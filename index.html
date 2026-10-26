@@ -506,6 +506,38 @@
     </div>
   </div>
 
+  <!-- MODAL TERIMA RETUR -->
+  <div id="modalRetur" class="modal-overlay hidden" style="z-index: 1350;">
+    <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-undo"></i> Terima Barang Retur</h3>
+        <button onclick="closeReturModal()" class="btn-outline" style="padding:4px 10px; border:none; background:transparent; font-size:18px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="event.preventDefault(); submitRetur();">
+          <input type="hidden" id="returRowIdx">
+          <div style="background:rgba(244,63,94,0.05); padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid rgba(244,63,94,0.2);">
+            <div style="font-size:10px; color:var(--text-muted); font-weight:800;">ORDER ID (RETUR)</div>
+            <div style="font-size:16px; color:var(--neon-red); font-weight:800;" id="returNoOrderLabel"></div>
+          </div>
+          <div id="returItemsList" style="margin-bottom:20px; max-height:150px; overflow-y:auto;"></div>
+          <div class="form-group">
+            <label>KONDISI FISIK BARANG</label>
+            <select id="returKondisi" class="form-input" style="width:100%;">
+              <option value="BAIK">Kondisi Mulus ➔ Masuk Stok Baik</option>
+              <option value="BS">Kondisi Rusak/Cacat ➔ Masuk Stok BS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>KETERANGAN (OPSIONAL)</label>
+            <input type="text" id="returKeterangan" class="form-input" placeholder="Contoh: Plastik sobek, kardus penyok..." style="width:100%;">
+          </div>
+          <button type="submit" id="btnSubmitRetur" class="btn btn-danger" style="width:100%; margin-top:10px; padding:15px;">Konfirmasi & Update Stok</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <div id="modalImport" class="modal-overlay hidden"><div class="modal-card" style="max-width: 420px;"><div class="modal-header"><h3><i class="fab fa-tiktok"></i> Bulk Import Engine</h3><button onclick="closeImportModal()" class="btn-outline" style="padding:4px 10px; border:none; background:transparent; font-size:18px;">&times;</button></div><div class="modal-body"><div style="background:rgba(250, 204, 21, 0.05); padding:16px; border-radius:12px; font-size:11px; border:1px solid rgba(250, 204, 21, 0.2); margin-bottom:20px; color:var(--text-muted); line-height:1.5;"><b style="color:var(--neon-yellow); display:block; margin-bottom:4px;">PROTOCOL:</b> 1. Clear EXPORT_TIKTOK sheet.<br>2. Paste raw data to TEMP_TIKTOK.<br>3. Select account & execute.</div><div class="form-group"><label>TARGET ACCOUNT</label><select id="importAccount" class="form-input"><option value="Zonime Biru">Zonime Biru</option><option value="Zonime Merah">Zonime Merah</option></select></div><div style="display:flex; gap:12px; margin-top:25px;"><button onclick="closeImportModal()" class="btn btn-outline" style="flex:1;">Abort</button><button onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2;"><i class="fas fa-bolt"></i> Execute</button></div></div></div></div>
 
   <div id="modalFixSales" class="modal-overlay hidden"><div class="modal-card" style="max-width: 600px;"><div class="modal-header"><h3><i class="fas fa-wrench"></i> Data Correction</h3><div style="display:flex; gap:10px; align-items:center;"><button class="btn btn-outline" style="font-size:10px; padding:5px 10px; color:var(--neon-cyan);" onclick="openModalSkuBaruFromModal()"><i class="fas fa-plus"></i> New SKU</button><button onclick="closeFixModal()" class="btn-outline" style="padding:4px 10px; border:none; background:transparent; font-size:18px;">&times;</button></div></div><div class="modal-body"><input type="hidden" id="fixRowIdx"><div id="fixRefBox" style="background:rgba(0,242,254,0.05); border:1px solid rgba(0,242,254,0.15); padding:15px; border-radius:12px; margin-bottom:20px;"></div><div id="fixItemsContainer"></div><button type="button" class="btn btn-outline" onclick="addFixRowUI('', 1)" style="width: 100%; margin-bottom: 20px; border-style:dashed; padding:12px;"><i class="fas fa-plus"></i> Insert Row (Max 10)</button><button onclick="saveFixModal()" id="btnSaveFix" class="btn btn-primary" style="width: 100%; padding:15px; text-transform:uppercase;">Apply Correction</button></div></div></div>
@@ -522,7 +554,7 @@
     // =========================================================================
     
     // UPDATE: URL BARU SESUAI DEPLOYMENT TERAKHIR ANDA
-    const API_URL = "https://script.google.com/macros/s/AKfycbz9-oGTP41sZ0J69BLGX6SzZy2hue1cV3ritm-V4I5l7re_zGMT6EmWf-KKr6t0v3aESg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyOlPQ4WfUH32KjmN99EiRdEmRqcmKHRyGQvUGmrUsFfdleEHg_tvbHIU-P_gTlVIAhwg/exec";
 
     if (typeof google === 'undefined') {
         window.google = {
@@ -574,8 +606,9 @@
                         runner.syncTikTokAutoWorkflow = function() { _call('syncTikTokAutoWorkflow'); };
                         runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
                         
-                        // FUNGSI BARU UNTUK OPNAME DAN MUTASI BS
                         runner.simpanPenyesuaianStok = function(payload) { _call('simpanPenyesuaianStok', payload); };
+                        // FUNGSI BARU UNTUK RETUR
+                        runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
                         
                         return runner;
                     }
@@ -759,11 +792,24 @@
     function submitQuickSku() { var btn = document.getElementById('btnSubmitQuick'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; var data = { sku: document.getElementById('qSku').value, tipe: document.getElementById('qType').value, kategori: document.getElementById('qCat').value, nama: document.getElementById('qName').value, varian: document.getElementById('qVar').value, listingCode: document.getElementById('qLc').value, stokAwal: document.getElementById('qStock').value, cogsAwal: document.getElementById('qCogs').value }; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Create Master"; if(res === "SUCCESS") { alert("SKU Added!"); document.getElementById('formQuickSku').reset(); closeModalQuickSku(); preloadDatalists(); } else { alert(res); } }).simpanSkuBaru(data); }
 
     function loadSalesData() { document.getElementById('salesContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Data...</div>'; google.script.run.withSuccessHandler(data => { globalSalesData = data; populateMonthFilter(data, 'filterMonthSales'); renderSalesTable(); }).getSalesData(); }
+    
+    // UPDATE: PERUBAHAN TOMBOL RETUR DI TABEL SALES
     function renderSalesTable() {
       var selMonth = document.getElementById('filterMonthSales').value; var selStatus = document.getElementById('filterStatusSales').value; var selKelengkapan = document.getElementById('filterKelengkapanSales').value; var searchQ = document.getElementById('searchSales').value.toLowerCase(); var container = document.getElementById('salesContainer');
       var filtered = globalSalesData.filter(item => { var mMatch = (selMonth === 'ALL' || item.valBulan === selMonth); var sMatch = (selStatus === 'ALL' || item.status === selStatus); var isError = item.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isError) || (selKelengkapan === 'ERROR' && isError); var textMatch = !searchQ || item.noOrder.toLowerCase().includes(searchQ) || item.mpProductName.toLowerCase().includes(searchQ) || item.listingCode.toLowerCase().includes(searchQ) || item.items.some(k => k.sku.toLowerCase().includes(searchQ) || k.nama.toLowerCase().includes(searchQ)); return mMatch && sMatch && kMatch && textMatch; });
       var sOmset = 0, sProfit = 0, sOrder = filtered.length, sQty = 0; var html = '';
-      if(filtered.length === 0) { html = '<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--glass-card); border-radius:var(--radius-md);">No data matched filter.</div>'; } else { filtered.forEach(d => { if(!["Batal", "Return", "Refund & Return"].includes(d.status)) { sOmset += d.totalPendapatan; sProfit += d.profit; } var badgeClass = d.status === "Selesai" ? "badge-success" : (d.status.includes("Menunggu") ? "badge-warning" : (d.status.includes("Batal") || d.status.includes("Return") ? "badge-danger" : "badge-info")); var isFixNeeded = false; var itemsHtml = ''; d.items.forEach(itm => { if(itm.sku === "" && itm.qty === 0) return; sQty += itm.qty; var isErr = itm.sku === '-' || itm.nama.includes('⚠️'); if(isErr) isFixNeeded = true; itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:var(--text-main); font-size:13px; margin-bottom:4px;" class="${isErr ? 'text-danger' : ''}">${itm.nama}</div><span style="font-size:10px; color:var(--text-muted); background:rgba(128,128,128,0.1); padding:2px 6px; border-radius:4px; border:1px solid var(--glass-border);">${itm.sku}</span></div><div class="money-stat" style="width:120px;"><span>COGS</span><div>${formatRp(itm.cogs * itm.qty)}</div></div><div class="money-stat" style="width:60px;"><span>QTY</span><div style="font-size:14px;">${itm.qty}</div></div></div>`; }); var btnFixHtml = isFixNeeded ? `<button class="btn btn-warning" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-wrench"></i> Fix</button>` : `<button class="btn btn-outline" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Edit</button>`; html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; align-items:center; gap:12px;"><span class="badge ${badgeClass}">${d.status}</span><span style="font-weight:800; color:var(--text-main); font-size:14px;">${d.noOrder}</span><span class="badge badge-purple">LC: ${d.listingCode}</span><span style="color:var(--text-muted); font-size:11px;"><i class="far fa-calendar-alt"></i> ${d.tanggal}</span></div><div style="display:flex; gap:20px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--neon-cyan);">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--neon-green);">${formatRp(d.profit)}</div></div>${btnFixHtml}</div></div><div class="dg-body"><div style="background:rgba(128,128,128,0.05); padding:12px 15px; border-radius:8px; font-size:11px; border:1px solid var(--glass-border); color:var(--text-muted);"><i class="fas fa-link" style="color:var(--neon-cyan);"></i> <b style="color:var(--text-main); margin-left:4px;">Ref (${d.channel}):</b> ${d.mpProductName} <span class="badge badge-warning" style="margin-left:8px;">VAR: ${d.mpVariant}</span></div><div>${itemsHtml}</div></div></div>`; }); }
+      if(filtered.length === 0) { html = '<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--glass-card); border-radius:var(--radius-md);">No data matched filter.</div>'; } else { filtered.forEach(d => { if(!["Batal", "Return", "Refund & Return"].includes(d.status)) { sOmset += d.totalPendapatan; sProfit += d.profit; } var badgeClass = d.status === "Selesai" ? "badge-success" : (d.status.includes("Menunggu") ? "badge-warning" : (d.status.includes("Batal") || d.status.includes("Return") ? "badge-danger" : "badge-info")); var isFixNeeded = false; var itemsHtml = ''; d.items.forEach(itm => { if(itm.sku === "" && itm.qty === 0) return; sQty += itm.qty; var isErr = itm.sku === '-' || itm.nama.includes('⚠️'); if(isErr) isFixNeeded = true; itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:var(--text-main); font-size:13px; margin-bottom:4px;" class="${isErr ? 'text-danger' : ''}">${itm.nama}</div><span style="font-size:10px; color:var(--text-muted); background:rgba(128,128,128,0.1); padding:2px 6px; border-radius:4px; border:1px solid var(--glass-border);">${itm.sku}</span></div><div class="money-stat" style="width:120px;"><span>COGS</span><div>${formatRp(itm.cogs * itm.qty)}</div></div><div class="money-stat" style="width:60px;"><span>QTY</span><div style="font-size:14px;">${itm.qty}</div></div></div>`; }); 
+      
+      var btnFixHtml = '';
+      if (d.status === "Return" || d.status === "Refund & Return") {
+        btnFixHtml = `<button class="btn btn-danger" style="padding:10px 15px;" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Terima Retur</button>`;
+      } else if (isFixNeeded) {
+        btnFixHtml = `<button class="btn btn-warning" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-wrench"></i> Fix</button>`;
+      } else {
+        btnFixHtml = `<button class="btn btn-outline" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Edit</button>`;
+      }
+
+      html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; align-items:center; gap:12px;"><span class="badge ${badgeClass}">${d.status}</span><span style="font-weight:800; color:var(--text-main); font-size:14px;">${d.noOrder}</span><span class="badge badge-purple">LC: ${d.listingCode}</span><span style="color:var(--text-muted); font-size:11px;"><i class="far fa-calendar-alt"></i> ${d.tanggal}</span></div><div style="display:flex; gap:20px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--neon-cyan);">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--neon-green);">${formatRp(d.profit)}</div></div>${btnFixHtml}</div></div><div class="dg-body"><div style="background:rgba(128,128,128,0.05); padding:12px 15px; border-radius:8px; font-size:11px; border:1px solid var(--glass-border); color:var(--text-muted);"><i class="fas fa-link" style="color:var(--neon-cyan);"></i> <b style="color:var(--text-main); margin-left:4px;">Ref (${d.channel}):</b> ${d.mpProductName} <span class="badge badge-warning" style="margin-left:8px;">VAR: ${d.mpVariant}</span></div><div>${itemsHtml}</div></div></div>`; }); }
       rawSalesOmsetVal = formatRp(sOmset); rawSalesProfitVal = formatRp(sProfit); document.getElementById('sumOrder').innerText = sOrder.toLocaleString('id-ID'); document.getElementById('sumQty').innerText = sQty.toLocaleString('id-ID') + " Pcs"; container.innerHTML = html; applySalesPrivacy();
     }
     function openFixModal(rowIdx) { var item = globalSalesData.find(s => s.rowIdx === rowIdx); if (!item) return; document.getElementById('fixRowIdx').value = rowIdx; document.getElementById('fixRefBox').innerHTML = `<div style="font-size:10px; color:var(--neon-cyan); font-weight:800; margin-bottom:6px;">MP REFERENCE:</div><div style="font-size:13px; font-weight:700; color:var(--text-main);">${item.mpProductName}</div><div style="font-size:11px; color:var(--text-muted); margin-top:8px;">Varian: <b style="color:var(--text-main);">${item.mpVariant}</b> | LC: <b style="color:var(--neon-yellow);">${item.listingCode}</b></div>`; document.getElementById('fixItemsContainer').innerHTML = ""; currentFixItemsCount = 0; var activeCount = 0; item.items.forEach(itm => { if(itm.sku && itm.sku !== '-' || itm.qty > 0) { addFixRowUI(itm.sku, itm.qty); activeCount++; } }); if(activeCount === 0) addFixRowUI('', 1); document.getElementById('modalFixSales').classList.remove('hidden'); }
@@ -773,7 +819,6 @@
 
     function loadInventoryData() { document.getElementById('invTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="7" class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Data...</td></tr>'; google.script.run.withSuccessHandler(data => { globalInvData = data; var types = new Set(), cats = new Set(); data.forEach(d => { if(d.tipe !== "-") types.add(d.tipe); if(d.kategori !== "-") cats.add(d.kategori); }); var selT = document.getElementById('filterTypeInv'); selT.innerHTML = '<option value="ALL">All Types</option>'; Array.from(types).sort().forEach(t => selT.innerHTML += `<option value="${t}">${t}</option>`); var selC = document.getElementById('filterCatInv'); selC.innerHTML = '<option value="ALL">All Categories</option>'; Array.from(cats).sort().forEach(c => selC.innerHTML += `<option value="${c}">${c}</option>`); renderInventory(); }).getInventoryData(); }
     
-    // UPDATE: PENAMBAHAN TOMBOL AKSI DI TABEL INVENTORY
     function renderInventory() { var selT = document.getElementById('filterTypeInv').value, selC = document.getElementById('filterCatInv').value, selS = document.getElementById('filterStatusInv').value, sq = document.getElementById('searchInv').value.toLowerCase(); var filtered = globalInvData.filter(d => { var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; return (selT === 'ALL' || d.tipe === selT) && (selC === 'ALL' || d.kategori === selC) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); }); var totalNilaiAsetFilter = 0, totalQtyFilter = 0, totalRestockFilter = 0; filtered.forEach(d => { totalNilaiAsetFilter += d.nilai; totalQtyFilter += d.stok; if(d.stok <= 1) totalRestockFilter++; }); document.getElementById('invSumAset').innerText = formatRp(totalNilaiAsetFilter); document.getElementById('invSumSku').innerText = filtered.length.toLocaleString('id-ID') + " SKU"; document.getElementById('invSumQty').innerText = totalQtyFilter.toLocaleString('id-ID') + " Pcs"; document.getElementById('invSumRestock').innerText = totalRestockFilter.toLocaleString('id-ID') + " SKU"; var tbody = document.getElementById('invTable').getElementsByTagName('tbody')[0], html = ''; filtered.forEach(d => { var stat = d.stok <= 1 ? '<span class="badge badge-danger">RESTOCK</span>' : '<span class="badge badge-success">STABLE</span>'; html += `<tr><td><div style="font-weight:800; color:var(--text-main); font-size:12px;">${d.sku}</div></td><td><div style="font-weight:600; font-size:13px; color:var(--text-main);">${d.nama}</div><div style="font-size:10px; margin-top:6px;"><span class="badge badge-info">${d.tipe}</span> <span class="badge badge-purple">${d.kategori}</span></div></td><td>${stat}</td><td style="text-align:center; font-weight:800; font-size:14px; color:${d.stok <= 1 ? 'var(--neon-red)' : 'var(--neon-cyan)'}">${d.stok.toLocaleString('id-ID')}</td><td style="text-align:right; color:var(--text-muted);">${formatRp(d.cogs)}</td><td style="text-align:right; font-weight:800; color:var(--text-main);">${formatRp(d.nilai)}</td><td style="text-align:center;"><button class="btn btn-outline btn-icon" style="width:28px; height:28px; font-size:10px;" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})"><i class="fas fa-pen"></i></button></td></tr>`; }); tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">No inventory found.</td></tr>' : html; }
 
     function loadProcurementData() { document.getElementById('procurementContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Ledger...</div>'; google.script.run.withSuccessHandler(data => { globalProcData = data; populateMonthFilter(data, 'filterMonthProc'); var sellers = new Set(); data.forEach(d => sellers.add(d.supplier)); var selS = document.getElementById('filterSellerProc'); selS.innerHTML = '<option value="ALL">Semua Supplier</option>'; Array.from(sellers).sort().forEach(s => selS.innerHTML += `<option value="${s}">${s}</option>`); renderProcurement(); }).getProcurementData(); }
@@ -796,7 +841,7 @@
     function submitSkuBaru() { var btn = document.getElementById('btnSubmitSku'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; var data = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value }; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Inject to Database"; if(res === "SUCCESS") { alert("SKU Added!"); document.getElementById('formSkuBaru').reset(); preloadDatalists(); } else { alert(res); } }).simpanSkuBaru(data); }
 
     // =========================================================================
-    // FUNGSI JAVASCRIPT BARU: STOCK OPNAME & MUTASI BS
+    // FUNGSI JAVASCRIPT: STOCK OPNAME & MUTASI BS
     // =========================================================================
     function openInvActionModal(sku, nama, stok, cogs) {
       document.getElementById('invActSku').value = sku;
@@ -813,9 +858,7 @@
       document.getElementById('modalInvAction').classList.remove('hidden');
     }
     
-    function closeInvActionModal() { 
-      document.getElementById('modalInvAction').classList.add('hidden'); 
-    }
+    function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden'); }
     
     function switchInvTab(tab) {
       if (tab === 'OPNAME') {
@@ -855,21 +898,13 @@
         qtySelisih: fis - sys,
         keterangan: document.getElementById('invActKetOpname').value
       };
-      
       if(payload.qtySelisih === 0) return alert("Tidak ada selisih stok (As-Is = To-Be).");
       
-      btn.disabled = true; 
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
-      
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
       google.script.run.withSuccessHandler(res => {
         btn.disabled = false; btn.innerText = "Proses Opname";
-        if(res === "SUCCESS") { 
-            alert("Data Opname berhasil disimpan dan Log Mutasi telah dicatat!"); 
-            closeInvActionModal(); 
-            loadInventoryData(); 
-        } else { 
-            alert(res); 
-        }
+        if(res === "SUCCESS") { alert("Data Opname berhasil disimpan!"); closeInvActionModal(); loadInventoryData(); } 
+        else { alert(res); }
       }).simpanPenyesuaianStok(payload);
     }
     
@@ -878,7 +913,6 @@
       var qty = parseInt(document.getElementById('invActQtyBs').value);
       var arah = document.getElementById('invActArahBs').value;
       var sys = parseInt(document.getElementById('invActStokSistem').value) || 0;
-      
       if(isNaN(qty) || qty <= 0) return alert("Qty barang rusak tidak valid!");
       if(arah === "BAIK_KE_BS" && qty > sys) return alert("Stok baik tidak mencukupi untuk di-BS-kan!");
       
@@ -892,19 +926,63 @@
         keterangan: document.getElementById('invActKetBs').value
       };
       
-      btn.disabled = true; 
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
-      
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
       google.script.run.withSuccessHandler(res => {
         btn.disabled = false; btn.innerText = "Mutasi Stok BS";
-        if(res === "SUCCESS") { 
-            alert("Barang berhasil dipindahkan dan direkap ke dalam Log Mutasi BS!"); 
-            closeInvActionModal(); 
-            loadInventoryData(); 
-        } else { 
-            alert(res); 
-        }
+        if(res === "SUCCESS") { alert("Barang berhasil dipindahkan!"); closeInvActionModal(); loadInventoryData(); } 
+        else { alert(res); }
       }).simpanPenyesuaianStok(payload);
+    }
+
+    // =========================================================================
+    // FUNGSI JAVASCRIPT: MANAJEMEN RETUR (RMA)
+    // =========================================================================
+    function openReturModal(rowIdx, noOrder) {
+      var item = globalSalesData.find(s => s.rowIdx === rowIdx);
+      if (!item) return;
+      document.getElementById('returRowIdx').value = rowIdx;
+      document.getElementById('returNoOrderLabel').innerText = noOrder;
+      document.getElementById('returKondisi').value = "BAIK";
+      document.getElementById('returKeterangan').value = "";
+      
+      var itemsHtml = '';
+      item.items.forEach(itm => {
+        if(itm.sku && itm.sku !== '-' && itm.qty > 0) {
+          itemsHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--glass-border); font-size:12px;"><div style="color:var(--text-main); font-weight:600;">${itm.sku}</div><div style="color:var(--neon-cyan); font-weight:800;">+${itm.qty} Pcs</div></div>`;
+        }
+      });
+      document.getElementById('returItemsList').innerHTML = itemsHtml;
+      document.getElementById('modalRetur').classList.remove('hidden');
+    }
+
+    function closeReturModal() { document.getElementById('modalRetur').classList.add('hidden'); }
+
+    function submitRetur() {
+      var rowIdx = parseInt(document.getElementById('returRowIdx').value);
+      var noOrder = document.getElementById('returNoOrderLabel').innerText;
+      var item = globalSalesData.find(s => s.rowIdx === rowIdx);
+      
+      var payload = {
+        rowIdx: rowIdx,
+        noOrder: noOrder,
+        kondisi: document.getElementById('returKondisi').value,
+        keterangan: document.getElementById('returKeterangan').value,
+        items: item.items
+      };
+
+      var btn = document.getElementById('btnSubmitRetur');
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+      
+      google.script.run.withSuccessHandler(res => {
+        btn.disabled = false; btn.innerText = "Konfirmasi & Update Stok";
+        if(res === "SUCCESS") {
+          alert("Retur berhasil diproses! Stok telah dikembalikan.");
+          closeReturModal();
+          loadSalesData(); // Refresh UI Sales
+        } else {
+          alert(res);
+        }
+      }).simpanTerimaRetur(payload);
     }
   </script>
 </body>
