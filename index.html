@@ -813,7 +813,7 @@
     }
     
     // UPDATE: PERUBAHAN TOMBOL RETUR DI TABEL SALES
-    function renderSalesTable() {
+   function renderSalesTable() {
       var selMonth = document.getElementById('filterMonthSales').value; 
       var selStatus = document.getElementById('filterStatusSales').value; 
       var selKelengkapan = document.getElementById('filterKelengkapanSales').value; 
@@ -822,7 +822,6 @@
       
       var filtered = globalSalesData.filter(item => { 
         var mMatch = (selMonth === 'ALL' || item.valBulan === selMonth); 
-        // UPDATE: Logika filter status yang tidak sensitif huruf besar/kecil & kelebihan spasi
         var sMatch = (selStatus === 'ALL' || (item.status && item.status.trim().toLowerCase() === selStatus.trim().toLowerCase())); 
         var isError = item.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
         var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isError) || (selKelengkapan === 'ERROR' && isError); 
@@ -835,13 +834,25 @@
         html = '<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--glass-card); border-radius:var(--radius-md);">No data matched filter.</div>'; 
       } else { 
         filtered.forEach(d => { 
+          // 1. STANDARISASI STRING STATUS
           var statLow = d.status ? d.status.toLowerCase().trim() : "";
-          if(!["batal", "return", "refund & return", "dikembalikan", "retur", "return selesai"].includes(statLow)) { 
+          
+          // 2. BUSINESS LOGIC (Kalkulasi Uang)
+          // Berdasarkan rule: Selesai DAN Refund & Return MASUK hitungan omset & profit
+          var isMasukHitungan = statLow.includes("selesai") || (statLow.includes("refund") && statLow.includes("return"));
+          
+          if(isMasukHitungan) { 
             sOmset += d.totalPendapatan; 
             sProfit += d.profit; 
           } 
           
-          var badgeClass = statLow.includes("selesai") ? "badge-success" : (statLow.includes("menunggu") || statLow.includes("transit") || statLow.includes("proses") ? "badge-warning" : (statLow.includes("batal") || statLow.includes("return") || statLow.includes("dikembalikan") || statLow.includes("retur") ? "badge-danger" : "badge-info")); 
+          // 3. RYUXDSGN BADGE STYLING (Warna indikator)
+          var badgeClass = "badge-info"; 
+          if (statLow.includes("selesai")) badgeClass = "badge-success";
+          else if (statLow.includes("refund") && statLow.includes("return")) badgeClass = "badge-purple"; // Warna khusus untuk Refund & Return
+          else if (statLow.includes("menunggu") || statLow.includes("transit")) badgeClass = "badge-warning";
+          else if (statLow.includes("cancel") || statLow.includes("batal") || statLow.includes("return")) badgeClass = "badge-danger";
+          
           var isFixNeeded = false; var itemsHtml = ''; 
           
           d.items.forEach(itm => { 
@@ -852,8 +863,10 @@
             itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:var(--text-main); font-size:13px; margin-bottom:4px;" class="${isErr ? 'text-danger' : ''}">${itm.nama}</div><span style="font-size:10px; color:var(--text-muted); background:rgba(128,128,128,0.1); padding:2px 6px; border-radius:4px; border:1px solid var(--glass-border);">${itm.sku}</span></div><div class="money-stat" style="width:120px;"><span>COGS</span><div>${formatRp(itm.cogs * itm.qty)}</div></div><div class="money-stat" style="width:60px;"><span>QTY</span><div style="font-size:14px;">${itm.qty}</div></div></div>`; 
           }); 
       
+          // 4. ACTION BUTTONS LOGIC
           var btnFixHtml = '';
-          if (statLow === "return" || statLow === "refund & return" || statLow.includes("dikembalikan") || statLow.includes("retur")) {
+          // Tombol Terima Retur hanya muncul jika status murni Return, atau Refund & Return
+          if (statLow === "return" || (statLow.includes("refund") && statLow.includes("return"))) {
             btnFixHtml = `<button class="btn btn-danger" style="padding:10px 15px;" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Terima Retur</button>`;
           } else if (isFixNeeded) {
             btnFixHtml = `<button class="btn btn-warning" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-wrench"></i> Fix</button>`;
