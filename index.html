@@ -66,20 +66,19 @@
     /* ========================================================================= */
     .cyber-bg-object {
       position: fixed;
-      top: 50%;
-      right: -10%;
+      top: 10%;
+      right: -5%;
       width: 900px;
       height: 900px;
-      /* Anda dapat mengganti URL ini dengan link gambar PNG/JPG objek 3D pilihan Anda */
-      background-image: url('https://images.unsplash.com/photo-1614729939124-03290b56c9ce?q=80&w=1200&auto=format&fit=crop');
+      background-image: url('https://images.unsplash.com/photo-1618172193763-c511deb635ca?q=80&w=1000&auto=format&fit=crop');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      opacity: 0.45;
-      z-index: -1;
+      opacity: 0.5;
+      z-index: 0; /* FIX: Diubah ke 0 agar tidak tenggelam di belakang aurora */
       pointer-events: none;
       mix-blend-mode: screen; 
-      filter: hue-rotate(210deg) saturate(150%) brightness(1.2); /* Menyesuaikan gambar abstract agar menjadi Cyan/Purple */
+      filter: hue-rotate(210deg) saturate(150%);
       animation: floatObject 15s ease-in-out infinite alternate;
     }
 
@@ -164,7 +163,14 @@
     .nav-item.active i { opacity: 1; color: var(--ryux-cyan); filter: drop-shadow(0 0 8px var(--ryux-cyan)); }
 
     /* HEADER */
-    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .main-content { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+      position: relative; 
+      z-index: 10; /* FIX: Memastikan konten kaca berada di atas objek 3D */
+    }
     .header { padding: 25px 35px 15px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
     .header h2 { margin: 0; font-size: 20px; display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: -0.5px; }
     .pip-indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--ryux-cyan); box-shadow: 0 0 10px var(--ryux-cyan); animation: pulse 2s infinite; }
