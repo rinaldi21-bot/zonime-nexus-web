@@ -791,25 +791,79 @@
     function closeModalQuickSku() { document.getElementById('modalQuickSku').classList.add('hidden'); }
     function submitQuickSku() { var btn = document.getElementById('btnSubmitQuick'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; var data = { sku: document.getElementById('qSku').value, tipe: document.getElementById('qType').value, kategori: document.getElementById('qCat').value, nama: document.getElementById('qName').value, varian: document.getElementById('qVar').value, listingCode: document.getElementById('qLc').value, stokAwal: document.getElementById('qStock').value, cogsAwal: document.getElementById('qCogs').value }; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Create Master"; if(res === "SUCCESS") { alert("SKU Added!"); document.getElementById('formQuickSku').reset(); closeModalQuickSku(); preloadDatalists(); } else { alert(res); } }).simpanSkuBaru(data); }
 
-    function loadSalesData() { document.getElementById('salesContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Data...</div>'; google.script.run.withSuccessHandler(data => { globalSalesData = data; populateMonthFilter(data, 'filterMonthSales'); renderSalesTable(); }).getSalesData(); }
+   function loadSalesData() { 
+      document.getElementById('salesContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Data...</div>'; 
+      google.script.run.withSuccessHandler(data => { 
+        globalSalesData = data; 
+        populateMonthFilter(data, 'filterMonthSales'); 
+        
+        // AUTO-GENERATE STATUS FILTER DARI DATA ASLI
+        var statusSet = new Set();
+        data.forEach(d => { if(d.status) statusSet.add(d.status.trim()); });
+        var selStat = document.getElementById('filterStatusSales');
+        var oldVal = selStat.value; // Simpan pilihan sebelumnya
+        selStat.innerHTML = '<option value="ALL">Semua Status</option>';
+        Array.from(statusSet).sort().forEach(st => {
+           selStat.innerHTML += `<option value="${st}">${st}</option>`;
+        });
+        if(Array.from(statusSet).includes(oldVal)) selStat.value = oldVal;
+        
+        renderSalesTable(); 
+      }).getSalesData(); 
+    }
     
     // UPDATE: PERUBAHAN TOMBOL RETUR DI TABEL SALES
     function renderSalesTable() {
-      var selMonth = document.getElementById('filterMonthSales').value; var selStatus = document.getElementById('filterStatusSales').value; var selKelengkapan = document.getElementById('filterKelengkapanSales').value; var searchQ = document.getElementById('searchSales').value.toLowerCase(); var container = document.getElementById('salesContainer');
-      var filtered = globalSalesData.filter(item => { var mMatch = (selMonth === 'ALL' || item.valBulan === selMonth); var sMatch = (selStatus === 'ALL' || item.status === selStatus); var isError = item.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isError) || (selKelengkapan === 'ERROR' && isError); var textMatch = !searchQ || item.noOrder.toLowerCase().includes(searchQ) || item.mpProductName.toLowerCase().includes(searchQ) || item.listingCode.toLowerCase().includes(searchQ) || item.items.some(k => k.sku.toLowerCase().includes(searchQ) || k.nama.toLowerCase().includes(searchQ)); return mMatch && sMatch && kMatch && textMatch; });
-      var sOmset = 0, sProfit = 0, sOrder = filtered.length, sQty = 0; var html = '';
-      if(filtered.length === 0) { html = '<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--glass-card); border-radius:var(--radius-md);">No data matched filter.</div>'; } else { filtered.forEach(d => { if(!["Batal", "Return", "Refund & Return"].includes(d.status)) { sOmset += d.totalPendapatan; sProfit += d.profit; } var badgeClass = d.status === "Selesai" ? "badge-success" : (d.status.includes("Menunggu") ? "badge-warning" : (d.status.includes("Batal") || d.status.includes("Return") ? "badge-danger" : "badge-info")); var isFixNeeded = false; var itemsHtml = ''; d.items.forEach(itm => { if(itm.sku === "" && itm.qty === 0) return; sQty += itm.qty; var isErr = itm.sku === '-' || itm.nama.includes('⚠️'); if(isErr) isFixNeeded = true; itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:var(--text-main); font-size:13px; margin-bottom:4px;" class="${isErr ? 'text-danger' : ''}">${itm.nama}</div><span style="font-size:10px; color:var(--text-muted); background:rgba(128,128,128,0.1); padding:2px 6px; border-radius:4px; border:1px solid var(--glass-border);">${itm.sku}</span></div><div class="money-stat" style="width:120px;"><span>COGS</span><div>${formatRp(itm.cogs * itm.qty)}</div></div><div class="money-stat" style="width:60px;"><span>QTY</span><div style="font-size:14px;">${itm.qty}</div></div></div>`; }); 
+      var selMonth = document.getElementById('filterMonthSales').value; 
+      var selStatus = document.getElementById('filterStatusSales').value; 
+      var selKelengkapan = document.getElementById('filterKelengkapanSales').value; 
+      var searchQ = document.getElementById('searchSales').value.toLowerCase(); 
+      var container = document.getElementById('salesContainer');
       
-      var btnFixHtml = '';
-      if (d.status === "Return" || d.status === "Refund & Return") {
-        btnFixHtml = `<button class="btn btn-danger" style="padding:10px 15px;" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Terima Retur</button>`;
-      } else if (isFixNeeded) {
-        btnFixHtml = `<button class="btn btn-warning" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-wrench"></i> Fix</button>`;
-      } else {
-        btnFixHtml = `<button class="btn btn-outline" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Edit</button>`;
-      }
+      var filtered = globalSalesData.filter(item => { 
+        var mMatch = (selMonth === 'ALL' || item.valBulan === selMonth); 
+        // UPDATE: Logika filter status yang tidak sensitif huruf besar/kecil & kelebihan spasi
+        var sMatch = (selStatus === 'ALL' || (item.status && item.status.trim().toLowerCase() === selStatus.trim().toLowerCase())); 
+        var isError = item.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
+        var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isError) || (selKelengkapan === 'ERROR' && isError); 
+        var textMatch = !searchQ || item.noOrder.toLowerCase().includes(searchQ) || item.mpProductName.toLowerCase().includes(searchQ) || item.listingCode.toLowerCase().includes(searchQ) || item.items.some(k => k.sku.toLowerCase().includes(searchQ) || k.nama.toLowerCase().includes(searchQ)); 
+        return mMatch && sMatch && kMatch && textMatch; 
+      });
+      
+      var sOmset = 0, sProfit = 0, sOrder = filtered.length, sQty = 0; var html = '';
+      if(filtered.length === 0) { 
+        html = '<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--glass-card); border-radius:var(--radius-md);">No data matched filter.</div>'; 
+      } else { 
+        filtered.forEach(d => { 
+          var statLow = d.status ? d.status.toLowerCase().trim() : "";
+          if(!["batal", "return", "refund & return", "dikembalikan", "retur", "return selesai"].includes(statLow)) { 
+            sOmset += d.totalPendapatan; 
+            sProfit += d.profit; 
+          } 
+          
+          var badgeClass = statLow.includes("selesai") ? "badge-success" : (statLow.includes("menunggu") || statLow.includes("transit") || statLow.includes("proses") ? "badge-warning" : (statLow.includes("batal") || statLow.includes("return") || statLow.includes("dikembalikan") || statLow.includes("retur") ? "badge-danger" : "badge-info")); 
+          var isFixNeeded = false; var itemsHtml = ''; 
+          
+          d.items.forEach(itm => { 
+            if(itm.sku === "" && itm.qty === 0) return; 
+            sQty += itm.qty; 
+            var isErr = itm.sku === '-' || itm.nama.includes('⚠️'); 
+            if(isErr) isFixNeeded = true; 
+            itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:var(--text-main); font-size:13px; margin-bottom:4px;" class="${isErr ? 'text-danger' : ''}">${itm.nama}</div><span style="font-size:10px; color:var(--text-muted); background:rgba(128,128,128,0.1); padding:2px 6px; border-radius:4px; border:1px solid var(--glass-border);">${itm.sku}</span></div><div class="money-stat" style="width:120px;"><span>COGS</span><div>${formatRp(itm.cogs * itm.qty)}</div></div><div class="money-stat" style="width:60px;"><span>QTY</span><div style="font-size:14px;">${itm.qty}</div></div></div>`; 
+          }); 
+      
+          var btnFixHtml = '';
+          if (statLow === "return" || statLow === "refund & return" || statLow.includes("dikembalikan") || statLow.includes("retur")) {
+            btnFixHtml = `<button class="btn btn-danger" style="padding:10px 15px;" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Terima Retur</button>`;
+          } else if (isFixNeeded) {
+            btnFixHtml = `<button class="btn btn-warning" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-wrench"></i> Fix</button>`;
+          } else {
+            btnFixHtml = `<button class="btn btn-outline" style="padding:10px 15px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Edit</button>`;
+          }
 
-      html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; align-items:center; gap:12px;"><span class="badge ${badgeClass}">${d.status}</span><span style="font-weight:800; color:var(--text-main); font-size:14px;">${d.noOrder}</span><span class="badge badge-purple">LC: ${d.listingCode}</span><span style="color:var(--text-muted); font-size:11px;"><i class="far fa-calendar-alt"></i> ${d.tanggal}</span></div><div style="display:flex; gap:20px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--neon-cyan);">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--neon-green);">${formatRp(d.profit)}</div></div>${btnFixHtml}</div></div><div class="dg-body"><div style="background:rgba(128,128,128,0.05); padding:12px 15px; border-radius:8px; font-size:11px; border:1px solid var(--glass-border); color:var(--text-muted);"><i class="fas fa-link" style="color:var(--neon-cyan);"></i> <b style="color:var(--text-main); margin-left:4px;">Ref (${d.channel}):</b> ${d.mpProductName} <span class="badge badge-warning" style="margin-left:8px;">VAR: ${d.mpVariant}</span></div><div>${itemsHtml}</div></div></div>`; }); }
+          html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; align-items:center; gap:12px;"><span class="badge ${badgeClass}">${d.status}</span><span style="font-weight:800; color:var(--text-main); font-size:14px;">${d.noOrder}</span><span class="badge badge-purple">LC: ${d.listingCode}</span><span style="color:var(--text-muted); font-size:11px;"><i class="far fa-calendar-alt"></i> ${d.tanggal}</span></div><div style="display:flex; gap:20px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--neon-cyan);">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--neon-green);">${formatRp(d.profit)}</div></div>${btnFixHtml}</div></div><div class="dg-body"><div style="background:rgba(128,128,128,0.05); padding:12px 15px; border-radius:8px; font-size:11px; border:1px solid var(--glass-border); color:var(--text-muted);"><i class="fas fa-link" style="color:var(--neon-cyan);"></i> <b style="color:var(--text-main); margin-left:4px;">Ref (${d.channel}):</b> ${d.mpProductName} <span class="badge badge-warning" style="margin-left:8px;">VAR: ${d.mpVariant}</span></div><div>${itemsHtml}</div></div></div>`; 
+        }); 
+      }
       rawSalesOmsetVal = formatRp(sOmset); rawSalesProfitVal = formatRp(sProfit); document.getElementById('sumOrder').innerText = sOrder.toLocaleString('id-ID'); document.getElementById('sumQty').innerText = sQty.toLocaleString('id-ID') + " Pcs"; container.innerHTML = html; applySalesPrivacy();
     }
     function openFixModal(rowIdx) { var item = globalSalesData.find(s => s.rowIdx === rowIdx); if (!item) return; document.getElementById('fixRowIdx').value = rowIdx; document.getElementById('fixRefBox').innerHTML = `<div style="font-size:10px; color:var(--neon-cyan); font-weight:800; margin-bottom:6px;">MP REFERENCE:</div><div style="font-size:13px; font-weight:700; color:var(--text-main);">${item.mpProductName}</div><div style="font-size:11px; color:var(--text-muted); margin-top:8px;">Varian: <b style="color:var(--text-main);">${item.mpVariant}</b> | LC: <b style="color:var(--neon-yellow);">${item.listingCode}</b></div>`; document.getElementById('fixItemsContainer').innerHTML = ""; currentFixItemsCount = 0; var activeCount = 0; item.items.forEach(itm => { if(itm.sku && itm.sku !== '-' || itm.qty > 0) { addFixRowUI(itm.sku, itm.qty); activeCount++; } }); if(activeCount === 0) addFixRowUI('', 1); document.getElementById('modalFixSales').classList.remove('hidden'); }
