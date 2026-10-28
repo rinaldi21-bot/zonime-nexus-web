@@ -4,17 +4,15 @@
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ZONIME NEXUS - Cyber OS v3 (Glassmorphism)</title>
+  <title>ZONIME NEXUS - Cyber OS v3.1</title>
   
   <!-- Fonts & Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
+  <!-- NATIVE CSS ENGINE (NO TAILWIND CDN NEEDED - 100% STABLE) -->
   <style>
-    /* ========================================================================= */
-    /* RYUXDSGN GLASSMORPHISM DARK MODE (NATIVE CSS ENGINE)                      */
-    /* ========================================================================= */
     :root {
       --ryux-cyan: #00F0FF;
       --ryux-green: #00FF66;
@@ -22,364 +20,257 @@
       --ryux-purple: #B026FF;
       --ryux-red: #FF0055;
       
-      --glass-bg: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.12);
-      --glass-hover-border: rgba(255, 255, 255, 0.25);
+      --glass-bg: rgba(18, 24, 38, 0.85); /* Warna Card Gelap Pekat (As Is) */
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-hover-border: rgba(255, 255, 255, 0.2);
       --text-muted: #94a3b8;
       --text-main: #f8fafc;
     }
 
     * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     ::-webkit-scrollbar { width: 6px; height: 6px; display: none; }
+    @media (min-width: 768px) { ::-webkit-scrollbar { display: block; } }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,0.5); }
 
+    /* VIBRANT MESH GRADIENT BACKGROUND */
     body {
       margin: 0; padding: 0;
-      background-color: #030305;
+      background-color: #05070a;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(67, 28, 168, 0.35) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(0, 240, 255, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(176, 38, 255, 0.25) 0px, transparent 50%);
+        radial-gradient(circle at 10% 20%, rgba(99, 39, 237, 0.2), transparent 40%),
+        radial-gradient(circle at 90% 15%, rgba(0, 240, 255, 0.15), transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(255, 0, 85, 0.1), transparent 50%);
+      background-size: 150% 150%;
       background-attachment: fixed;
+      animation: meshPulse 15s ease-in-out infinite alternate;
       color: var(--text-main);
       display: flex;
       height: 100vh;
       overflow: hidden;
+      position: relative;
+    }
+    @keyframes meshPulse {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 50% 100%; }
+    }
+
+    /* CYBER DATA RAIN CANVAS LAYER (DI BELAKANG, TIDAK MENGGANGGU KLIK) */
+    #cyberRainCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none; /* PENTING: Mencegah canvas menghalangi klik menu */
+      opacity: 0.3;
+      filter: blur(1px);
     }
 
     /* GLASS PANEL CORE */
     .glass-panel, .bento-card, .stat-card, .chart-container, .mini-widget, .card, .data-group-card, .summary-box, .filter-bar {
       background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--glass-border);
       border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
       position: relative;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s ease;
+      z-index: 10;
     }
     .stat-card:hover, .data-group-card:hover { border-color: var(--glass-hover-border); }
 
     /* SIDEBAR */
     .sidebar {
-      width: 260px;
-      background: rgba(0, 0, 0, 0.4);
+      width: 270px;
+      background: rgba(10, 13, 20, 0.8);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
+      border-right: 1px solid var(--glass-border);
+      display: none;
       flex-direction: column;
       z-index: 100;
       box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
     }
-    .logo {
-      padding: 30px 25px 15px;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      color: white;
-      text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-    }
-    .logo span {
-      font-size: 9px;
-      background: rgba(0, 240, 255, 0.1);
-      color: var(--ryux-cyan);
-      border: 1px solid rgba(0, 240, 255, 0.3);
-      padding: 3px 10px;
-      border-radius: 99px;
-      width: fit-content;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      backdrop-blur: 10px;
-    }
-    .nav-group { padding: 20px 25px 6px; font-size: 9px; text-transform: uppercase; color: #475569; letter-spacing: 2px; font-weight: 900; }
-    .nav-item {
-      padding: 12px 20px;
-      margin: 3px 15px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      transition: all 0.25s ease;
-      font-size: 11px;
-      border-radius: 12px;
-      color: var(--text-muted);
-      font-weight: 700;
-      border: 1px solid transparent;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .nav-item i { width: 28px; font-size: 15px; opacity: 0.7; }
+    @media (min-width: 768px) { .sidebar { display: flex; } }
+    
+    .logo { padding: 30px 25px 15px; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; display: flex; flex-direction: column; gap: 8px; color: white; filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.3)); }
+    .logo span { font-size: 9px; background: linear-gradient(to right, rgba(0,240,255,0.15), transparent); color: var(--ryux-cyan); border: 1px solid rgba(0, 240, 255, 0.3); padding: 4px 12px; border-radius: 99px; width: fit-content; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+    .nav-group { padding: 20px 25px 6px; font-size: 10px; text-transform: uppercase; color: #64748b; letter-spacing: 2px; font-weight: 900; }
+    .nav-item { padding: 14px 20px; margin: 4px 16px; cursor: pointer; display: flex; align-items: center; gap: 16px; transition: all 0.25s ease; font-size: 12px; border-radius: 12px; color: var(--text-muted); font-weight: 700; border: 1px solid transparent; text-transform: uppercase; letter-spacing: 1px; }
+    .nav-item i { width: 24px; font-size: 16px; opacity: 0.6; text-align: center; }
     .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: white; }
-    .nav-item.active {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--ryux-cyan);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
-    }
-    .nav-item.active i { opacity: 1; color: var(--ryux-cyan); filter: drop-shadow(0 0 8px var(--ryux-cyan)); }
+    .nav-item.active { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--ryux-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.1); }
+    .nav-item.active i { opacity: 1; color: var(--ryux-cyan); filter: drop-shadow(0 0 10px #00F0FF); }
 
     /* HEADER */
-    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .header { padding: 25px 35px 15px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
-    .header h2 { margin: 0; font-size: 20px; display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: -0.5px; }
-    .pip-indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--ryux-cyan); box-shadow: 0 0 10px var(--ryux-cyan); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; z-index: 10; }
+    .header { padding: 25px 35px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
+    .header h2 { margin: 0; font-size: 20px; display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: 0.5px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+    
+    .realtime-widget { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 99px; display: none; align-items: center; gap: 16px; font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; backdrop-filter: blur(12px); }
+    @media (min-width: 768px) { .realtime-widget { display: flex; } }
+    .top-action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-muted); transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .top-action-btn:hover { background: rgba(0, 240, 255, 0.1); border-color: rgba(0,240,255,0.5); color: var(--ryux-cyan); }
 
-    .realtime-widget {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 8px 16px;
-      border-radius: 99px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .top-action-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: 0.3s;
-    }
-    .top-action-btn:hover { background: rgba(0, 240, 255, 0.1); border-color: var(--ryux-cyan); color: var(--ryux-cyan); }
+    .content-scroll { flex: 1; overflow-y: auto; padding: 15px 35px 40px; position: relative; z-index: 10; }
 
-    .content-scroll { flex: 1; overflow-y: auto; padding: 15px 35px 35px; }
+    /* DASHBOARD LAYOUT */
+    .dashboard-layout { display: grid; grid-template-columns: 1fr; gap: 24px; }
+    @media (min-width: 1280px) { .dashboard-layout { grid-template-columns: 2.4fr 1fr; } }
+    .dash-main-col, .dash-side-col { display: flex; flex-direction: column; gap: 24px; }
+    .dashboard-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (min-width: 768px) { .dashboard-cards { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
 
-    /* DASHBOARD LAYOUT & CARDS */
-    .dashboard-layout { display: grid; grid-template-columns: 2.3fr 1fr; gap: 20px; }
-    .dash-main-col, .dash-side-col { display: flex; flex-direction: column; gap: 20px; }
-    .dashboard-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .stat-card { padding: 24px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; opacity: 0.8; }
+    .stat-card:nth-child(1)::before { background: var(--ryux-cyan); box-shadow: 0 0 15px #00F0FF; }
+    .stat-card:nth-child(2)::before { background: var(--ryux-green); box-shadow: 0 0 15px #00FF66; }
+    .stat-card:nth-child(3)::before { background: var(--ryux-yellow); box-shadow: 0 0 15px #FFD700; }
+    .stat-card:nth-child(4)::before { background: var(--ryux-purple); box-shadow: 0 0 15px #B026FF; }
+    .stat-title { font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+    .stat-value { font-size: 24px; font-weight: 900; color: white; letter-spacing: -1px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
+    .stat-sub { font-size: 9px; font-weight: 800; color: var(--ryux-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
 
-    .stat-card { padding: 20px; display: flex; flex-direction: column; gap: 6px; }
-    .stat-icon { display: none; }
-    .stat-title { font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
-    .stat-value { font-size: 24px; font-weight: 900; color: white; letter-spacing: -0.5px; }
-    .stat-sub { font-size: 9px; font-weight: 800; color: var(--ryux-cyan); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
-
-    .chart-container { padding: 25px; height: 320px; }
-    .tiny-label { font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+    .chart-container { padding: 24px; height: 320px; }
+    .tiny-label { font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
 
     .mini-widget { display: flex; flex-direction: column; }
-    .widget-header, .card-header, .dg-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-    .widget-body, .card-body, .dg-body { padding: 20px; flex: 1; }
+    .widget-header, .card-header, .dg-header { padding: 16px 24px; border-bottom: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: white; }
+    .widget-body, .card-body, .dg-body { padding: 24px; flex: 1; }
 
-    /* FORMS & INPUTS */
-    .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; padding: 15px 20px; align-items: center; flex-wrap: wrap; }
-    .form-input, .filter-select, .filter-input {
-      padding: 12px 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 700;
-      background: rgba(0, 0, 0, 0.3);
-      color: white;
-      outline: none;
-      transition: 0.3s;
-    }
-    .filter-input { flex: 2; min-width: 200px; }
-    .filter-select { flex: 1; min-width: 140px; }
-    .form-input:focus, .filter-select:focus, .filter-input:focus {
-      border-color: var(--ryux-cyan);
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-    }
+    /* FORMS */
+    .filter-bar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; padding: 16px; align-items: center; }
+    @media (min-width: 768px) { .filter-bar { flex-direction: row; } }
+    .form-input, .filter-select, .filter-input { padding: 12px 16px; border: 1px solid var(--glass-border); border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(0, 0, 0, 0.4); color: white; outline: none; transition: 0.3s; width: 100%; }
+    .filter-input { flex: 2; }
+    .filter-select { flex: 1; }
+    .form-input:focus, .filter-select:focus, .filter-input:focus { border-color: var(--ryux-cyan); background: rgba(0,0,0,0.6); }
     .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; margin-bottom: 6px; font-size: 9px; font-weight: 900; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+    .form-group label { display: block; margin-bottom: 8px; font-size: 9px; font-weight: 900; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
 
     /* BUTTONS */
-    .btn {
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.25s ease;
-      border: 1px solid transparent;
-      backdrop-filter: blur(8px);
-    }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary {
-      background: rgba(0, 240, 255, 0.15);
-      color: var(--ryux-cyan);
-      border-color: rgba(0, 240, 255, 0.35);
-    }
-    .btn-primary:hover { background: rgba(0, 240, 255, 0.25); box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
-    .btn-warning {
-      background: rgba(255, 215, 0, 0.15);
-      color: var(--ryux-yellow);
-      border-color: rgba(255, 215, 0, 0.35);
-    }
-    .btn-warning:hover { background: rgba(255, 215, 0, 0.25); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
-    .btn-danger {
-      background: rgba(255, 0, 85, 0.15);
-      color: var(--ryux-red);
-      border-color: rgba(255, 0, 85, 0.35);
-    }
-    .btn-danger:hover { background: rgba(255, 0, 85, 0.25); box-shadow: 0 0 20px rgba(255, 0, 85, 0.4); }
-    .btn-outline {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.15);
-      color: #cbd5e1;
-    }
+    .btn { padding: 12px 20px; border-radius: 12px; font-size: 10px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.25s ease; border: 1px solid transparent; backdrop-filter: blur(8px); }
+    .btn:active { transform: scale(0.95); }
+    .btn-primary { background: rgba(0, 240, 255, 0.1); color: var(--ryux-cyan); border-color: rgba(0, 240, 255, 0.3); }
+    .btn-primary:hover { background: rgba(0, 240, 255, 0.2); box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
+    .btn-warning { background: rgba(255, 215, 0, 0.1); color: var(--ryux-yellow); border-color: rgba(255, 215, 0, 0.3); }
+    .btn-warning:hover { background: rgba(255, 215, 0, 0.2); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+    .btn-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3); }
+    .btn-danger:hover { background: rgba(255, 0, 85, 0.2); box-shadow: 0 0 15px rgba(255, 0, 85, 0.3); }
+    .btn-outline { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: #cbd5e1; }
     .btn-outline:hover { background: rgba(255, 255, 255, 0.1); color: white; border-color: rgba(255, 255, 255, 0.3); }
-    .btn-icon { width: 34px; height: 34px; padding: 0; border-radius: 50%; }
+    .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 14px; flex-shrink: 0; }
 
     /* BADGES */
-    .badge {
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-weight: 900;
-      font-size: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      border: 1px solid transparent;
-      backdrop-filter: blur(8px);
-    }
-    .badge-success { background: rgba(0, 255, 102, 0.1); color: var(--ryux-green); border-color: rgba(0, 255, 102, 0.3); }
-    .badge-warning { background: rgba(255, 215, 0, 0.1); color: var(--ryux-yellow); border-color: rgba(255, 215, 0, 0.3); }
-    .badge-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3); }
-    .badge-info { background: rgba(0, 240, 255, 0.1); color: var(--ryux-cyan); border-color: rgba(0, 240, 255, 0.3); }
-    .badge-purple { background: rgba(176, 38, 255, 0.1); color: #d8b4fe; border-color: rgba(176, 38, 255, 0.3); }
+    .badge { padding: 4px 12px; border-radius: 99px; font-weight: 900; font-size: 9px; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid transparent; backdrop-filter: blur(8px); }
+    .badge-success { background: rgba(0, 255, 102, 0.1); color: var(--ryux-green); border-color: rgba(0, 255, 102, 0.3); box-shadow: 0 0 8px rgba(0,255,102,0.15); }
+    .badge-warning { background: rgba(255, 215, 0, 0.1); color: var(--ryux-yellow); border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 0 8px rgba(255,215,0,0.15); }
+    .badge-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3); box-shadow: 0 0 8px rgba(255,0,85,0.15); }
+    .badge-info { background: rgba(0, 240, 255, 0.1); color: var(--ryux-cyan); border-color: rgba(0, 240, 255, 0.3); box-shadow: 0 0 8px rgba(0,240,255,0.15); }
+    .badge-purple { background: rgba(176, 38, 255, 0.1); color: #d8b4fe; border-color: rgba(176, 38, 255, 0.3); box-shadow: 0 0 8px rgba(176,38,255,0.15); }
 
     /* SUMMARY BOX & DATA GROUPS */
-    .summary-box { padding: 20px 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-    .summary-item.right { text-align: right; }
-    .summary-label { font-size: 9px; font-weight: 900; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
-    .summary-val { font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
+    .summary-box { padding: 24px; margin-bottom: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; background: linear-gradient(to bottom right, rgba(255,255,255,0.02), rgba(0,0,0,0.2)); }
+    .summary-item { width: 45%; text-align: left; }
+    @media (min-width: 768px) { .summary-item { width: auto; } .summary-item.right { text-align: right; } }
+    .summary-label { font-size: 9px; font-weight: 900; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+    .summary-val { font-size: 24px; font-weight: 900; color: white; letter-spacing: -1px; }
 
-    .data-group-card { margin-bottom: 16px; }
-    .dg-header { flex-wrap: wrap; gap: 12px; }
-    .dg-body { display: flex; flex-direction: column; gap: 12px; }
-    .dg-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px dashed rgba(255, 255, 255, 0.08); }
+    .data-group-card { margin-bottom: 20px; }
+    .dg-header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px 24px; }
+    @media (min-width: 768px) { .dg-header { flex-direction: row; align-items: center; } }
+    .dg-body { display: flex; flex-direction: column; gap: 16px; padding: 24px; }
+    .dg-row { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); gap: 12px; }
+    @media (min-width: 768px) { .dg-row { flex-direction: row; align-items: center; gap: 0; } }
     .dg-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .money-stat { text-align: right; }
-    .money-stat span { display: block; font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; }
-    .money-stat div { font-size: 14px; font-weight: 800; color: white; }
+    .money-stat { text-align: left; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+    @media (min-width: 768px) { .money-stat { text-align: right; width: auto; display: block; } }
+    .money-stat span { display: block; font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 4px; }
+    .money-stat div { font-size: 15px; font-weight: 800; color: white; letter-spacing: -0.5px; }
 
     /* TABLE */
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
-    th, td { padding: 14px 18px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
-    th { background: rgba(0, 0, 0, 0.3); font-weight: 900; color: var(--text-muted); text-transform: uppercase; font-size: 9px; letter-spacing: 1.5px; position: sticky; top: 0; z-index: 5; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; white-space: nowrap; }
+    th { background: rgba(0, 0, 0, 0.4); padding: 16px 24px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; font-size: 9px; letter-spacing: 2px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--glass-border); text-align: left; }
+    td { padding: 16px 24px; border-bottom: 1px solid var(--glass-border); font-weight: 500; color: #e2e8f0; }
 
     /* MODALS */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
-    .modal-overlay.hidden { display: none; }
-    .modal-card { width: 100%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 24px; }
-    .modal-header { padding: 20px 25px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h3 { margin: 0; font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 900; letter-spacing: 0.5px; }
-    .modal-body { padding: 25px; overflow-y: auto; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 16px; transition: opacity 0.3s; }
+    .modal-overlay.hidden { display: none; opacity: 0; }
+    .modal-card { width: 100%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 28px !important; }
+    .modal-header { padding: 24px 32px; border-bottom: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: 0.5px; color: white; }
+    .modal-body { padding: 24px 32px; overflow-y: auto; }
 
     /* MISC */
-    .todo-input-group { display: flex; gap: 8px; margin-bottom: 12px; }
-    .todo-list { list-style: none; padding: 0; margin: 0; max-height: 180px; overflow-y: auto; }
-    .todo-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.06); font-size: 11px; font-weight: 600; color: #cbd5e1; }
-    .todo-item.completed span { text-decoration: line-through; opacity: 0.5; }
-    .todo-checkbox { appearance: none; width: 15px; height: 15px; border: 2px solid var(--ryux-purple); border-radius: 4px; cursor: pointer; position: relative; }
-    .todo-checkbox:checked { background: var(--ryux-purple); box-shadow: 0 0 10px var(--ryux-purple); }
-    .todo-checkbox:checked::after { content: '✔'; position: absolute; color: white; font-size: 9px; top: -1px; left: 2px; }
-    .note-textarea { width: 100%; min-height: 90px; resize: none; }
-    .cyber-dropdown { position: fixed; z-index: 999999; background: rgba(10, 10, 14, 0.95); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 14px; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; padding: 6px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+    .todo-input-group { display: flex; gap: 12px; margin-bottom: 16px; }
+    .todo-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+    .todo-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--glass-border); font-size: 12px; font-weight: 600; color: white; justify-content: space-between; }
+    .todo-item.completed span { text-decoration: line-through; color: var(--text-muted); }
+    .todo-checkbox { appearance: none; width: 16px; height: 16px; border: 2px solid var(--ryux-cyan); border-radius: 4px; background: rgba(0,0,0,0.3); cursor: pointer; transition: 0.3s; position: relative; flex-shrink: 0; }
+    .todo-checkbox:checked { background: var(--ryux-cyan); box-shadow: 0 0 10px rgba(0,240,255,0.5); }
+    .todo-checkbox:checked::after { content: '✔'; position: absolute; color: black; font-size: 10px; font-weight: 900; top: -1px; left: 1.5px; }
+    
+    .note-textarea { width: 100%; min-height: 120px; resize: none; }
+    .cyber-dropdown { position: fixed; z-index: 999999; background: rgba(10, 13, 20, 0.95); backdrop-filter: blur(24px); border: 1px solid var(--ryux-cyan); border-radius: 12px; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; padding: 8px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
     .cyber-dropdown.hidden { display: none; }
-    .cyber-dropdown-item { padding: 10px 14px; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; color: #cbd5e1; }
-    .cyber-dropdown-item:hover { background: rgba(255, 255, 255, 0.08); color: white; }
-    .loading-spinner { text-align: center; padding: 50px; color: var(--ryux-cyan); font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .loading-spinner i { font-size: 32px; filter: drop-shadow(0 0 15px var(--ryux-cyan)); }
+    .cyber-dropdown-item { padding: 12px 16px; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; color: #cbd5e1; transition: 0.2s; }
+    .cyber-dropdown-item:hover { background: rgba(0, 240, 255, 0.2); color: var(--ryux-cyan); }
+    .loading-spinner { text-align: center; padding: 48px; color: var(--ryux-cyan); font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .loading-spinner i { font-size: 40px; filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.8)); }
     .hidden-section { display: none !important; }
-    .bottom-nav { display: none; }
 
-    /* RESPONSIVE MOBILE */
+    /* MOBILE NAV */
+    .bottom-nav { display: none; }
     @media (max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar { display: none !important; }
       .bottom-nav {
-        display: flex !important;
-        position: fixed; bottom: 0; left: 0; right: 0;
-        background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(24px);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        justify-content: space-around;
-        padding: 8px 5px 12px; z-index: 1000;
+        display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+        background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(24px);
+        border-top: 1px solid var(--glass-border);
+        justify-content: space-around; padding: 8px; z-index: 100;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
       }
       .bottom-nav-item {
-        display: flex; flex-direction: column; align-items: center; gap: 3px;
-        color: var(--text-muted); font-size: 9px; font-weight: 800;
-        cursor: pointer; padding: 6px 12px; border-radius: 12px; text-transform: uppercase;
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+        color: var(--text-muted); font-size: 9px; font-weight: 900;
+        cursor: pointer; padding: 8px; border-radius: 12px; text-transform: uppercase; transition: 0.3s;
       }
-      .bottom-nav-item i { font-size: 15px; }
-      .bottom-nav-item.active { color: var(--ryux-cyan); background: rgba(0, 240, 255, 0.1); }
-      .header { padding: 16px 20px; }
-      .header h2 { font-size: 16px; }
-      .content-scroll { padding: 12px 15px 75px; }
-      .dashboard-layout { grid-template-columns: 1fr; gap: 14px; }
-      .dashboard-cards { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
-      .stat-card { padding: 14px; }
-      .stat-value { font-size: 18px; }
-      .chart-container { height: 230px; padding: 15px; }
-      .filter-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
-      .filter-input { grid-column: span 2; min-width: 0; width: 100%; }
-      .summary-box { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-      .summary-item.right { text-align: left; }
-      .summary-val { font-size: 16px; }
-      .dg-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px; }
-      .dg-body { padding: 14px; }
-      .dg-row { flex-direction: column; align-items: flex-start; gap: 6px; }
-      .money-stat { text-align: left; width: 100%; display: flex; justify-content: space-between; }
-      .money-stat span { margin-bottom: 0; }
-      .modal-card { width: 100% !important; height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
-      .modal-body { padding: 16px 16px 80px; }
-      #grnItemsContainer .grn-item-row { flex-direction: column; gap: 8px; padding: 12px; }
+      .bottom-nav-item i { font-size: 18px; }
+      .bottom-nav-item.active { color: var(--ryux-cyan); background: rgba(255,255,255,0.05); box-shadow: 0 0 15px rgba(0,240,255,0.1); }
+      .modal-card { width: 100% !important; height: 100vh; max-height: 100vh; border-radius: 0 !important; border: none; }
+      .modal-body { padding: 20px 20px 80px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ========================================== -->
+  <!-- CYBER DATA RAIN CANVAS (DIPERBAIKI)        -->
+  <!-- ========================================== -->
+  <!-- pointer-events-none DAN z-index 0 memastikan Hujan Data tidak akan menghalangi menu klik Anda -->
+  <canvas id="cyberRainCanvas"></canvas>
+
   <!-- SIDEBAR (PC) -->
   <div class="sidebar">
     <div class="logo">
       ZONIME NEXUS
-      <span>Cyber OS v3.0</span>
+      <span>Cyber OS v3.1</span>
     </div>
-    <div style="flex:1; overflow-y:auto; padding-bottom:20px; margin-top:10px;">
+    <div style="flex:1; overflow-y:auto; padding-bottom:24px; margin-top:8px;">
       <div class="nav-group">Workspace</div>
-      <div class="nav-item active" onclick="showPage('pageDashboard', this)"><i class="fas fa-layer-group"></i> Control Center</div>
+      <div class="nav-item active" onclick="showPage('pageDashboard', this)"><i class="fas fa-layer-group text-ryux-cyan"></i> Control Center</div>
+      
       <div class="nav-group">Database</div>
       <div class="nav-item" onclick="showPage('pageSalesLog', this)"><i class="fas fa-satellite-dish"></i> Live Sales</div>
       <div class="nav-item" onclick="showPage('pageInventory', this)"><i class="fas fa-cubes"></i> Smart Inventory</div>
       <div class="nav-item" onclick="showPage('pageSkuBaru', this)"><i class="fas fa-microchip"></i> Create SKU</div>
+      
       <div class="nav-group">Automation</div>
       <div class="nav-item" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import TikTok</div>
       <div class="nav-item" onclick="runSyncSales()"><i class="fas fa-sync-alt"></i> Sync Engine</div>
+      
       <div class="nav-group">Procurement</div>
       <div class="nav-item" onclick="showPage('pageProcurement', this)"><i class="fas fa-file-invoice-dollar"></i> GRN Ledger</div>
       <div class="nav-item" onclick="openGrnModal()"><i class="fas fa-pen-nib"></i> Input GRN</div>
@@ -389,18 +280,17 @@
   <div class="main-content">
     <div class="header">
       <h2 id="headerTitle">
-        <div class="pip-indicator"></div>
-        Control Center
+        <i class="fas fa-layer-group" style="color:var(--ryux-cyan);"></i> Control Center
       </h2>
-      <div style="display:flex; gap:12px; align-items:center;">
+      <div style="display:flex; gap:16px; align-items:center;">
         <button class="top-action-btn hidden" onclick="toggleTheme()" title="Toggle Theme"><i id="themeIcon" class="fas fa-moon"></i></button>
         <button class="top-action-btn" onclick="toggleGlobalPrivacy()" title="Global Hide Mode"><i id="globalPrivacyIcon" class="fas fa-eye"></i></button>
         <div class="realtime-widget">
-          <i class="far fa-clock" style="color:var(--ryux-purple);"></i>
-          <span id="timeClock" style="color:white;">00:00:00</span>
-          <span id="dateClock" style="border-left:1px solid rgba(255,255,255,0.15); padding-left:12px; margin-left:3px;">Senin, 01 Jan</span>
+          <i class="far fa-clock" style="color:var(--ryux-cyan);"></i>
+          <span id="timeClock" style="color:white; letter-spacing:2px;">00:00:00</span>
+          <span id="dateClock" style="border-left:1px solid var(--glass-border); padding-left:16px; color:var(--text-muted);">Senin, 01 Jan</span>
         </div>
-        <div id="headerActions" style="display:flex; gap:8px;"></div>
+        <div id="headerActions" style="display:flex; gap:12px;"></div>
       </div>
     </div>
     
@@ -411,41 +301,41 @@
         <div class="dashboard-layout">
           <div class="dash-main-col">
             <div class="dashboard-cards" id="dashCards">
-              <div class="loading-spinner" style="grid-column: span 4;"><i class="fas fa-circle-notch fa-spin"></i> Initializing Stream...</div>
+              <div class="loading-spinner" style="grid-column: span 4;"><i class="fas fa-circle-notch fa-spin"></i> Initializing OS...</div>
             </div>
             <div class="chart-container">
-              <div style="position:absolute; top:20px; left:25px; display:flex; align-items:center; gap:8px;" class="tiny-label">
-                <div style="width:6px; height:6px; border-radius:50%; background:var(--ryux-cyan); box-shadow:0 0 8px var(--ryux-cyan);"></div>
+              <div style="position:absolute; top:24px; left:30px; display:flex; align-items:center; gap:10px;" class="tiny-label">
+                <div style="width:8px; height:8px; border-radius:50%; background:var(--ryux-cyan); box-shadow:0 0 10px var(--ryux-cyan); animation:pulse 2s infinite;"></div>
                 REVENUE & PROFIT MATRIX
               </div>
-              <div style="margin-top:20px; height:calc(100% - 20px);"><canvas id="trendChart"></canvas></div>
+              <div style="margin-top:24px; height:calc(100% - 24px);"><canvas id="trendChart"></canvas></div>
             </div>
           </div>
           <div class="dash-side-col">
-            <div class="mini-widget" style="padding:20px; align-items:center;">
-              <div class="tiny-label" style="width:100%; text-align:left; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                <div style="width:6px; height:6px; border-radius:50%; background:var(--ryux-purple); box-shadow:0 0 8px var(--ryux-purple);"></div>
+            <div class="mini-widget" style="padding:24px; align-items:center;">
+              <div class="tiny-label" style="width:100%; text-align:left; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                <div style="width:8px; height:8px; border-radius:50%; background:var(--ryux-purple); box-shadow:0 0 10px var(--ryux-purple); animation:pulse 2s infinite;"></div>
                 MARKETPLACE SHARE
               </div>
               <div style="height:150px; width:100%; position:relative;"><canvas id="doughnutChart"></canvas></div>
             </div>
             <div class="mini-widget">
-              <div class="widget-header"><span style="color:var(--ryux-cyan); display:flex; align-items:center; gap:8px;"><i class="fas fa-terminal"></i> Task Protocol</span></div>
+              <div class="widget-header"><span style="color:var(--ryux-cyan); display:flex; align-items:center; gap:10px;"><i class="fas fa-terminal"></i> Task Protocol</span></div>
               <div class="widget-body">
                 <div class="todo-input-group">
                   <input type="text" id="todoInput" class="form-input" style="flex:1;" placeholder="Enter command..." onkeypress="if(event.key === 'Enter') addTodo()">
-                  <button class="btn btn-outline btn-icon" style="color:var(--ryux-cyan); border-color:rgba(0,240,255,0.3);" onclick="addTodo()"><i class="fas fa-arrow-right"></i></button>
+                  <button class="btn btn-primary btn-icon" onclick="addTodo()"><i class="fas fa-arrow-right"></i></button>
                 </div>
                 <ul class="todo-list" id="todoListUI"></ul>
               </div>
             </div>
             <div class="mini-widget">
               <div class="widget-header">
-                <span style="color:var(--ryux-yellow); display:flex; align-items:center; gap:8px;"><i class="fas fa-satellite-dish"></i> Global Directive</span>
-                <button class="btn btn-outline" style="padding:4px 10px; font-size:9px;" onclick="saveNote('pengumuman', 'btnSavePin')" id="btnSavePin">Save</button>
+                <span style="color:var(--ryux-yellow); display:flex; align-items:center; gap:10px;"><i class="fas fa-satellite-dish"></i> Global Directive</span>
+                <button class="btn btn-outline" style="padding:6px 12px; font-size:9px;" onclick="saveNote('pengumuman', 'btnSavePin')" id="btnSavePin">Save</button>
               </div>
-              <div class="widget-body" style="padding:15px;">
-                <textarea id="pengumumanText" class="form-input note-textarea" placeholder="Input announcements..."></textarea>
+              <div class="widget-body">
+                <textarea id="pengumumanText" class="form-input note-textarea" placeholder="Input system announcements..."></textarea>
               </div>
             </div>
           </div>
@@ -458,20 +348,20 @@
           <select class="filter-select" id="filterMonthSales" onchange="renderSalesTable()"><option value="ALL">Semua Bulan</option></select>
           <select class="filter-select" id="filterStatusSales" onchange="renderSalesTable()"><option value="ALL">Semua Status</option><option value="Selesai">Selesai</option><option value="Menunggu Pengambilan">Menunggu Pengambilan</option><option value="Sedang Transit">Sedang Transit</option><option value="Batal">Batal</option><option value="Return">Return</option><option value="Refund & Return">Refund & Return</option></select>
           <select class="filter-select" id="filterKelengkapanSales" onchange="renderSalesTable()"><option value="ALL">Semua Data</option><option value="AMAN">Data Valid</option><option value="ERROR">Butuh Koreksi</option></select>
-          <input type="text" class="filter-input" id="searchSales" placeholder="Search order / LC / produk..." onkeyup="renderSalesTable()">
+          <input type="text" class="filter-input" id="searchSales" placeholder="Cari Order / LC / Nama Produk..." onkeyup="renderSalesTable()">
         </div>
         <div class="summary-box">
-          <div class="summary-item"><div class="summary-label">TOTAL OMSET</div><div class="summary-val" style="color:var(--ryux-cyan); text-shadow:0 0 10px rgba(0,240,255,0.3);" id="sumOmset">Rp 0</div></div>
-          <div class="summary-item"><div class="summary-label">NET PROFIT</div><div class="summary-val" style="color:var(--ryux-green); text-shadow:0 0 10px rgba(0,255,102,0.3);" id="sumProfit">Rp 0</div></div>
-          <div class="summary-item right"><div class="summary-label">PESANAN</div><div class="summary-val" id="sumOrder">0</div></div>
-          <div class="summary-item right"><div class="summary-label">TERJUAL</div><div class="summary-val" id="sumQty">0 Pcs</div></div>
+          <div class="summary-item"><div class="summary-label">TOTAL OMSET</div><div class="summary-val" style="color:var(--ryux-cyan); text-shadow:0 0 15px rgba(0,240,255,0.4);" id="sumOmset">Rp 0</div></div>
+          <div class="summary-item"><div class="summary-label">NET PROFIT</div><div class="summary-val" style="color:var(--ryux-green); text-shadow:0 0 15px rgba(0,255,102,0.4);" id="sumProfit">Rp 0</div></div>
+          <div class="summary-item right"><div class="summary-label">TOTAL PESANAN</div><div class="summary-val" id="sumOrder">0</div></div>
+          <div class="summary-item right"><div class="summary-label">ITEM TERJUAL</div><div class="summary-val" id="sumQty">0 Pcs</div></div>
         </div>
-        <div id="salesContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Stream...</div></div>
+        <div id="salesContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Data...</div></div>
       </div>
 
       <!-- INVENTORY -->
       <div id="pageInventory" class="page-section hidden-section">
-        <div class="dashboard-cards" style="margin-bottom:20px;">
+        <div class="dashboard-cards" style="margin-bottom:24px;">
           <div class="stat-card"><div class="stat-title">Nilai Aset</div><div class="stat-value" style="color:var(--ryux-cyan);" id="invSumAset">Rp 0</div></div>
           <div class="stat-card"><div class="stat-title">Total Varian</div><div class="stat-value" id="invSumSku">0 SKU</div></div>
           <div class="stat-card"><div class="stat-title">Stok Fisik</div><div class="stat-value" style="color:var(--ryux-green);" id="invSumQty">0 Pcs</div></div>
@@ -481,9 +371,9 @@
           <select class="filter-select" id="filterTypeInv" onchange="renderInventory()"><option value="ALL">Semua Tipe</option></select>
           <select class="filter-select" id="filterCatInv" onchange="renderInventory()"><option value="ALL">Semua Kategori</option></select>
           <select class="filter-select" id="filterStatusInv" onchange="renderInventory()"><option value="ALL">Semua Status</option><option value="SAFE">Status Aman</option><option value="RESTOCK NOW">Kritis (Restock)</option></select>
-          <input type="text" class="filter-input" id="searchInv" placeholder="Search SKU..." onkeyup="renderInventory()">
+          <input type="text" class="filter-input" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
         </div>
-        <div class="card">
+        <div class="card" style="margin-bottom: 0;">
           <div style="overflow-x:auto;">
             <table id="invTable">
               <thead><tr><th>Kode SKU</th><th>Detail Produk</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
@@ -495,40 +385,40 @@
 
       <!-- PROCUREMENT -->
       <div id="pageProcurement" class="page-section hidden-section">
-        <div class="dashboard-cards" style="margin-bottom:20px; grid-template-columns:repeat(3, 1fr);">
-          <div class="stat-card"><div class="stat-title">Total Belanja</div><div class="stat-value" style="color:var(--ryux-yellow); text-shadow:0 0 10px rgba(255,215,0,0.3);" id="procSumBelanja">Rp 0</div></div>
+        <div class="dashboard-cards" style="margin-bottom:24px; grid-template-columns:repeat(3, 1fr);">
+          <div class="stat-card"><div class="stat-title">Total Belanja</div><div class="stat-value" style="color:var(--ryux-yellow); text-shadow:0 0 15px rgba(255,215,0,0.4);" id="procSumBelanja">Rp 0</div></div>
           <div class="stat-card"><div class="stat-title">Invoice</div><div class="stat-value" id="procSumInvoice">0</div></div>
           <div class="stat-card"><div class="stat-title">Qty Masuk</div><div class="stat-value" style="color:var(--ryux-cyan);" id="procSumQty">0 Pcs</div></div>
         </div>
         <div class="filter-bar">
           <select class="filter-select" id="filterMonthProc" onchange="renderProcurement()"><option value="ALL">Semua Bulan</option></select>
           <select class="filter-select" id="filterSellerProc" onchange="renderProcurement()"><option value="ALL">Semua Supplier</option></select>
-          <input type="text" class="filter-input" id="searchProc" placeholder="Search Ledger..." onkeyup="renderProcurement()">
+          <input type="text" class="filter-input" id="searchProc" placeholder="Cari Nota / Supplier..." onkeyup="renderProcurement()">
         </div>
-        <div id="procurementContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Ledger...</div></div>
+        <div id="procurementContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Loading Ledger...</div></div>
       </div>
 
       <!-- SKU BARU -->
       <div id="pageSkuBaru" class="page-section hidden-section">
         <div class="card" style="max-width:650px; margin:0 auto;">
-          <div class="card-header"><span style="color:var(--ryux-green); display:flex; align-items:center; gap:8px;"><i class="fas fa-plus-circle"></i> Create New SKU Master</span></div>
+          <div class="card-header"><span style="color:var(--ryux-green); display:flex; align-items:center; gap:10px;"><i class="fas fa-plus-circle"></i> Create New SKU Master</span></div>
           <div class="card-body">
             <form id="formSkuBaru" onsubmit="event.preventDefault(); submitSkuBaru();">
-              <div class="form-group"><label>KODE SKU UTAMA</label><input type="text" id="newSku" class="form-input" style="text-transform:uppercase;" required placeholder="ACC-STAND-ORI"></div>
-              <div style="display:flex; gap:12px; background:rgba(255,255,255,0.02); padding:15px; border-radius:14px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.06);">
-                <div class="form-group" style="flex:1; margin:0;"><label>Tipe Group</label><input type="text" id="newType" data-custom-list="listTypes" class="form-input" placeholder="Tipe" autocomplete="off"></div>
-                <div class="form-group" style="flex:1; margin:0;"><label>Kategori</label><input type="text" id="newCat" data-custom-list="listCats" class="form-input" placeholder="Kategori" autocomplete="off"></div>
+              <div class="form-group"><label>KODE SKU UTAMA</label><input type="text" id="newSku" class="form-input" style="text-transform:uppercase; font-size:14px;" required placeholder="Contoh: ACC-STAND-ORI"></div>
+              <div style="display:flex; flex-wrap:wrap; gap:16px; background:rgba(0,0,0,0.3); padding:20px; border-radius:16px; margin-bottom:20px; border:1px solid var(--glass-border);">
+                <div class="form-group" style="flex:1; min-width:140px; margin:0;"><label>Tipe Group</label><input type="text" id="newType" data-custom-list="listTypes" class="form-input" placeholder="Tipe" autocomplete="off"></div>
+                <div class="form-group" style="flex:1; min-width:140px; margin:0;"><label>Kategori</label><input type="text" id="newCat" data-custom-list="listCats" class="form-input" placeholder="Kategori" autocomplete="off"></div>
               </div>
-              <div class="form-group"><label>NAMA PRODUK LENGKAP</label><input type="text" id="newName" data-custom-list="listProdNames" class="form-input" required placeholder="Search database..." oninput="onProductSelect(this.value)" autocomplete="off"></div>
-              <div style="display:flex; gap:12px;">
-                <div class="form-group" style="flex:1;"><label>Varian Detail</label><input type="text" id="newVar" class="form-input" placeholder="Varian"></div>
-                <div class="form-group" style="flex:1;"><label>Listing Code (LC)</label><input type="text" id="newLc" class="form-input" placeholder="Listing Code"><small id="refLcLabel" style="display:block; margin-top:4px; font-size:9px; color:var(--text-muted); font-weight:800;"></small></div>
+              <div class="form-group"><label>NAMA PRODUK LENGKAP</label><input type="text" id="newName" data-custom-list="listProdNames" class="form-input" required placeholder="Pilih dari database..." oninput="onProductSelect(this.value)" autocomplete="off"></div>
+              <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px;">
+                <div class="form-group" style="flex:1; min-width:140px; margin:0;"><label>Varian Detail</label><input type="text" id="newVar" class="form-input" placeholder="Varian"></div>
+                <div class="form-group" style="flex:1; min-width:140px; margin:0;"><label>Listing Code (LC)</label><input type="text" id="newLc" class="form-input" placeholder="Listing Code"><small id="refLcLabel" style="display:block; margin-top:6px; font-size:9px; color:var(--text-muted); font-weight:800; text-transform:uppercase;"></small></div>
               </div>
-              <div style="display:flex; gap:12px; margin-top:4px;">
-                <div class="form-group" style="flex:1;"><label style="color:var(--ryux-green)">STOK AWAL (FISIK)</label><input type="number" id="newStock" class="form-input" required value="0" min="0"></div>
-                <div class="form-group" style="flex:1;"><label style="color:var(--ryux-yellow)">HARGA MODAL (HPP)</label><input type="number" id="newCogs" class="form-input" required value="0" min="0"></div>
+              <div style="display:flex; flex-wrap:wrap; gap:16px;">
+                <div class="form-group" style="flex:1; min-width:140px; margin:0;"><label style="color:var(--ryux-green)">STOK AWAL (FISIK)</label><input type="number" id="newStock" class="form-input" style="text-align:center; font-weight:900; font-size:14px;" required value="0" min="0"></div>
+                <div class="form-group" style="flex:1; min-width:140px; margin:0;"><label style="color:var(--ryux-yellow)">HARGA MODAL (HPP)</label><input type="number" id="newCogs" class="form-input" style="font-weight:900; font-size:14px;" required value="0" min="0"></div>
               </div>
-              <button type="submit" id="btnSubmitSku" class="btn btn-primary" style="width:100%; margin-top:10px; padding:15px;">Inject to Database</button>
+              <button type="submit" id="btnSubmitSku" class="btn btn-primary" style="width:100%; margin-top:24px; padding:16px; font-size:12px;">Inject to Database</button>
             </form>
           </div>
         </div>
@@ -549,43 +439,44 @@
   <!-- DATALISTS -->
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
-  <!-- MODAL INVENTORY ACTION -->
-  <div id="modalInvAction" class="modal-overlay hidden">
+  <!-- MODAL INVENTORY ACTION (OPNAME & BS) -->
+  <div id="modalInvAction" class="modal-overlay hidden" style="z-index: 1300;">
     <div class="modal-card" style="max-width:500px;">
       <div class="modal-header">
         <h3 style="color:var(--ryux-purple);"><i class="fas fa-cubes"></i> Inventory Action</h3>
-        <button onclick="closeInvActionModal()" class="btn-outline" style="border:none; background:transparent; font-size:18px;">&times;</button>
+        <button onclick="closeInvActionModal()" class="btn-outline" style="border:none; background:transparent; font-size:24px; line-height:1;">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:15px;">
-          <button class="btn btn-primary" style="flex:1;" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Stock Opname</button>
-          <button class="btn btn-outline" style="flex:1;" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi BS</button>
+        <div style="display:flex; gap:12px; margin-bottom:24px; border-bottom:1px solid var(--glass-border); padding-bottom:20px;">
+          <button class="btn btn-primary" style="flex:1; padding:14px;" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Stock Opname</button>
+          <button class="btn btn-outline" style="flex:1; padding:14px;" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi BS</button>
         </div>
 
         <div id="tabOpname">
           <form onsubmit="event.preventDefault(); submitOpname();">
             <input type="hidden" id="invActSku"><input type="hidden" id="invActCogs">
-            <div style="background:rgba(0,240,255,0.05); padding:15px; border-radius:14px; margin-bottom:16px; border:1px solid rgba(0,240,255,0.2);">
-              <div class="tiny-label" style="color:var(--ryux-cyan); margin-bottom:4px;">TARGET SKU</div>
-              <div style="font-size:13px; font-weight:900; color:white;" id="invActSkuLabel"></div>
-              <div style="font-size:11px; color:#cbd5e1; margin-top:2px;" id="invActNamaLabel"></div>
+            <div style="background:rgba(0,240,255,0.05); padding:20px; border-radius:16px; margin-bottom:20px; border:1px solid rgba(0,240,255,0.2);">
+              <div class="tiny-label" style="color:var(--ryux-cyan); margin-bottom:8px;">TARGET SKU</div>
+              <div style="font-size:15px; font-weight:900; color:white; letter-spacing:1px;" id="invActSkuLabel"></div>
+              <div style="font-size:12px; color:#cbd5e1; margin-top:6px; font-weight:600;" id="invActNamaLabel"></div>
             </div>
-            <div style="display:flex; gap:12px; margin-bottom:12px;">
+            
+            <div style="display:flex; gap:16px; margin-bottom:16px;">
               <div class="form-group" style="flex:1; margin:0;"><label>STOK SISTEM (AS-IS)</label><input type="number" id="invActStokSistem" class="form-input" readonly style="background:rgba(0,0,0,0.5); color:var(--text-muted); width:100%;"></div>
-              <div class="form-group" style="flex:1; margin:0;"><label style="color:var(--ryux-yellow);">STOK FISIK (TO-BE)</label><input type="number" id="invActStokFisik" class="form-input" required min="0" oninput="calcOpnameDiff()" style="width:100%; border-color:rgba(255,215,0,0.4); color:var(--ryux-yellow);"></div>
+              <div class="form-group" style="flex:1; margin:0;"><label style="color:var(--ryux-yellow);">STOK FISIK (TO-BE)</label><input type="number" id="invActStokFisik" class="form-input" required min="0" oninput="calcOpnameDiff()" style="width:100%; border-color:rgba(255,215,0,0.5); color:var(--ryux-yellow); font-weight:900; font-size:15px;"></div>
             </div>
-            <div class="form-group"><label>SELISIH</label><input type="text" id="invActSelisih" class="form-input" readonly style="width:100%; font-size:16px; font-weight:900; text-align:center; background:rgba(0,0,0,0.5);"></div>
+            <div class="form-group"><label>SELISIH</label><input type="text" id="invActSelisih" class="form-input" readonly style="width:100%; font-size:20px; font-weight:900; text-align:center; background:rgba(0,0,0,0.5); letter-spacing:2px;"></div>
             <div class="form-group"><label>KETERANGAN / ALASAN</label><input type="text" id="invActKetOpname" class="form-input" style="width:100%;" required placeholder="Contoh: Audit mingguan..."></div>
-            <button type="submit" id="btnSubmitOpname" class="btn btn-warning" style="width:100%; margin-top:10px; padding:14px;">Proses Opname</button>
+            <button type="submit" id="btnSubmitOpname" class="btn btn-warning" style="width:100%; margin-top:16px; padding:16px; font-size:12px;">Proses Opname</button>
           </form>
         </div>
 
         <div id="tabBs" class="hidden-section">
           <form onsubmit="event.preventDefault(); submitMutasiBs();">
             <div class="form-group"><label>ARAH MUTASI</label><select id="invActArahBs" class="form-input" style="width:100%;"><option value="BAIK_KE_BS">Stok Baik ➔ Pindah ke BS (Rusak)</option><option value="BS_KE_BAIK">Stok BS ➔ Restore ke Baik</option></select></div>
-            <div class="form-group"><label>QTY DIPINDAHKAN</label><input type="number" id="invActQtyBs" class="form-input" style="width:100%;" required min="1"></div>
+            <div class="form-group"><label>QTY DIPINDAHKAN</label><input type="number" id="invActQtyBs" class="form-input" style="width:100%; font-weight:900; font-size:14px; text-align:center;" required min="1"></div>
             <div class="form-group"><label>KETERANGAN KERUSAKAN</label><input type="text" id="invActKetBs" class="form-input" style="width:100%;" required placeholder="Contoh: Kemasan penyok..."></div>
-            <button type="submit" id="btnSubmitBs" class="btn btn-danger" style="width:100%; margin-top:10px; padding:14px;">Mutasi Stok BS</button>
+            <button type="submit" id="btnSubmitBs" class="btn btn-danger" style="width:100%; margin-top:16px; padding:16px; font-size:12px;">Mutasi Stok BS</button>
           </form>
         </div>
       </div>
@@ -595,18 +486,18 @@
   <!-- MODAL TERIMA RETUR -->
   <div id="modalRetur" class="modal-overlay hidden">
     <div class="modal-card" style="max-width:500px;">
-      <div class="modal-header"><h3 style="color:var(--ryux-red);"><i class="fas fa-undo"></i> Log RMA / Retur</h3><button onclick="closeReturModal()" class="btn-outline" style="border:none; background:transparent; font-size:18px;">&times;</button></div>
+      <div class="modal-header"><h3 style="color:var(--ryux-red);"><i class="fas fa-undo"></i> Log RMA / Retur</h3><button onclick="closeReturModal()" class="btn-outline" style="border:none; background:transparent; font-size:24px; line-height:1;">&times;</button></div>
       <div class="modal-body">
         <form onsubmit="event.preventDefault(); submitRetur();">
           <input type="hidden" id="returRowIdx">
-          <div style="background:rgba(255,0,85,0.05); padding:15px; border-radius:14px; margin-bottom:16px; border:1px solid rgba(255,0,85,0.2);">
-            <div class="tiny-label" style="color:var(--ryux-red); margin-bottom:4px;">ORDER ID (RETUR)</div>
-            <div style="font-size:15px; font-weight:900; color:white;" id="returNoOrderLabel"></div>
+          <div style="background:rgba(255,0,85,0.05); padding:20px; border-radius:16px; margin-bottom:20px; border:1px solid rgba(255,0,85,0.2);">
+            <div class="tiny-label" style="color:var(--ryux-red); margin-bottom:8px;">ORDER ID (RETUR)</div>
+            <div style="font-size:16px; font-weight:900; color:white; letter-spacing:1.5px;" id="returNoOrderLabel"></div>
           </div>
-          <div id="returItemsList" style="margin-bottom:16px; max-height:150px; overflow-y:auto;"></div>
+          <div id="returItemsList" style="margin-bottom:20px; max-height:150px; overflow-y:auto; padding-right:8px;"></div>
           <div class="form-group"><label>KONDISI FISIK BARANG</label><select id="returKondisi" class="form-input" style="width:100%;"><option value="BAIK">Kondisi Mulus ➔ Masuk Stok Baik</option><option value="BS">Kondisi Rusak/Cacat ➔ Masuk Stok BS</option></select></div>
           <div class="form-group"><label>KETERANGAN (OPSIONAL)</label><input type="text" id="returKeterangan" class="form-input" style="width:100%;" placeholder="Opsional..."></div>
-          <button type="submit" id="btnSubmitRetur" class="btn btn-danger" style="width:100%; margin-top:10px; padding:14px;">Konfirmasi Retur</button>
+          <button type="submit" id="btnSubmitRetur" class="btn btn-danger" style="width:100%; margin-top:16px; padding:16px; font-size:12px;">Konfirmasi Retur</button>
         </form>
       </div>
     </div>
@@ -614,17 +505,17 @@
 
   <!-- MODAL IMPORT -->
   <div id="modalImport" class="modal-overlay hidden">
-    <div class="modal-card" style="max-width:420px;">
-      <div class="modal-header"><h3><i class="fab fa-tiktok"></i> Data Import Engine</h3><button onclick="closeImportModal()" class="btn-outline" style="border:none; background:transparent; font-size:18px;">&times;</button></div>
+    <div class="modal-card" style="max-width:450px;">
+      <div class="modal-header"><h3 style="color:white;"><i class="fab fa-tiktok"></i> Bulk Import Engine</h3><button onclick="closeImportModal()" class="btn-outline" style="border:none; background:transparent; font-size:24px; line-height:1;">&times;</button></div>
       <div class="modal-body">
-        <div style="background:rgba(255,215,0,0.05); padding:14px; border-radius:14px; font-size:10px; border:1px solid rgba(255,215,0,0.2); margin-bottom:18px; color:#cbd5e1; line-height:1.6;">
-          <b style="color:var(--ryux-yellow); display:block; margin-bottom:4px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">Protocol Sequence:</b>
+        <div style="background:rgba(255,215,0,0.05); padding:16px; border-radius:12px; font-size:11px; border:1px solid rgba(255,215,0,0.2); margin-bottom:24px; color:#cbd5e1; line-height:1.6; font-weight:500;">
+          <b style="color:var(--ryux-yellow); display:block; margin-bottom:6px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">Protocol Sequence:</b>
           1. Clear EXPORT_TIKTOK sheet.<br>2. Paste raw data to TEMP_TIKTOK.<br>3. Select account & execute.
         </div>
         <div class="form-group"><label>TARGET ACCOUNT</label><select id="importAccount" class="form-input" style="width:100%;"><option value="Zonime Biru">Zonime Biru</option><option value="Zonime Merah">Zonime Merah</option></select></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-          <button type="button" onclick="closeImportModal()" class="btn btn-outline" style="flex:1;">Abort</button>
-          <button type="button" onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2;"><i class="fas fa-bolt"></i> Execute</button>
+        <div style="display:flex; gap:12px; margin-top:24px;">
+          <button type="button" onclick="closeImportModal()" class="btn btn-outline" style="flex:1; padding:16px; font-size:11px;">Abort</button>
+          <button type="button" onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2; padding:16px; font-size:11px;"><i class="fas fa-bolt"></i> Execute</button>
         </div>
       </div>
     </div>
@@ -632,20 +523,20 @@
 
   <!-- MODAL FIX SALES -->
   <div id="modalFixSales" class="modal-overlay hidden">
-    <div class="modal-card" style="max-width:600px;">
+    <div class="modal-card" style="max-width:650px;">
       <div class="modal-header">
         <h3 style="color:var(--ryux-yellow);"><i class="fas fa-wrench"></i> Data Correction</h3>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:9px; color:var(--ryux-cyan); border-color:rgba(0,240,255,0.3);" onclick="openModalSkuBaruFromModal()"><i class="fas fa-plus"></i> New SKU</button>
-          <button type="button" onclick="closeFixModal()" class="btn-outline" style="border:none; background:transparent; font-size:18px;">&times;</button>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button type="button" class="btn btn-primary" style="padding:6px 12px; font-size:9px;" onclick="openModalSkuBaruFromModal()"><i class="fas fa-plus"></i> New SKU</button>
+          <button type="button" onclick="closeFixModal()" class="btn-outline" style="border:none; background:transparent; font-size:24px; line-height:1;">&times;</button>
         </div>
       </div>
       <div class="modal-body">
         <input type="hidden" id="fixRowIdx">
-        <div id="fixRefBox" style="background:rgba(0,240,255,0.05); border:1px solid rgba(0,240,255,0.2); padding:14px; border-radius:14px; margin-bottom:16px;"></div>
-        <div id="fixItemsContainer" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;"></div>
-        <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:16px; border-style:dashed;" onclick="addFixRowUI('', 1)"><i class="fas fa-plus"></i> Insert Row (Max 10)</button>
-        <button type="button" onclick="saveFixModal()" id="btnSaveFix" class="btn btn-primary" style="width:100%; padding:14px;">Apply Correction</button>
+        <div id="fixRefBox" style="background:rgba(0,240,255,0.05); border:1px solid rgba(0,240,255,0.2); padding:20px; border-radius:16px; margin-bottom:20px;"></div>
+        <div id="fixItemsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;"></div>
+        <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:20px; border-style:dashed; padding:14px;" onclick="addFixRowUI('', 1)"><i class="fas fa-plus"></i> Insert Row (Max 10)</button>
+        <button type="button" onclick="saveFixModal()" id="btnSaveFix" class="btn btn-primary" style="width:100%; padding:16px; font-size:12px;">Apply Correction</button>
       </div>
     </div>
   </div>
@@ -655,41 +546,50 @@
     <div class="modal-card" style="max-width:900px;">
       <div class="modal-header">
         <h3 style="color:var(--ryux-green);"><i class="fas fa-file-invoice"></i> GRN Entry Protocol</h3>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:9px; color:var(--ryux-cyan); border-color:rgba(0,240,255,0.3);" onclick="openModalSkuBaruFromModal()"><i class="fas fa-plus"></i> New SKU</button>
-          <button type="button" onclick="closeGrnModal()" class="btn-outline" style="border:none; background:transparent; font-size:18px;">&times;</button>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button type="button" class="btn btn-primary" style="padding:6px 12px; font-size:9px;" onclick="openModalSkuBaruFromModal()"><i class="fas fa-plus"></i> New SKU</button>
+          <button type="button" onclick="closeGrnModal()" class="btn-outline" style="border:none; background:transparent; font-size:24px; line-height:1;">&times;</button>
         </div>
       </div>
       <div class="modal-body">
-        <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:14px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.08); display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px;">
+        <div style="background:rgba(0,0,0,0.3); padding:24px; border-radius:16px; margin-bottom:24px; border:1px solid var(--glass-border); display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px;">
           <div class="form-group" style="margin:0;"><label>ORDER DATE</label><input type="date" id="grnTgl" class="form-input" style="width:100%;" required></div>
           <div class="form-group" style="margin:0;"><label>PLATFORM</label><select id="grnMp" class="form-input" style="width:100%;"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="WhatsApp">WhatsApp</option><option value="1688">1688</option><option value="Taobao">Taobao</option><option value="Offline">Offline</option><option value="Other">Other</option></select></div>
           <div class="form-group" style="margin:0;"><label>VENDOR / SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="form-input" style="width:100%;" autocomplete="off" placeholder="Search..." required></div>
           <div class="form-group" style="margin:0;"><label>INVOICE REF</label><input type="text" id="grnNota" class="form-input" style="width:100%; text-transform:uppercase;" placeholder="INV-..." required></div>
         </div>
         
-        <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:14px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div class="tiny-label" style="color:white; display:flex; align-items:center; gap:6px;"><i class="fas fa-box-open" style="color:var(--ryux-cyan);"></i> LINE ITEMS</div>
-            <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:9px;" onclick="addGrnRow()"><i class="fas fa-plus"></i> Add Line</button>
+        <div style="background:rgba(0,0,0,0.3); padding:24px; border-radius:16px; margin-bottom:24px; border:1px solid var(--glass-border);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div class="tiny-label" style="color:white; display:flex; align-items:center; gap:8px;"><i class="fas fa-box-open" style="color:var(--ryux-cyan); font-size:14px;"></i> LINE ITEMS</div>
+            <button type="button" class="btn btn-outline" style="padding:8px 16px; font-size:10px;" onclick="addGrnRow()"><i class="fas fa-plus"></i> Add Line</button>
           </div>
-          <div id="grnItemsContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+          <div id="grnHeaderDesktop" style="display:none; padding-bottom:12px; border-bottom:1px solid var(--glass-border); margin-bottom:16px;">
+            <div style="font-size:9px; font-weight:900; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; display:flex; width:100%;">
+              <div style="flex:1;">SKU MASTER</div>
+              <div style="width:90px; text-align:center;">QTY</div>
+              <div style="width:160px; text-align:center;">PRICE (IDR)</div>
+              <div style="width:140px; text-align:right;">LINE TOTAL</div>
+              <div style="width:50px; text-align:center;">ACT</div>
+            </div>
+          </div>
+          <div id="grnItemsContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
         </div>
         
-        <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:14px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
-            <div class="form-group" style="flex:1; margin:0;"><label style="color:var(--ryux-red);">VOUCHER ( - )</label><input type="number" id="grnVoc" class="form-input" style="width:100%; color:var(--ryux-red);" value="0" min="0" oninput="calcGrn()"></div>
-            <div class="form-group" style="flex:1; margin:0;"><label style="color:var(--ryux-cyan);">ADMIN FEE ( + )</label><input type="number" id="grnFee" class="form-input" style="width:100%; color:var(--ryux-cyan);" value="0" min="0" oninput="calcGrn()"></div>
-            <div class="form-group" style="flex:1; margin:0;"><label style="color:var(--ryux-yellow);">SHIPPING ( + )</label><input type="number" id="grnOng" class="form-input" style="width:100%; color:var(--ryux-yellow);" value="0" min="0" oninput="calcGrn()"></div>
+        <div style="background:rgba(0,0,0,0.3); padding:24px; border-radius:16px; margin-bottom:30px; border:1px solid var(--glass-border);">
+          <div style="display:flex; gap:16px; margin-bottom:20px; flex-wrap:wrap;">
+            <div class="form-group" style="flex:1; min-width:150px; margin:0;"><label style="color:var(--ryux-red);">VOUCHER ( - )</label><input type="number" id="grnVoc" class="form-input" style="width:100%; color:var(--ryux-red); font-weight:900; border-color:rgba(255,0,85,0.3);" value="0" min="0" oninput="calcGrn()"></div>
+            <div class="form-group" style="flex:1; min-width:150px; margin:0;"><label style="color:var(--ryux-cyan);">ADMIN FEE ( + )</label><input type="number" id="grnFee" class="form-input" style="width:100%; color:var(--ryux-cyan); font-weight:900; border-color:rgba(0,240,255,0.3);" value="0" min="0" oninput="calcGrn()"></div>
+            <div class="form-group" style="flex:1; min-width:150px; margin:0;"><label style="color:var(--ryux-yellow);">SHIPPING ( + )</label><input type="number" id="grnOng" class="form-input" style="width:100%; color:var(--ryux-yellow); font-weight:900; border-color:rgba(255,215,0,0.3);" value="0" min="0" oninput="calcGrn()"></div>
           </div>
-          <div style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:14px; display:flex; justify-content:space-between; align-items:center;">
-            <div class="tiny-label">Subtotal: <b id="grnSubtotalLabel" style="color:white; margin-left:6px; font-size:13px;">Rp 0</b></div>
-            <div class="tiny-label" style="color:white;">Net Total: <b id="grnTotalBersihLabel" style="font-size:22px; color:var(--ryux-cyan); margin-left:8px; text-shadow:0 0 10px rgba(0,240,255,0.4);">Rp 0</b></div>
+          <div style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
+            <div class="tiny-label">Subtotal: <b id="grnSubtotalLabel" style="color:white; margin-left:8px; font-size:14px; letter-spacing:0;">Rp 0</b></div>
+            <div class="tiny-label" style="color:white;">Net Total: <b id="grnTotalBersihLabel" style="font-size:26px; color:var(--ryux-cyan); margin-left:12px; letter-spacing:-1px; text-shadow:0 0 15px rgba(0,240,255,0.4);">Rp 0</b></div>
           </div>
         </div>
-        <div style="display:flex; gap:12px;">
-          <button type="button" class="btn btn-outline" style="flex:1; padding:14px;" onclick="closeGrnModal()">Cancel</button>
-          <button type="button" class="btn btn-primary" style="flex:3; padding:14px;" onclick="submitGrnData()" id="btnSubmitGrn"><i class="fas fa-lock"></i> Commit Ledger</button>
+        <div style="display:flex; gap:16px;">
+          <button type="button" class="btn btn-outline" style="flex:1; padding:16px;" onclick="closeGrnModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" style="flex:3; padding:16px; font-size:12px;" onclick="submitGrnData()" id="btnSubmitGrn"><i class="fas fa-lock"></i> Commit Ledger</button>
         </div>
       </div>
     </div>
@@ -698,24 +598,24 @@
   <!-- MODAL QUICK SKU -->
   <div id="modalQuickSku" class="modal-overlay hidden" style="z-index:1100;">
     <div class="modal-card" style="max-width:500px;">
-      <div class="modal-header"><h3 style="color:var(--ryux-cyan);"><i class="fas fa-microchip"></i> Quick SKU Setup</h3><button type="button" onclick="closeModalQuickSku()" class="btn-outline" style="border:none; background:transparent; font-size:18px;">&times;</button></div>
+      <div class="modal-header"><h3 style="color:var(--ryux-cyan);"><i class="fas fa-cube"></i> Quick SKU Setup</h3><button type="button" onclick="closeModalQuickSku()" class="btn-outline" style="border:none; background:transparent; font-size:24px; line-height:1;">&times;</button></div>
       <div class="modal-body">
         <form id="formQuickSku" onsubmit="event.preventDefault(); submitQuickSku();">
-          <div class="form-group"><label>SKU CODE</label><input type="text" id="qSku" class="form-input" style="width:100%; text-transform:uppercase;" required placeholder="ACC-STAND-NEW"></div>
-          <div style="display:flex; gap:10px;">
+          <div class="form-group"><label>SKU CODE</label><input type="text" id="qSku" class="form-input" style="width:100%; text-transform:uppercase; font-size:14px;" required placeholder="ACC-STAND-NEW"></div>
+          <div style="display:flex; gap:16px;">
             <div class="form-group" style="flex:1;"><label>TYPE</label><input type="text" id="qType" data-custom-list="listTypes" class="form-input" style="width:100%;" autocomplete="off"></div>
             <div class="form-group" style="flex:1;"><label>CATEGORY</label><input type="text" id="qCat" data-custom-list="listCats" class="form-input" style="width:100%;" autocomplete="off"></div>
           </div>
           <div class="form-group"><label>PRODUCT NAME</label><input type="text" id="qName" data-custom-list="listProdNames" class="form-input" style="width:100%;" required oninput="onQuickProductSelect(this.value)" autocomplete="off"></div>
-          <div style="display:flex; gap:10px;">
+          <div style="display:flex; gap:16px;">
             <div class="form-group" style="flex:1;"><label>VARIANT</label><input type="text" id="qVar" class="form-input" style="width:100%;"></div>
-            <div class="form-group" style="flex:1;"><label>LISTING CODE</label><input type="text" id="qLc" class="form-input" style="width:100%;"><small id="refQuickLcLabel" style="display:block; margin-top:4px; font-size:9px; color:var(--text-muted); font-weight:800;"></small></div>
+            <div class="form-group" style="flex:1;"><label>LISTING CODE</label><input type="text" id="qLc" class="form-input" style="width:100%;"><small id="refQuickLcLabel" style="display:block; margin-top:6px; font-size:9px; color:var(--text-muted); font-weight:800; text-transform:uppercase;"></small></div>
           </div>
-          <div style="display:flex; gap:10px; margin-top:4px;">
-            <div class="form-group" style="flex:1;"><label style="color:var(--ryux-green);">INITIAL STOCK</label><input type="number" id="qStock" class="form-input" style="width:100%;" required value="0" min="0"></div>
-            <div class="form-group" style="flex:1;"><label style="color:var(--ryux-yellow);">COGS (IDR)</label><input type="number" id="qCogs" class="form-input" style="width:100%;" required value="0" min="0"></div>
+          <div style="display:flex; gap:16px; margin-top:8px;">
+            <div class="form-group" style="flex:1;"><label style="color:var(--ryux-green);">INITIAL STOCK</label><input type="number" id="qStock" class="form-input" style="width:100%; text-align:center; font-weight:900;" required value="0" min="0"></div>
+            <div class="form-group" style="flex:1;"><label style="color:var(--ryux-yellow);">COGS (IDR)</label><input type="number" id="qCogs" class="form-input" style="width:100%; font-weight:900;" required value="0" min="0"></div>
           </div>
-          <button type="submit" id="btnSubmitQuick" class="btn btn-primary" style="width:100%; margin-top:14px; padding:14px;">Create Master</button>
+          <button type="submit" id="btnSubmitQuick" class="btn btn-primary" style="width:100%; margin-top:16px; padding:16px; font-size:11px;">Create Master</button>
         </form>
       </div>
     </div>
@@ -724,29 +624,74 @@
   <!-- MODAL REVISE PROC -->
   <div id="modalReviseProc" class="modal-overlay hidden" style="z-index:1200;">
     <div class="modal-card" style="max-width:450px;">
-      <div class="modal-header"><h3 style="color:var(--ryux-yellow);"><i class="fas fa-edit"></i> Edit Ledger Line</h3><button type="button" onclick="closeReviseProcModal()" class="btn-outline" style="border:none; background:transparent; font-size:18px;">&times;</button></div>
+      <div class="modal-header"><h3 style="color:var(--ryux-yellow);"><i class="fas fa-edit"></i> Edit Ledger Line</h3><button type="button" onclick="closeReviseProcModal()" class="btn-outline" style="border:none; background:transparent; font-size:24px; line-height:1;">&times;</button></div>
       <div class="modal-body">
         <form id="formReviseProc" onsubmit="event.preventDefault(); submitReviseProc();">
           <div class="form-group"><label>REF INVOICE</label><input type="text" id="revProcNota" class="form-input" style="width:100%; background:rgba(0,0,0,0.5); color:var(--text-muted);" readonly></div>
           <div class="form-group"><label>SKU TARGET</label><input type="text" id="revProcSku" data-custom-list="skuSuggestions" class="form-input" style="width:100%;" required autocomplete="off"><input type="hidden" id="revProcOldSku"></div>
-          <div style="display:flex; gap:10px;">
-            <div class="form-group" style="flex:1;"><label>NEW QTY</label><input type="number" id="revProcQty" class="form-input" style="width:100%;" required min="1"></div>
-            <div class="form-group" style="flex:2;"><label>NEW PRICE (IDR)</label><input type="number" id="revProcHarga" class="form-input" style="width:100%;" required min="0"></div>
+          <div style="display:flex; gap:16px;">
+            <div class="form-group" style="flex:1;"><label>NEW QTY</label><input type="number" id="revProcQty" class="form-input" style="width:100%; text-align:center; font-weight:900;" required min="1"></div>
+            <div class="form-group" style="flex:2;"><label style="color:var(--ryux-yellow);">NEW PRICE (IDR)</label><input type="number" id="revProcHarga" class="form-input" style="width:100%; color:var(--ryux-yellow); font-weight:900;" required min="0"></div>
           </div>
-          <button type="submit" id="btnSubmitReviseProc" class="btn btn-primary" style="width:100%; margin-top:14px; padding:14px;">Update Ledger</button>
+          <button type="submit" id="btnSubmitReviseProc" class="btn btn-primary" style="width:100%; margin-top:16px; padding:16px; font-size:11px;">Update Ledger</button>
         </form>
       </div>
     </div>
   </div>
 
   <!-- ===================================================================== -->
-  <!-- JAVASCRIPT ASLI (100% UTUH - LOGIKA TIDAK DIUBAH SAMA SEKALI)         -->
+  <!-- JAVASCRIPT ASLI & CYBER DATA RAIN CANVAS ANIMATION                    -->
   <!-- ===================================================================== -->
   <script>
+    // -----------------------------------------------------------------
+    // CYBER DATA RAIN ANIMATION (Sparse, Blurry, Fading)
+    // -----------------------------------------------------------------
+    const rainCanvas = document.getElementById('cyberRainCanvas');
+    const rainCtx = rainCanvas.getContext('2d');
+    
+    function resizeRainCanvas() { rainCanvas.width = window.innerWidth; rainCanvas.height = window.innerHeight; }
+    resizeRainCanvas(); window.addEventListener('resize', resizeRainCanvas);
+    
+    // Sangat sedikit/sparse (lebar dibagi 60)
+    const rainColumns = Math.floor(window.innerWidth / 60); 
+    const rainDrops = [];
+    const rainSpeeds = [];
+    
+    for(let i = 0; i < rainColumns; i++) {
+      rainDrops[i] = Math.random() * -100;
+      rainSpeeds[i] = Math.random() * 0.8 + 0.2; // Sangat pelan
+    }
+    
+    function drawCyberRain() {
+      // Background canvas untuk membuat ekor hujan memudar ke atas
+      rainCtx.fillStyle = 'rgba(5, 7, 10, 0.15)'; 
+      rainCtx.fillRect(0, 0, rainCanvas.width, rainCanvas.height);
+      
+      for(let i = 0; i < rainDrops.length; i++) {
+        // Warna neon cyan dan ungu
+        rainCtx.fillStyle = i % 2 === 0 ? '#00f2fe' : '#8b5cf6';
+        // Gambar titik hujan (seperti garis vertikal pendek)
+        rainCtx.fillRect(i * 60, rainDrops[i] * 20, 1.5, 12);
+        
+        // Reset titik ke atas layar jika sudah lewat batas bawah
+        if(rainDrops[i] * 20 > rainCanvas.height && Math.random() > 0.98) {
+          rainDrops[i] = 0;
+          rainSpeeds[i] = Math.random() * 0.8 + 0.2;
+        }
+        rainDrops[i] += rainSpeeds[i];
+      }
+      requestAnimationFrame(drawCyberRain);
+    }
+    drawCyberRain();
+
+    // -----------------------------------------------------------------
+    // JAVASCRIPT LOGIC CORE ZONIME NEXUS (100% UTUH)
+    // Termasuk fungsi Auto-Fix SKU
+    // -----------------------------------------------------------------
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
 
     if (typeof google === 'undefined') {
-        window.google = { script: { run: (function() { function createRunner(onSuccess, onError) { const runner = { withSuccessHandler: function(cb) { return createRunner(cb, onError); }, withFailureHandler: function(cb) { return createRunner(onSuccess, cb); } }; const _call = async function(action, payload) { try { let options = { method: "POST", redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: action, payload: payload || {} }) }; let res = await fetch(API_URL, options); let json = await res.json(); if (json.status === "success" || json.omset !== undefined) { let dataToReturn = json.data !== undefined ? json.data : json; if (onSuccess) onSuccess(dataToReturn); } else { if (onError) onError(new Error(json.message || "API Error")); else console.error("API Response Error:", json); } } catch (e) { if (onError) onError(e); else console.error("Fetch API Error (" + action + "):", e); } }; runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); }; runner.getDashboardData = function() { _call('getDashboardData'); }; runner.getSalesData = function() { _call('getSalesData'); }; runner.getInventoryData = function() { _call('getInventoryData'); }; runner.getProcurementData = function() { _call('getProcurementData'); }; runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; runner.getSupplierSuggestions = function() { _call('getSupplierSuggestions'); }; runner.getInventoryDataFull = function() { _call('getInventoryDataFull'); }; runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); }; runner.simpanKoreksiSales = function(row, arr) { _call('simpanKoreksiSales', {rowIdx: row, itemsArray: arr}); }; runner.simpanDataGRNBaru = function(nota, items) { _call('simpanDataGRNBaru', {nota: nota, items: items}); }; runner.importTikTokFromTemp = function(acc) { _call('importTikTokFromTemp', acc); }; runner.syncTikTokAutoWorkflow = function() { _call('syncTikTokAutoWorkflow'); }; runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); }; runner.simpanPenyesuaianStok = function(payload) { _call('simpanPenyesuaianStok', payload); }; runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); }; return runner; } return createRunner(null, null); })() } };
+        window.google = { script: { run: (function() { function createRunner(onSuccess, onError) { const runner = { withSuccessHandler: function(cb) { return createRunner(cb, onError); }, withFailureHandler: function(cb) { return createRunner(onSuccess, cb); } }; const _call = async function(action, payload) { try { let options = { method: "POST", redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: action, payload: payload || {} }) }; let res = await fetch(API_URL, options); let json = await res.json(); if (json.status === "success" || json.omset !== undefined) { let dataToReturn = json.data !== undefined ? json.data : json; if (onSuccess) onSuccess(dataToReturn); } else { if (onError) onError(new Error(json.message || "API Error")); else console.error("API Response Error:", json); } } catch (e) { if (onError) onError(e); else console.error("Fetch API Error (" + action + "):", e); } }; runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); }; runner.getDashboardData = function() { _call('getDashboardData'); }; runner.getSalesData = function() { _call('getSalesData'); }; runner.getInventoryData = function() { _call('getInventoryData'); }; runner.getProcurementData = function() { _call('getProcurementData'); }; runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; runner.getSupplierSuggestions = function() { _call('getSupplierSuggestions'); }; runner.getInventoryDataFull = function() { _call('getInventoryDataFull'); }; runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); }; runner.simpanKoreksiSales = function(row, arr) { _call('simpanKoreksiSales', {rowIdx: row, itemsArray: arr}); }; runner.simpanDataGRNBaru = function(nota, items) { _call('simpanDataGRNBaru', {nota: nota, items: items}); }; runner.importTikTokFromTemp = function(acc) { _call('importTikTokFromTemp', acc); }; runner.syncTikTokAutoWorkflow = function() { _call('syncTikTokAutoWorkflow'); }; runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); }; runner.simpanPenyesuaianStok = function(payload) { _call('simpanPenyesuaianStok', payload); }; runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); }; runner.autoFillMissingSKUs = function() { _call('autoFillMissingSKUs'); }; return runner; } return createRunner(null, null); })() } };
     }
 
     let dashChartTrend = null; let dashChartDoughnut = null;
@@ -763,7 +708,7 @@
         const ctxTrend = trendEl.getContext('2d'); const ctxDoughnut = doughnutEl.getContext('2d');
         let gradientFill = ctxTrend.createLinearGradient(0, 0, 0, 300);
         gradientFill.addColorStop(0, 'rgba(0, 240, 255, 0.3)'); gradientFill.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
-        dashChartTrend = new Chart(ctxTrend, { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [ { type: 'line', label: 'Gross Revenue', data: [120, 190, 150, 250, 220, 300, 280], borderColor: cyan, backgroundColor: gradientFill, fill: true, tension: 0.4, borderWidth: 2, pointBackgroundColor: '#030305', pointBorderColor: cyan, pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 }, { type: 'bar', label: 'Net Profit', data: [40, 60, 50, 90, 80, 110, 100], backgroundColor: 'rgba(0, 255, 102, 0.15)', borderColor: green, borderWidth: 1, borderRadius: 4, barPercentage: 0.5 } ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', align:'end', labels: {boxWidth: 8, usePointStyle: true, font:{size:10, weight:'bold'}} } }, scales: { y: { beginAtZero: true, grid: { color: gridColor, borderDash: [4, 4] }, border: {display: false} }, x: { grid: { display: true, color: gridColor }, border: {display: false} } }, interaction: { mode: 'index', intersect: false } } });
+        dashChartTrend = new Chart(ctxTrend, { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [ { type: 'line', label: 'Gross Revenue', data: [120, 190, 150, 250, 220, 300, 280], borderColor: cyan, backgroundColor: gradientFill, fill: true, tension: 0.4, borderWidth: 2, pointBackgroundColor: '#06080c', pointBorderColor: cyan, pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 }, { type: 'bar', label: 'Net Profit', data: [40, 60, 50, 90, 80, 110, 100], backgroundColor: 'rgba(0, 255, 102, 0.15)', borderColor: green, borderWidth: 1, borderRadius: 4, barPercentage: 0.5 } ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', align:'end', labels: {boxWidth: 8, usePointStyle: true, font:{size:10, weight:'bold'}} } }, scales: { y: { beginAtZero: true, grid: { color: gridColor, borderDash: [4, 4] }, border: {display: false} }, x: { grid: { display: true, color: gridColor }, border: {display: false} } }, interaction: { mode: 'index', intersect: false } } });
         let dColors = ['#B026FF', '#00F0FF', '#00FF66'];
         dashChartDoughnut = new Chart(ctxDoughnut, { type: 'doughnut', data: { labels: ['Shopee', 'TikTok', 'Tokopedia'], datasets: [{ data: [55, 30, 15], backgroundColor: dColors, borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {usePointStyle: true, boxWidth: 6, font:{size:10, weight:'bold'}} } }, cutout: '75%' } });
     }
@@ -782,11 +727,14 @@
     function updateClock() { const now = new Date(); document.getElementById('timeClock').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); document.getElementById('dateClock').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'short' }); }
     setInterval(updateClock, 1000); updateClock();
 
-    document.addEventListener("DOMContentLoaded", function() { document.getElementById('grnTgl').valueAsDate = new Date(); loadDashboard(); preloadDatalists(); addGrnRow(); loadDashboardNotes(); });
+    document.addEventListener("DOMContentLoaded", function() { document.getElementById('grnTgl').valueAsDate = new Date(); loadDashboard(); preloadDatalists(); addGrnRow(); loadDashboardNotes(); 
+      // Tampilkan header tabel GRN di desktop jika viewport lebar
+      if(window.innerWidth >= 768) document.getElementById('grnHeaderDesktop').style.display = 'block';
+    });
 
     function loadDashboardNotes() { google.script.run.withSuccessHandler(data => { document.getElementById('pengumumanText').value = data.pengumuman; todoItems = data.todoList || []; renderTodoList(); }).getDashboardNotes(); }
     function saveNote(type, btnId) { var btn = document.getElementById(btnId); var originalText = btn.innerHTML; btn.innerHTML = "Saving..."; btn.disabled = true; var content = document.getElementById('pengumumanText').value; google.script.run.withSuccessHandler(res => { btn.innerHTML = originalText; btn.disabled = false; }).withFailureHandler(err => { btn.innerHTML = originalText; btn.disabled = false; }).saveDashboardNote(type, content); }
-    function renderTodoList() { var listUI = document.getElementById('todoListUI'); if (!todoItems || todoItems.length === 0) { listUI.innerHTML = '<li class="todo-item" style="justify-content:center; border:none; opacity:0.5;">Standby...</li>'; return; } var html = ''; todoItems.forEach((item, index) => { var checked = item.done ? 'checked' : ''; var compClass = item.done ? 'completed' : ''; html += `<li class="todo-item ${compClass}"><input type="checkbox" class="todo-checkbox" ${checked} onchange="toggleTodo(${index})"><span style="flex:1;">${item.text}</span><button class="btn-icon" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;" onclick="deleteTodo(${index})"><i class="fas fa-times"></i></button></li>`; }); listUI.innerHTML = html; }
+    function renderTodoList() { var listUI = document.getElementById('todoListUI'); if (!todoItems || todoItems.length === 0) { listUI.innerHTML = '<li class="todo-item" style="justify-content:center; border:none; opacity:0.5;">Standby...</li>'; return; } var html = ''; todoItems.forEach((item, index) => { var checked = item.done ? 'checked' : ''; var compClass = item.done ? 'completed' : ''; html += `<li class="todo-item ${compClass}"><div style="display:flex; align-items:center; gap:12px; width:100%;"><input type="checkbox" class="todo-checkbox" ${checked} onchange="toggleTodo(${index})"><span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${item.text}</span><button class="btn-icon" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; width:24px; height:24px;" onclick="deleteTodo(${index})"><i class="fas fa-times"></i></button></div></li>`; }); listUI.innerHTML = html; }
     function addTodo() { var input = document.getElementById('todoInput'); var text = input.value.trim(); if (!text) return; todoItems.push({ text: text, done: false }); input.value = ''; renderTodoList(); syncTodoList(); }
     function toggleTodo(index) { todoItems[index].done = !todoItems[index].done; renderTodoList(); syncTodoList(); }
     function deleteTodo(index) { todoItems.splice(index, 1); renderTodoList(); syncTodoList(); }
@@ -813,9 +761,16 @@
       var titleMap = { 'pageDashboard': '<div class="pip-indicator"></div>Control Center', 'pageSalesLog': '<div class="pip-indicator"></div>Live Sales', 'pageInventory': '<div class="pip-indicator" style="background:var(--ryux-purple); box-shadow:0 0 10px var(--ryux-purple);"></div>Smart Inventory', 'pageSkuBaru': '<div class="pip-indicator" style="background:var(--ryux-green); box-shadow:0 0 10px var(--ryux-green);"></div>SKU Master', 'pageProcurement': '<div class="pip-indicator" style="background:var(--ryux-yellow); box-shadow:0 0 10px var(--ryux-yellow);"></div>GRN Ledger' };
       document.getElementById('headerTitle').innerHTML = titleMap[pageId]; document.getElementById('headerActions').innerHTML = '';
       if(pageId === 'pageDashboard') { setTimeout(() => { initCharts(); }, 100); }
-      else if(pageId === 'pageSalesLog') { loadSalesData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`; } 
-      else if (pageId === 'pageInventory') { loadInventoryData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="showPage('pageSkuBaru', null, 4)"><i class="fas fa-plus"></i> New SKU</button>`; } 
-      else if (pageId === 'pageProcurement') { loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()"><i class="fas fa-plus"></i> GRN Entry</button>`; }
+      else if(pageId === 'pageSalesLog') { 
+        loadSalesData(); 
+        document.getElementById('headerActions').innerHTML = `
+          <button class="btn btn-outline" style="padding:10px 16px; font-size:9px;" onclick="runAutoFillSKU()"><i class="fas fa-magic" style="color:var(--ryux-purple);"></i> Auto-Fix SKU</button>
+          <button class="btn btn-warning" style="padding:10px 16px; font-size:9px;" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button>
+          <button class="btn btn-primary" style="padding:10px 16px; font-size:9px;" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>
+        `; 
+      } 
+      else if (pageId === 'pageInventory') { loadInventoryData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" style="padding:10px 16px; font-size:9px;" onclick="showPage('pageSkuBaru', null, 4)"><i class="fas fa-plus"></i> New SKU</button>`; } 
+      else if (pageId === 'pageProcurement') { loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" style="padding:10px 16px; font-size:9px;" onclick="openGrnModal()"><i class="fas fa-plus"></i> GRN Entry</button>`; }
     }
 
     function preloadDatalists() {
@@ -827,8 +782,8 @@
     function onProductSelect(val) { var match = masterProductFullList.find(d => d.nama.toLowerCase() === val.toLowerCase() || d.nama.toLowerCase().includes(val.toLowerCase())); if(match) { document.getElementById('newSku').value = match.sku || ''; document.getElementById('newType').value = match.tipe !== '-' ? match.tipe : ''; document.getElementById('newCat').value = match.kategori !== '-' ? match.kategori : ''; document.getElementById('newVar').value = match.varian !== '-' ? match.varian : ''; document.getElementById('newLc').value = match.listingCode !== '-' ? match.listingCode : ''; document.getElementById('newCogs').value = match.cogs || 0; document.getElementById('refLcLabel').innerText = "LC: " + (match.listingCode || "-"); } }
     function onQuickProductSelect(val) { var match = masterProductFullList.find(d => d.nama.toLowerCase() === val.toLowerCase() || d.nama.toLowerCase().includes(val.toLowerCase())); if(match) { document.getElementById('qSku').value = match.sku || ''; document.getElementById('qType').value = match.tipe !== '-' ? match.tipe : ''; document.getElementById('qCat').value = match.kategori !== '-' ? match.kategori : ''; document.getElementById('qVar').value = match.varian !== '-' ? match.varian : ''; document.getElementById('qLc').value = match.listingCode !== '-' ? match.listingCode : ''; document.getElementById('qCogs').value = match.cogs || 0; document.getElementById('refQuickLcLabel').innerText = "LC: " + (match.listingCode || "-"); } }
     
-    function openModalSkuBaruFromModal() { document.getElementById('modalQuickSku').classList.remove('hidden'); }
-    function closeModalQuickSku() { document.getElementById('modalQuickSku').classList.add('hidden'); }
+    function openModalSkuBaruFromModal() { document.getElementById('modalQuickSku').classList.remove('hidden-section'); }
+    function closeModalQuickSku() { document.getElementById('modalQuickSku').classList.add('hidden-section'); }
     
     function submitQuickSku() { var btn = document.getElementById('btnSubmitQuick'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; var data = { sku: document.getElementById('qSku').value, tipe: document.getElementById('qType').value, kategori: document.getElementById('qCat').value, nama: document.getElementById('qName').value, varian: document.getElementById('qVar').value, listingCode: document.getElementById('qLc').value, stokAwal: document.getElementById('qStock').value, cogsAwal: document.getElementById('qCogs').value }; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Create Master"; if(res === "SUCCESS") { alert("SKU Added!"); document.getElementById('formQuickSku').reset(); closeModalQuickSku(); preloadDatalists(); } else { alert(res); } }).simpanSkuBaru(data); }
 
@@ -850,6 +805,8 @@
       }).getSalesData(); 
     }
     
+    var bSuccess = "badge badge-success"; var bWarning = "badge badge-warning"; var bDanger = "badge badge-danger"; var bInfo = "badge badge-info"; var bPurple = "badge badge-purple";
+
     function renderSalesTable() {
       var selMonth = document.getElementById('filterMonthSales').value; 
       var selStatus = document.getElementById('filterStatusSales').value; 
@@ -868,80 +825,85 @@
       
       var sOmset = 0, sProfit = 0, sOrder = filtered.length, sQty = 0; var html = '';
       if(filtered.length === 0) { 
-        html = '<div class="glass-panel" style="padding:40px; text-align:center; color:var(--text-muted); font-weight:800; letter-spacing:1.5px; text-transform:uppercase;">No data matched filter.</div>'; 
+        html = '<div class="glass-panel" style="padding:40px; text-align:center; color:var(--text-muted); font-weight:900; letter-spacing:2px; text-transform:uppercase;">No data matched filter.</div>'; 
       } else { 
         filtered.forEach(d => { 
           var statLow = d.status ? d.status.toLowerCase().trim() : "";
           var isMasukHitungan = statLow.includes("selesai") || (statLow.includes("refund") && statLow.includes("return"));
           if(isMasukHitungan) { sOmset += d.totalPendapatan; sProfit += d.profit; } 
           
-          var badgeClass = "badge-info"; 
-          if (statLow.includes("selesai")) badgeClass = "badge-success";
-          else if (statLow.includes("refund") && statLow.includes("return")) badgeClass = "badge-purple"; 
-          else if (statLow.includes("menunggu") || statLow.includes("transit") || statLow.includes("proses")) badgeClass = "badge-warning";
-          else if (statLow.includes("cancel") || statLow.includes("batal") || statLow.includes("return")) badgeClass = "badge-danger";
+          var badgeClass = bInfo; 
+          if (statLow.includes("selesai")) badgeClass = bSuccess;
+          else if (statLow.includes("refund") && statLow.includes("return")) badgeClass = bPurple; 
+          else if (statLow.includes("menunggu") || statLow.includes("transit") || statLow.includes("proses")) badgeClass = bWarning;
+          else if (statLow.includes("cancel") || statLow.includes("batal") || statLow.includes("return")) badgeClass = bDanger;
           
           var isFixNeeded = false; var itemsHtml = ''; 
           d.items.forEach(itm => { 
             if(itm.sku === "" && itm.qty === 0) return; 
-            sQty += itm.qty; 
-            var isErr = itm.sku === '-' || itm.nama.includes('⚠️'); 
-            if(isErr) isFixNeeded = true; 
-            itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:white; font-size:12px; margin-bottom:2px;" class="${isErr ? 'text-danger' : ''}">${itm.nama}</div><span style="font-size:9px; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.06); letter-spacing:1px;">${itm.sku}</span></div><div class="money-stat" style="width:110px;"><span>COGS</span><div style="color:#cbd5e1;">${formatRp(itm.cogs * itm.qty)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div style="font-size:14px;">${itm.qty}</div></div></div>`; 
+            sQty += itm.qty; var isErr = itm.sku === '-' || itm.nama.includes('⚠️'); if(isErr) isFixNeeded = true; 
+            itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:white; font-size:13px; margin-bottom:4px;" class="${isErr ? 'text-danger' : ''}">${itm.nama}</div><span style="font-size:9px; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); letter-spacing:1.5px;">${itm.sku}</span></div><div class="money-stat" style="width:130px;"><span>COGS</span><div style="color:#cbd5e1;">${formatRp(itm.cogs * itm.qty)}</div></div><div class="money-stat" style="width:60px;"><span>QTY</span><div style="font-size:16px;">${itm.qty}</div></div></div>`; 
           }); 
       
           var btnFixHtml = '';
           if (statLow === "return" || (statLow.includes("refund") && statLow.includes("return"))) {
-            btnFixHtml = `<button type="button" class="btn btn-danger" style="padding:8px 12px;" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Terima Retur</button>`;
+            btnFixHtml = `<button type="button" class="btn btn-danger" style="padding:10px 16px; font-size:9px;" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Terima Retur</button>`;
           } else if (isFixNeeded) {
-            btnFixHtml = `<button type="button" class="btn btn-warning" style="padding:8px 12px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-wrench"></i> Fix Data</button>`;
+            btnFixHtml = `<button type="button" class="btn btn-warning" style="padding:10px 16px; font-size:9px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-wrench"></i> Fix Data</button>`;
           } else {
-            btnFixHtml = `<button type="button" class="btn btn-outline" style="padding:8px 12px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Edit</button>`;
+            btnFixHtml = `<button type="button" class="btn btn-outline" style="padding:10px 16px; font-size:9px;" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Edit</button>`;
           }
 
-          html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;"><span class="badge ${badgeClass}">${d.status}</span><span style="font-weight:900; color:white; font-size:13px; letter-spacing:1px;">${d.noOrder}</span><span class="badge badge-purple" style="border-style:dashed;">LC: ${d.listingCode}</span><span style="color:var(--text-muted); font-size:9px; margin-left:6px; font-weight:700;"><i class="far fa-calendar-alt"></i> ${d.tanggal}</span></div><div style="display:flex; flex-wrap:wrap; gap:16px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan); text-shadow:0 0 8px rgba(0,240,255,0.3);">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green); text-shadow:0 0 8px rgba(0,255,102,0.3);">${formatRp(d.profit)}</div></div>${btnFixHtml}</div></div><div class="dg-body"><div style="background:rgba(0,0,0,0.3); padding:10px 14px; border-radius:10px; font-size:10px; border:1px solid rgba(255,255,255,0.05); color:var(--text-muted); display:flex; align-items:center; flex-wrap:wrap; gap:6px;"><i class="fas fa-link" style="color:var(--ryux-cyan);"></i> <b style="color:white; text-transform:uppercase; letter-spacing:1px;">Ref (${d.channel}):</b> ${d.mpProductName} <span class="badge badge-warning" style="border-style:dashed;">VAR: ${d.mpVariant}</span></div><div>${itemsHtml}</div></div></div>`; 
+          html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;"><span class="${badgeClass}">${d.status}</span><span style="font-weight:900; color:white; font-size:14px; letter-spacing:1.5px;">${d.noOrder}</span><span class="${bPurple}" style="border-style:dashed;">LC: ${d.listingCode}</span><span style="color:var(--text-muted); font-size:10px; margin-left:8px; font-weight:700; letter-spacing:1px;"><i class="far fa-calendar-alt" style="opacity:0.5; margin-right:4px;"></i> ${d.tanggal}</span></div><div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan); text-shadow:0 0 10px rgba(0,240,255,0.3); font-size:16px;">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green); text-shadow:0 0 10px rgba(0,255,102,0.3); font-size:16px;">${formatRp(d.profit)}</div></div>${btnFixHtml}</div></div><div class="dg-body"><div style="background:rgba(0,0,0,0.3); padding:12px 16px; border-radius:12px; font-size:10px; border:1px solid rgba(255,255,255,0.05); color:var(--text-muted); display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:16px;"><i class="fas fa-link" style="color:var(--ryux-cyan);"></i> <b style="color:white; text-transform:uppercase; letter-spacing:1.5px;">Ref (${d.channel}):</b> ${d.mpProductName} <span class="${bWarning}" style="border-style:dashed;">VAR: ${d.mpVariant}</span></div><div>${itemsHtml}</div></div></div>`; 
         }); 
       }
       rawSalesOmsetVal = formatRp(sOmset); rawSalesProfitVal = formatRp(sProfit); document.getElementById('sumOrder').innerText = sOrder.toLocaleString('id-ID'); document.getElementById('sumQty').innerText = sQty.toLocaleString('id-ID') + " Pcs"; container.innerHTML = html; applySalesPrivacy();
     }
+
+    // FUNGSI BARU UNTUK TRIGGER AUTO-FIX SKU
+    function runAutoFillSKU() { 
+      var act = document.getElementById('headerActions'); 
+      act.innerHTML = '<span class="badge badge-info" style="background:rgba(0,0,0,0.4); border-color:rgba(176,38,255,0.3); padding:6px 12px; color:var(--ryux-purple);"><i class="fas fa-circle-notch fa-spin"></i> FIXING SKU...</span>'; 
+      google.script.run.withSuccessHandler(res => { 
+        if(res.startsWith("SUCCESS")) { 
+          alert(res); 
+          showPage('pageSalesLog', document.querySelector('.nav-item:nth-child(4)')); 
+        } else { 
+          alert(res); 
+          showPage('pageSalesLog', document.querySelector('.nav-item:nth-child(4)'));
+        } 
+      }).autoFillMissingSKUs(); 
+    }
     
-    function openFixModal(rowIdx) { var item = globalSalesData.find(s => s.rowIdx === rowIdx); if (!item) return; document.getElementById('fixRowIdx').value = rowIdx; document.getElementById('fixRefBox').innerHTML = `<div class="tiny-label" style="color:var(--ryux-cyan); margin-bottom:4px;">MP REFERENCE</div><div style="font-size:12px; font-weight:700; color:white;">${item.mpProductName}</div><div style="font-size:10px; color:var(--text-muted); margin-top:6px; font-weight:700;">VAR: <b style="color:white;">${item.mpVariant}</b> | LC: <b style="color:var(--ryux-yellow);">${item.listingCode}</b></div>`; document.getElementById('fixItemsContainer').innerHTML = ""; currentFixItemsCount = 0; var activeCount = 0; item.items.forEach(itm => { if(itm.sku && itm.sku !== '-' || itm.qty > 0) { addFixRowUI(itm.sku, itm.qty); activeCount++; } }); if(activeCount === 0) addFixRowUI('', 1); document.getElementById('modalFixSales').classList.remove('hidden'); }
-    function addFixRowUI(skuVal, qtyVal) { if(currentFixItemsCount >= 10) return alert("Max 10 items!"); currentFixItemsCount++; var idx = currentFixItemsCount; var div = document.createElement('div'); div.style.cssText = "display:flex; gap:12px; align-items:center; background:rgba(255,255,255,0.02); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);"; div.innerHTML = `<div style="flex:1;"><label style="display:block; margin-bottom:4px; font-size:8px; font-weight:900; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase;">SKU ${idx}</label><input type="text" id="fixSku${idx}" data-custom-list="skuSuggestions" class="form-input" style="width:100%;" value="${skuVal && skuVal !== '-' ? skuVal : ''}" autocomplete="off"></div><div style="width:70px;"><label style="display:block; margin-bottom:4px; font-size:8px; font-weight:900; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase;">QTY</label><input type="number" id="fixQty${idx}" min="0" class="form-input" style="width:100%; text-align:center;" value="${qtyVal !== undefined ? qtyVal : 0}"></div>`; document.getElementById('fixItemsContainer').appendChild(div); }
-    function closeFixModal() { document.getElementById('modalFixSales').classList.add('hidden'); }
+    function openFixModal(rowIdx) { var item = globalSalesData.find(s => s.rowIdx === rowIdx); if (!item) return; document.getElementById('fixRowIdx').value = rowIdx; document.getElementById('fixRefBox').innerHTML = `<div class="tiny-label" style="color:var(--ryux-cyan); margin-bottom:6px;">MP REFERENCE</div><div style="font-size:13px; font-weight:700; color:white;">${item.mpProductName}</div><div style="font-size:10px; color:var(--text-muted); margin-top:8px; font-weight:700; letter-spacing:1px;">VAR: <b style="color:white;">${item.mpVariant}</b> | LC: <b style="color:var(--ryux-yellow);">${item.listingCode}</b></div>`; document.getElementById('fixItemsContainer').innerHTML = ""; currentFixItemsCount = 0; var activeCount = 0; item.items.forEach(itm => { if(itm.sku && itm.sku !== '-' || itm.qty > 0) { addFixRowUI(itm.sku, itm.qty); activeCount++; } }); if(activeCount === 0) addFixRowUI('', 1); document.getElementById('modalFixSales').classList.remove('hidden-section'); }
+    function addFixRowUI(skuVal, qtyVal) { if(currentFixItemsCount >= 10) return alert("Max 10 items!"); currentFixItemsCount++; var idx = currentFixItemsCount; var div = document.createElement('div'); div.style.cssText = "display:flex; gap:16px; align-items:center; background:rgba(0,0,0,0.3); padding:16px; border-radius:16px; border:1px solid var(--glass-border);"; div.innerHTML = `<div style="flex:1;"><label style="display:block; margin-bottom:6px; font-size:9px; font-weight:900; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase;">SKU ${idx}</label><input type="text" id="fixSku${idx}" data-custom-list="skuSuggestions" class="form-input" style="width:100%;" value="${skuVal && skuVal !== '-' ? skuVal : ''}" autocomplete="off"></div><div style="width:80px;"><label style="display:block; margin-bottom:6px; font-size:9px; font-weight:900; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase;">QTY</label><input type="number" id="fixQty${idx}" min="0" class="form-input" style="width:100%; text-align:center;" value="${qtyVal !== undefined ? qtyVal : 0}"></div>`; document.getElementById('fixItemsContainer').appendChild(div); }
+    function closeFixModal() { document.getElementById('modalFixSales').classList.add('hidden-section'); }
     function saveFixModal() { var rowIdx = parseInt(document.getElementById('fixRowIdx').value); var itemsArray = []; for(var i=1; i<=10; i++) { var elSku = document.getElementById('fixSku' + i), elQty = document.getElementById('fixQty' + i); itemsArray.push({sku: elSku ? elSku.value : "", qty: elQty ? elQty.value : 0}); } var btn = document.getElementById('btnSaveFix'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerHTML = "Apply Correction"; if (res === "SUCCESS") { closeFixModal(); loadSalesData(); } else { alert("Failed: " + res); } }).simpanKoreksiSales(rowIdx, itemsArray); }
 
     function loadInventoryData() { document.getElementById('invTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="7" class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Data...</td></tr>'; google.script.run.withSuccessHandler(data => { globalInvData = data; var types = new Set(), cats = new Set(); data.forEach(d => { if(d.tipe !== "-") types.add(d.tipe); if(d.kategori !== "-") cats.add(d.kategori); }); var selT = document.getElementById('filterTypeInv'); selT.innerHTML = '<option value="ALL">All Types</option>'; Array.from(types).sort().forEach(t => selT.innerHTML += `<option value="${t}">${t}</option>`); var selC = document.getElementById('filterCatInv'); selC.innerHTML = '<option value="ALL">All Categories</option>'; Array.from(cats).sort().forEach(c => selC.innerHTML += `<option value="${c}">${c}</option>`); renderInventory(); }).getInventoryData(); }
-    function renderInventory() { var selT = document.getElementById('filterTypeInv').value, selC = document.getElementById('filterCatInv').value, selS = document.getElementById('filterStatusInv').value, sq = document.getElementById('searchInv').value.toLowerCase(); var filtered = globalInvData.filter(d => { var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; return (selT === 'ALL' || d.tipe === selT) && (selC === 'ALL' || d.kategori === selC) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); }); var totalNilaiAsetFilter = 0, totalQtyFilter = 0, totalRestockFilter = 0; filtered.forEach(d => { totalNilaiAsetFilter += d.nilai; totalQtyFilter += d.stok; if(d.stok <= 1) totalRestockFilter++; }); document.getElementById('invSumAset').innerText = formatRp(totalNilaiAsetFilter); document.getElementById('invSumSku').innerText = filtered.length.toLocaleString('id-ID') + " SKU"; document.getElementById('invSumQty').innerText = totalQtyFilter.toLocaleString('id-ID') + " Pcs"; document.getElementById('invSumRestock').innerText = totalRestockFilter.toLocaleString('id-ID') + " SKU"; var tbody = document.getElementById('invTable').getElementsByTagName('tbody')[0], html = ''; filtered.forEach(d => { var stat = d.stok <= 1 ? '<span class="badge badge-danger">RESTOCK</span>' : '<span class="badge badge-success">STABLE</span>'; html += `<tr><td><div style="font-weight:900; color:white; letter-spacing:1px;">${d.sku}</div></td><td><div style="font-weight:700; color:white; margin-bottom:4px;">${d.nama}</div><div style="display:flex; gap:6px;"><span class="badge badge-info">${d.tipe}</span> <span class="badge badge-purple" style="border-style:dashed;">${d.kategori}</span></div></td><td>${stat}</td><td style="text-align:center; font-weight:900; font-size:13px; color:${d.stok <= 1 ? 'var(--ryux-red)' : 'var(--ryux-cyan)'}">${d.stok.toLocaleString('id-ID')}</td><td style="text-align:right; color:#cbd5e1; font-weight:700;">${formatRp(d.cogs)}</td><td style="text-align:right; font-weight:900; color:white;">${formatRp(d.nilai)}</td><td style="text-align:center;"><button type="button" class="btn btn-outline btn-icon" style="width:28px; height:28px; font-size:10px;" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})"><i class="fas fa-pen"></i></button></td></tr>`; }); tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" class="tiny-label" style="text-align:center; padding:40px;">No inventory found.</td></tr>' : html; }
+    function renderInventory() { var selT = document.getElementById('filterTypeInv').value, selC = document.getElementById('filterCatInv').value, selS = document.getElementById('filterStatusInv').value, sq = document.getElementById('searchInv').value.toLowerCase(); var filtered = globalInvData.filter(d => { var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; return (selT === 'ALL' || d.tipe === selT) && (selC === 'ALL' || d.kategori === selC) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); }); var totalNilaiAsetFilter = 0, totalQtyFilter = 0, totalRestockFilter = 0; filtered.forEach(d => { totalNilaiAsetFilter += d.nilai; totalQtyFilter += d.stok; if(d.stok <= 1) totalRestockFilter++; }); document.getElementById('invSumAset').innerText = formatRp(totalNilaiAsetFilter); document.getElementById('invSumSku').innerText = filtered.length.toLocaleString('id-ID') + " SKU"; document.getElementById('invSumQty').innerText = totalQtyFilter.toLocaleString('id-ID') + " Pcs"; document.getElementById('invSumRestock').innerText = totalRestockFilter.toLocaleString('id-ID') + " SKU"; var tbody = document.getElementById('invTable').getElementsByTagName('tbody')[0], html = ''; filtered.forEach(d => { var stat = d.stok <= 1 ? `<span class="badge badge-danger">RESTOCK</span>` : `<span class="badge badge-success">STABLE</span>`; html += `<tr><td><div style="font-weight:900; color:white; letter-spacing:1.5px; font-size:11px;">${d.sku}</div></td><td><div style="font-weight:700; color:white; margin-bottom:6px; font-size:12px;">${d.nama}</div><div style="display:flex; gap:8px;"><span class="badge badge-info">${d.tipe}</span> <span class="badge badge-purple" style="border-style:dashed;">${d.kategori}</span></div></td><td>${stat}</td><td style="text-align:center; font-weight:900; font-size:14px; color:${d.stok <= 1 ? 'var(--ryux-red)' : 'var(--ryux-cyan)'}">${d.stok.toLocaleString('id-ID')}</td><td style="text-align:right; color:#cbd5e1; font-weight:700; font-size:12px; letter-spacing:1px;">${formatRp(d.cogs)}</td><td style="text-align:right; font-weight:900; color:white; letter-spacing:1px; font-size:13px;">${formatRp(d.nilai)}</td><td style="text-align:center;"><button type="button" class="btn btn-outline btn-icon" style="width:34px; height:34px; font-size:11px;" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})"><i class="fas fa-pen"></i></button></td></tr>`; }); tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" class="tiny-label" style="text-align:center; padding:40px;">No inventory found.</td></tr>' : html; }
 
     function loadProcurementData() { document.getElementById('procurementContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Ledger...</div>'; google.script.run.withSuccessHandler(data => { globalProcData = data; populateMonthFilter(data, 'filterMonthProc'); var sellers = new Set(); data.forEach(d => sellers.add(d.supplier)); var selS = document.getElementById('filterSellerProc'); selS.innerHTML = '<option value="ALL">Semua Supplier</option>'; Array.from(sellers).sort().forEach(s => selS.innerHTML += `<option value="${s}">${s}</option>`); renderProcurement(); }).getProcurementData(); }
-    function renderProcurement() { var m = document.getElementById('filterMonthProc').value, s = document.getElementById('filterSellerProc').value, q = document.getElementById('searchProc').value.toLowerCase(), container = document.getElementById('procurementContainer'); var filtered = globalProcData.filter(d => (m === 'ALL' || d.valBulan === m) && (s === 'ALL' || d.supplier === s) && (!q || d.noOrder.toLowerCase().includes(q) || d.sku.toLowerCase().includes(q) || d.supplier.toLowerCase().includes(q))); var groups = {}; var orderOrderList = []; filtered.forEach((d, idx) => { if(!groups[d.noOrder]) { groups[d.noOrder] = { noOrder: d.noOrder, tanggal: d.tanggal, supplier: d.supplier, marketplace: d.marketplace, items: [], totalBelanja: 0, originalIdx: idx }; orderOrderList.push(d.noOrder); } groups[d.noOrder].items.push(d); groups[d.noOrder].totalBelanja += d.total; }); orderOrderList.sort((a, b) => { var dateA = new Date(groups[a].tanggal), dateB = new Date(groups[b].tanggal); if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) { if (dateB.getTime() === dateA.getTime()) { return groups[b].originalIdx - groups[a].originalIdx; } return dateB - dateA; } return groups[b].originalIdx - groups[a].originalIdx; }); var totalBelanjaFilter = 0; var totalQtyFilter = 0; orderOrderList.forEach(k => { totalBelanjaFilter += groups[k].totalBelanja; groups[k].items.forEach(itm => totalQtyFilter += itm.qty); }); document.getElementById('procSumBelanja').innerText = formatRp(totalBelanjaFilter); document.getElementById('procSumInvoice').innerText = orderOrderList.length.toLocaleString('id-ID'); document.getElementById('procSumQty').innerText = totalQtyFilter.toLocaleString('id-ID') + " Pcs"; var html = ''; if(orderOrderList.length === 0) { container.innerHTML = '<div class="glass-panel tiny-label" style="padding:40px; text-align:center;">No ledger data.</div>'; return; } orderOrderList.forEach(ordNo => { var g = groups[ordNo]; var itemsHtml = ''; g.items.forEach(itm => { itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:white; font-size:12px; margin-bottom:2px;">${itm.nama}</div><span style="font-size:9px; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.06); letter-spacing:1px;">${itm.sku}</span></div><div class="money-stat" style="width:130px;"><span>NET PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(itm.hargaCogs)} <small style="font-size:9px; color:var(--text-muted); font-weight:700; display:block;">(Ori: ${formatRp(itm.hargaAsli)})</small></div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div style="font-size:14px;">${itm.qty}</div></div><div class="money-stat" style="width:120px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><div style="width:36px; text-align:right;"><button type="button" class="btn btn-outline btn-icon" style="width:28px; height:28px; font-size:10px;" onclick="openReviseProcModal('${String(g.noOrder).replace(/'/g, "\\'")}', '${String(itm.sku).replace(/'/g, "\\'")}', ${itm.qty}, ${itm.hargaAsli})"><i class="fas fa-pen"></i></button></div></div>`; }); html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;"><span class="badge badge-info"><i class="fas fa-hashtag"></i> ${g.noOrder}</span><span style="font-weight:900; color:white; font-size:13px; letter-spacing:1px;">${g.supplier}</span><span class="badge badge-warning" style="border-style:dashed;">${g.marketplace}</span><span style="color:var(--text-muted); font-size:9px; margin-left:6px; font-weight:700;"><i class="far fa-calendar-alt"></i> ${g.tanggal}</span></div><div class="money-stat"><span>INV TOTAL</span><div style="font-size:16px; color:var(--ryux-cyan);">${formatRp(g.totalBelanja)}</div></div></div><div class="dg-body">${itemsHtml}</div></div>`; }); container.innerHTML = html; }
-    function openReviseProcModal(noOrder, sku, qty, harga) { document.getElementById('revProcNota').value = noOrder; document.getElementById('revProcOldSku').value = sku; document.getElementById('revProcSku').value = sku; document.getElementById('revProcQty').value = qty; document.getElementById('revProcHarga').value = harga; document.getElementById('modalReviseProc').classList.remove('hidden'); }
-    function closeReviseProcModal() { document.getElementById('modalReviseProc').classList.add('hidden'); }
+    function renderProcurement() { var m = document.getElementById('filterMonthProc').value, s = document.getElementById('filterSellerProc').value, q = document.getElementById('searchProc').value.toLowerCase(), container = document.getElementById('procurementContainer'); var filtered = globalProcData.filter(d => (m === 'ALL' || d.valBulan === m) && (s === 'ALL' || d.supplier === s) && (!q || d.noOrder.toLowerCase().includes(q) || d.sku.toLowerCase().includes(q) || d.supplier.toLowerCase().includes(q))); var groups = {}; var orderOrderList = []; filtered.forEach((d, idx) => { if(!groups[d.noOrder]) { groups[d.noOrder] = { noOrder: d.noOrder, tanggal: d.tanggal, supplier: d.supplier, marketplace: d.marketplace, items: [], totalBelanja: 0, originalIdx: idx }; orderOrderList.push(d.noOrder); } groups[d.noOrder].items.push(d); groups[d.noOrder].totalBelanja += d.total; }); orderOrderList.sort((a, b) => { var dateA = new Date(groups[a].tanggal), dateB = new Date(groups[b].tanggal); if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) { if (dateB.getTime() === dateA.getTime()) { return groups[b].originalIdx - groups[a].originalIdx; } return dateB - dateA; } return groups[b].originalIdx - groups[a].originalIdx; }); var totalBelanjaFilter = 0; var totalQtyFilter = 0; orderOrderList.forEach(k => { totalBelanjaFilter += groups[k].totalBelanja; groups[k].items.forEach(itm => totalQtyFilter += itm.qty); }); document.getElementById('procSumBelanja').innerText = formatRp(totalBelanjaFilter); document.getElementById('procSumInvoice').innerText = orderOrderList.length.toLocaleString('id-ID'); document.getElementById('procSumQty').innerText = totalQtyFilter.toLocaleString('id-ID') + " Pcs"; var html = ''; if(orderOrderList.length === 0) { container.innerHTML = '<div class="glass-panel" style="padding:40px; text-align:center; color:var(--text-muted); font-weight:900; letter-spacing:2px; text-transform:uppercase;">No ledger data.</div>'; return; } orderOrderList.forEach(ordNo => { var g = groups[ordNo]; var itemsHtml = ''; g.items.forEach(itm => { itemsHtml += `<div class="dg-row"><div style="flex:1;"><div style="font-weight:700; color:white; font-size:12px; margin-bottom:4px;">${itm.nama}</div><span style="font-size:9px; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); letter-spacing:1.5px;">${itm.sku}</span></div><div class="money-stat" style="width:150px;"><span>NET PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(itm.hargaCogs)} <small style="font-size:9px; color:var(--text-muted); font-weight:700; display:block; margin-top:2px;">(Ori: ${formatRp(itm.hargaAsli)})</small></div></div><div class="money-stat" style="width:70px;"><span>QTY</span><div style="font-size:16px;">${itm.qty}</div></div><div class="money-stat" style="width:140px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><div style="width:40px; text-align:right;"><button type="button" class="btn btn-outline btn-icon" style="width:34px; height:34px; font-size:12px;" onclick="openReviseProcModal('${String(g.noOrder).replace(/'/g, "\\'")}', '${String(itm.sku).replace(/'/g, "\\'")}', ${itm.qty}, ${itm.hargaAsli})"><i class="fas fa-pen"></i></button></div></div>`; }); html += `<div class="data-group-card"><div class="dg-header"><div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;"><span class="badge badge-info"><i class="fas fa-hashtag" style="margin-right:4px;"></i> ${g.noOrder}</span><span style="font-weight:900; color:white; font-size:14px; letter-spacing:1.5px;">${g.supplier}</span><span class="badge badge-warning" style="border-style:dashed;">${g.marketplace}</span><span style="color:var(--text-muted); font-size:10px; margin-left:8px; font-weight:700; letter-spacing:1px;"><i class="far fa-calendar-alt" style="opacity:0.5; margin-right:4px;"></i> ${g.tanggal}</span></div><div class="money-stat w-full md:w-auto mt-3 md:mt-0"><span>INV TOTAL</span><div style="font-size:20px; color:var(--ryux-cyan); text-shadow:0 0 10px rgba(0,240,255,0.3);">${formatRp(g.totalBelanja)}</div></div></div><div class="dg-body">${itemsHtml}</div></div>`; }); container.innerHTML = html; }
+    function openReviseProcModal(noOrder, sku, qty, harga) { document.getElementById('revProcNota').value = noOrder; document.getElementById('revProcOldSku').value = sku; document.getElementById('revProcSku').value = sku; document.getElementById('revProcQty').value = qty; document.getElementById('revProcHarga').value = harga; document.getElementById('modalReviseProc').classList.remove('hidden-section'); }
+    function closeReviseProcModal() { document.getElementById('modalReviseProc').classList.add('hidden-section'); }
     function submitReviseProc() { var noOrder = document.getElementById('revProcNota').value, oldSku = document.getElementById('revProcOldSku').value, newSku = document.getElementById('revProcSku').value, qty = document.getElementById('revProcQty').value, harga = document.getElementById('revProcHarga').value; var btn = document.getElementById('btnSubmitReviseProc'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerHTML = 'Update Ledger'; if(res === "SUCCESS") { alert("Ledger updated!"); closeReviseProcModal(); loadProcurementData(); } }).simpanRevisiProcurement(noOrder, oldSku, newSku, qty, harga); }
 
-    function openGrnModal() { preloadDatalists(); document.getElementById('modalGrn').classList.remove('hidden'); }
-    function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden'); }
+    function openGrnModal() { preloadDatalists(); document.getElementById('modalGrn').classList.remove('hidden-section'); }
+    function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); }
     function calcGrn() { var subtotalProduk = 0; document.querySelectorAll('.grn-item-row').forEach(row => { var q = parseInt(row.querySelector('.grn-qty').value) || 0; var h = parseInt(row.querySelector('.grn-hrg').value) || 0; var sub = q * h; subtotalProduk += sub; row.querySelector('.grn-subtotal-text').innerText = formatRp(sub); }); var voc = parseInt(document.getElementById('grnVoc').value) || 0; var fee = parseInt(document.getElementById('grnFee').value) || 0; var ong = parseInt(document.getElementById('grnOng').value) || 0; document.getElementById('grnSubtotalLabel').innerText = formatRp(subtotalProduk); document.getElementById('grnTotalBersihLabel').innerText = formatRp(subtotalProduk - voc + fee + ong); }
-    function addGrnRow() { var container = document.getElementById('grnItemsContainer'); var div = document.createElement('div'); div.className = 'grn-item-row'; div.style.cssText = "display:flex; gap:10px; align-items:center; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(0,0,0,0.3);"; div.innerHTML = `<div style="flex:1;"><input type="text" class="form-input grn-sku" data-custom-list="skuSuggestions" placeholder="Select SKU..." style="width:100%;" required oninput="calcGrn()" autocomplete="off"></div><div style="width:80px;"><input type="number" class="form-input grn-qty" placeholder="Qty" min="1" value="1" style="width:100%; text-align:center;" required oninput="calcGrn()"></div><div style="width:140px;"><input type="number" class="form-input grn-hrg" placeholder="Price" min="0" style="width:100%;" required oninput="calcGrn()"></div><div style="width:130px; text-align:right; font-weight:900; font-size:13px; color:var(--ryux-cyan);" class="grn-subtotal-text">Rp 0</div><div style="width:36px; text-align:center;"><button type="button" class="btn btn-outline btn-icon" style="color:var(--ryux-red); border-color:rgba(255,0,85,0.3); width:28px; height:28px; font-size:10px;" onclick="this.closest('.grn-item-row').remove(); calcGrn();"><i class="fas fa-trash"></i></button></div>`; container.appendChild(div); calcGrn(); }
+    function addGrnRow() { var container = document.getElementById('grnItemsContainer'); var div = document.createElement('div'); div.className = 'grn-item-row'; div.style.cssText = "display:flex; flex-direction:column; gap:12px; align-items:flex-start; padding:16px; border-radius:16px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.3); margin-bottom:12px;"; 
+    if(window.innerWidth >= 768) { div.style.flexDirection = "row"; div.style.alignItems = "center"; }
+    div.innerHTML = `<div style="flex:1; width:100%;"><input type="text" class="form-input grn-sku" data-custom-list="skuSuggestions" placeholder="Select SKU..." style="width:100%; padding:14px;" required oninput="calcGrn()" autocomplete="off"></div><div style="width:100%; max-width:100px;"><input type="number" class="form-input grn-qty" placeholder="Qty" min="1" value="1" style="width:100%; text-align:center; padding:14px;" required oninput="calcGrn()"></div><div style="width:100%; max-width:180px;"><input type="number" class="form-input grn-hrg" placeholder="Price" min="0" style="width:100%; padding:14px;" required oninput="calcGrn()"></div><div style="width:100%; max-width:150px; text-align:right; font-weight:900; font-size:14px; color:var(--ryux-cyan);" class="grn-subtotal-text">Rp 0</div><div style="width:100%; max-width:50px; text-align:center;"><button type="button" class="btn btn-outline btn-icon" style="color:var(--ryux-red); border-color:rgba(255,0,85,0.3); width:34px; height:34px; font-size:12px;" onclick="this.closest('.grn-item-row').remove(); calcGrn();"><i class="fas fa-trash"></i></button></div>`; container.appendChild(div); calcGrn(); }
     function submitGrnData() { var nota = { noOrder: document.getElementById('grnNota').value, tglOrder: document.getElementById('grnTgl').value, marketplace: document.getElementById('grnMp').value, supplier: document.getElementById('grnSupp').value, voucher: document.getElementById('grnVoc').value, ongkir: document.getElementById('grnOng').value, fee: document.getElementById('grnFee').value }; if(!nota.noOrder || !nota.supplier || !nota.tglOrder) return alert("Harap lengkapi No Nota, Tanggal, dan Supplier!"); var items = []; document.querySelectorAll('.grn-item-row').forEach(row => { var skuVal = row.querySelector('.grn-sku').value; var qtyVal = row.querySelector('.grn-qty').value; var hrgVal = row.querySelector('.grn-hrg').value; if(skuVal && qtyVal > 0) items.push({ skuLengkap: skuVal, qty: qtyVal, harga: hrgVal }); }); if(items.length === 0) return alert("Pilih minimal 1 item barang!"); var btn = document.getElementById('btnSubmitGrn'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock"></i> Commit Ledger'; if(res === "SUCCESS") { alert("GRN Berhasil Disimpan!"); closeGrnModal(); document.getElementById('grnNota').value = ""; document.getElementById('grnItemsContainer').innerHTML = ""; document.getElementById('grnVoc').value = "0"; document.getElementById('grnOng').value = "0"; document.getElementById('grnFee').value = "0"; addGrnRow(); loadProcurementData(); preloadDatalists(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock"></i> Commit Ledger'; alert("Error: " + err.message); }).simpanDataGRNBaru(nota, items); }
 
     function populateMonthFilter(data, elId) { var s = new Set(); data.forEach(d => s.add(d.valBulan + "|" + d.labelBulan)); var sel = document.getElementById(elId); sel.innerHTML = '<option value="ALL">Semua Bulan</option>'; Array.from(s).sort().reverse().forEach(v => { var p = v.split("|"); sel.innerHTML += `<option value="${p[0]}">${p[1]}</option>`; }); }
-    function openImportModal() { document.getElementById('modalImport').classList.remove('hidden'); }
-    function closeImportModal() { document.getElementById('modalImport').classList.add('hidden'); }
+    function openImportModal() { document.getElementById('modalImport').classList.remove('hidden-section'); }
+    function closeImportModal() { document.getElementById('modalImport').classList.add('hidden-section'); }
     function executeImport() { var acc = document.getElementById('importAccount').value, btn = document.getElementById('btnExecImport'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Syncing...'; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> Execute'; if(res.startsWith("SUCCESS")) { var p = res.split(":"); alert("Import Complete!\nNew: " + p[1] + "\nUpdated: " + p[2]); closeImportModal(); } else { alert(res); } }).importTikTokFromTemp(acc); }
-    function runSyncSales() { var act = document.getElementById('headerActions'); act.innerHTML = '<span class="badge badge-info"><i class="fas fa-circle-notch fa-spin"></i> SYNCING...</span>'; google.script.run.withSuccessHandler(res => { if(res.startsWith("SUCCESS")) { var p = res.split(":"); alert("SYNC COMPLETE!\nNew: " + p[1] + "\nUpdated: " + p[2]); loadSalesData(); } }).syncTikTokAutoWorkflow(); }
-    function submitSkuBaru() { var btn = document.getElementById('btnSubmitSku'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; var data = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value }; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Inject to Database"; if(res === "SUCCESS") { alert("SKU Added!"); document.getElementById('formSkuBaru').reset(); preloadDatalists(); } else { alert(res); } }).simpanSkuBaru(data); }
-
-    function openInvActionModal(sku, nama, stok, cogs) { document.getElementById('invActSku').value = sku; document.getElementById('invActCogs').value = cogs; document.getElementById('invActSkuLabel').innerText = sku; document.getElementById('invActNamaLabel').innerText = nama; document.getElementById('invActStokSistem').value = stok; document.getElementById('invActStokFisik').value = ""; document.getElementById('invActSelisih').value = "0"; document.getElementById('invActKetOpname').value = ""; document.getElementById('invActQtyBs').value = ""; document.getElementById('invActKetBs').value = ""; switchInvTab('OPNAME'); document.getElementById('modalInvAction').classList.remove('hidden'); }
-    function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden'); }
+    function runSyncSales() { var act = document.getElementById('headerActions'); act.innerHTML = '<span class="badge badge-info" style="background:rgba(0,0,0,0.4); border-color:rgba(0,240,255,0.3); padding:6px 12px;"><i class="fas fa-circle-notch fa-spin"></i> SYNCING...</span>'; google.script.run.withSuccessHandler(res => { if(res.startsWith("SUCCESS")) { var p = res.split(":"); alert("SYNC COMPLETE!\nNew: " + p[1] + "\nUpdated: " + p[2]); loadSalesData(); } }).syncTikTokAutoWorkflow(); }
+    
     function switchInvTab(tab) { if (tab === 'OPNAME') { document.getElementById('tabOpname').classList.remove('hidden-section'); document.getElementById('tabBs').classList.add('hidden-section'); document.getElementById('tabOpnameBtn').className = "btn btn-primary"; document.getElementById('tabBsBtn').className = "btn btn-outline"; } else { document.getElementById('tabBs').classList.remove('hidden-section'); document.getElementById('tabOpname').classList.add('hidden-section'); document.getElementById('tabBsBtn').className = "btn btn-primary"; document.getElementById('tabOpnameBtn').className = "btn btn-outline"; } }
-    function calcOpnameDiff() { var sys = parseInt(document.getElementById('invActStokSistem').value) || 0; var fis = parseInt(document.getElementById('invActStokFisik').value) || 0; var diff = fis - sys; var el = document.getElementById('invActSelisih'); el.value = diff > 0 ? "+" + diff : diff; el.style.color = diff > 0 ? "var(--ryux-green)" : (diff < 0 ? "var(--ryux-red)" : "white"); }
-    function submitOpname() { var btn = document.getElementById('btnSubmitOpname'); var sys = parseInt(document.getElementById('invActStokSistem').value) || 0; var fis = parseInt(document.getElementById('invActStokFisik').value); if(isNaN(fis)) return alert("Harap isi stok fisik!"); var payload = { sku: document.getElementById('invActSku').value, cogs: document.getElementById('invActCogs').value, tipeMutasi: "OPNAME", stokSistem: sys, stokFisik: fis, qtySelisih: fis - sys, keterangan: document.getElementById('invActKetOpname').value }; if(payload.qtySelisih === 0) return alert("Tidak ada selisih stok (As-Is = To-Be)."); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Proses Opname"; if(res === "SUCCESS") { alert("Data Opname berhasil disimpan!"); closeInvActionModal(); loadInventoryData(); } else { alert(res); } }).simpanPenyesuaianStok(payload); }
-    function submitMutasiBs() { var btn = document.getElementById('btnSubmitBs'); var qty = parseInt(document.getElementById('invActQtyBs').value); var arah = document.getElementById('invActArahBs').value; var sys = parseInt(document.getElementById('invActStokSistem').value) || 0; if(isNaN(qty) || qty <= 0) return alert("Qty barang rusak tidak valid!"); if(arah === "BAIK_KE_BS" && qty > sys) return alert("Stok baik tidak mencukupi untuk di-BS-kan!"); var payload = { sku: document.getElementById('invActSku').value, cogs: document.getElementById('invActCogs').value, tipeMutasi: arah, stokSistem: sys, stokFisik: arah === "BAIK_KE_BS" ? sys - qty : sys + qty, qtySelisih: qty, keterangan: document.getElementById('invActKetBs').value }; btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Mutasi Stok BS"; if(res === "SUCCESS") { alert("Barang berhasil dipindahkan!"); closeInvActionModal(); loadInventoryData(); } else { alert(res); } }).simpanPenyesuaianStok(payload); }
-
-    function openReturModal(rowIdx, noOrder) { var item = globalSalesData.find(s => s.rowIdx === rowIdx); if (!item) return; document.getElementById('returRowIdx').value = rowIdx; document.getElementById('returNoOrderLabel').innerText = noOrder; document.getElementById('returKondisi').value = "BAIK"; document.getElementById('returKeterangan').value = ""; var itemsHtml = ''; item.items.forEach(itm => { if(itm.sku && itm.sku !== '-' && itm.qty > 0) { itemsHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed rgba(255,255,255,0.08); font-size:11px;"><div style="color:white; font-weight:700;">${itm.sku}</div><div style="color:var(--ryux-cyan); font-weight:900;">+${itm.qty} Pcs</div></div>`; } }); document.getElementById('returItemsList').innerHTML = itemsHtml; document.getElementById('modalRetur').classList.remove('hidden'); }
-    function closeReturModal() { document.getElementById('modalRetur').classList.add('hidden'); }
-    function submitRetur() { var rowIdx = parseInt(document.getElementById('returRowIdx').value); var noOrder = document.getElementById('returNoOrderLabel').innerText; var item = globalSalesData.find(s => s.rowIdx === rowIdx); var payload = { rowIdx: rowIdx, noOrder: noOrder, kondisi: document.getElementById('returKondisi').value, keterangan: document.getElementById('returKeterangan').value, items: item.items }; var btn = document.getElementById('btnSubmitRetur'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Konfirmasi Retur"; if(res === "SUCCESS") { alert("Retur berhasil diproses! Stok telah dikembalikan."); closeReturModal(); loadSalesData(); } else { alert(res); } }).simpanTerimaRetur(payload); }
   </script>
 </body>
 </html>
