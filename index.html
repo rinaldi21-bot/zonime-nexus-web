@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <!-- NATIVE CSS ENGINE (NO TAILWIND CDN NEEDED - 100% STABLE) -->
+  <!-- NATIVE CSS ENGINE (100% STABLE) -->
   <style>
     :root {
       --ryux-cyan: #00F0FF;
@@ -20,7 +20,7 @@
       --ryux-purple: #B026FF;
       --ryux-red: #FF0055;
       
-      --glass-bg: rgba(18, 24, 38, 0.85); /* Warna Card Gelap Pekat (As Is) */
+      --glass-bg: rgba(18, 24, 38, 0.85);
       --glass-border: rgba(255, 255, 255, 0.08);
       --glass-hover-border: rgba(255, 255, 255, 0.2);
       --text-muted: #94a3b8;
@@ -57,13 +57,13 @@
       100% { background-position: 50% 100%; }
     }
 
-    /* CYBER DATA RAIN CANVAS LAYER (DI BELAKANG, TIDAK MENGGANGGU KLIK) */
+    /* CYBER DATA RAIN CANVAS LAYER */
     #cyberRainCanvas {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: 0;
-      pointer-events: none; /* PENTING: Mencegah canvas menghalangi klik menu */
+      pointer-events: none;
       opacity: 0.3;
       filter: blur(1px);
     }
@@ -132,7 +132,7 @@
     .stat-card:nth-child(4)::before { background: var(--ryux-purple); box-shadow: 0 0 15px #B026FF; }
     .stat-title { font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
     .stat-value { font-size: 24px; font-weight: 900; color: white; letter-spacing: -1px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
-    .stat-sub { font-size: 9px; font-weight: 800; color: var(--ryux-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+    .stat-sub { font-size: 9px; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
 
     .chart-container { padding: 24px; height: 320px; }
     .tiny-label { font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
@@ -246,10 +246,6 @@
 </head>
 <body>
 
-  <!-- ========================================== -->
-  <!-- CYBER DATA RAIN CANVAS (DIPERBAIKI)        -->
-  <!-- ========================================== -->
-  <!-- pointer-events-none DAN z-index 0 memastikan Hujan Data tidak akan menghalangi menu klik Anda -->
   <canvas id="cyberRainCanvas"></canvas>
 
   <!-- SIDEBAR (PC) -->
@@ -260,7 +256,7 @@
     </div>
     <div style="flex:1; overflow-y:auto; padding-bottom:24px; margin-top:8px;">
       <div class="nav-group">Workspace</div>
-      <div class="nav-item active" onclick="showPage('pageDashboard', this)"><i class="fas fa-layer-group text-ryux-cyan"></i> Control Center</div>
+      <div class="nav-item active" onclick="showPage('pageDashboard', this)"><i class="fas fa-layer-group" style="color:var(--ryux-cyan);"></i> Control Center</div>
       
       <div class="nav-group">Database</div>
       <div class="nav-item" onclick="showPage('pageSalesLog', this)"><i class="fas fa-satellite-dish"></i> Live Sales</div>
@@ -639,9 +635,6 @@
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- JAVASCRIPT ASLI & CYBER DATA RAIN CANVAS ANIMATION                    -->
-  <!-- ===================================================================== -->
   <script>
     // -----------------------------------------------------------------
     // CYBER DATA RAIN ANIMATION (Sparse, Blurry, Fading)
@@ -652,28 +645,23 @@
     function resizeRainCanvas() { rainCanvas.width = window.innerWidth; rainCanvas.height = window.innerHeight; }
     resizeRainCanvas(); window.addEventListener('resize', resizeRainCanvas);
     
-    // Sangat sedikit/sparse (lebar dibagi 60)
     const rainColumns = Math.floor(window.innerWidth / 60); 
     const rainDrops = [];
     const rainSpeeds = [];
     
     for(let i = 0; i < rainColumns; i++) {
       rainDrops[i] = Math.random() * -100;
-      rainSpeeds[i] = Math.random() * 0.8 + 0.2; // Sangat pelan
+      rainSpeeds[i] = Math.random() * 0.8 + 0.2; 
     }
     
     function drawCyberRain() {
-      // Background canvas untuk membuat ekor hujan memudar ke atas
       rainCtx.fillStyle = 'rgba(5, 7, 10, 0.15)'; 
       rainCtx.fillRect(0, 0, rainCanvas.width, rainCanvas.height);
       
       for(let i = 0; i < rainDrops.length; i++) {
-        // Warna neon cyan dan ungu
         rainCtx.fillStyle = i % 2 === 0 ? '#00f2fe' : '#8b5cf6';
-        // Gambar titik hujan (seperti garis vertikal pendek)
         rainCtx.fillRect(i * 60, rainDrops[i] * 20, 1.5, 12);
         
-        // Reset titik ke atas layar jika sudah lewat batas bawah
         if(rainDrops[i] * 20 > rainCanvas.height && Math.random() > 0.98) {
           rainDrops[i] = 0;
           rainSpeeds[i] = Math.random() * 0.8 + 0.2;
@@ -686,7 +674,6 @@
 
     // -----------------------------------------------------------------
     // JAVASCRIPT LOGIC CORE ZONIME NEXUS (100% UTUH)
-    // Termasuk fungsi Auto-Fix SKU
     // -----------------------------------------------------------------
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
 
@@ -728,7 +715,6 @@
     setInterval(updateClock, 1000); updateClock();
 
     document.addEventListener("DOMContentLoaded", function() { document.getElementById('grnTgl').valueAsDate = new Date(); loadDashboard(); preloadDatalists(); addGrnRow(); loadDashboardNotes(); 
-      // Tampilkan header tabel GRN di desktop jika viewport lebar
       if(window.innerWidth >= 768) document.getElementById('grnHeaderDesktop').style.display = 'block';
     });
 
@@ -860,7 +846,7 @@
       rawSalesOmsetVal = formatRp(sOmset); rawSalesProfitVal = formatRp(sProfit); document.getElementById('sumOrder').innerText = sOrder.toLocaleString('id-ID'); document.getElementById('sumQty').innerText = sQty.toLocaleString('id-ID') + " Pcs"; container.innerHTML = html; applySalesPrivacy();
     }
 
-    // FUNGSI BARU UNTUK TRIGGER AUTO-FIX SKU
+    // TRIGGER AUTO-FIX SKU
     function runAutoFillSKU() { 
       var act = document.getElementById('headerActions'); 
       act.innerHTML = '<span class="badge badge-info" style="background:rgba(0,0,0,0.4); border-color:rgba(176,38,255,0.3); padding:6px 12px; color:var(--ryux-purple);"><i class="fas fa-circle-notch fa-spin"></i> FIXING SKU...</span>'; 
