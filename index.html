@@ -465,20 +465,28 @@
       <!-- 3. LIVE SALES                                                  -->
       <!-- ============================================================== -->
       <div id="pageSalesLog" class="page-section hidden-section">
-        <div class="filter-bar glass-card">
-          <select class="glass-input filter-select" id="filterMonthSales" onchange="renderSalesTable()"><option value="ALL">Semua Bulan</option></select>
+        <div class="filter-bar glass-card" style="flex-wrap: wrap;">
+          <!-- FILTER TANGGAL BARU -->
+          <select class="glass-input filter-select" id="filterDateRangeSales" onchange="toggleCustomDateSales(); renderSalesTable();">
+            <option value="ALL">Semua Waktu</option>
+            <option value="TODAY">Hari Ini</option>
+            <option value="YESTERDAY">Kemarin</option>
+            <option value="THIS_WEEK">Pekan Ini</option>
+            <option value="THIS_MONTH">Bulan Ini</option>
+            <option value="CUSTOM">Rentang Tanggal...</option>
+          </select>
+          
+          <!-- INPUT RENTANG TANGGAL (Sembunyi by default) -->
+          <div id="customDateSalesContainer" style="display:none; gap:8px; align-items:center; flex:2; min-width:250px;">
+            <input type="date" id="salesStartDate" class="glass-input" onchange="renderSalesTable()">
+            <span style="color:var(--ryux-muted); font-weight:900;">-</span>
+            <input type="date" id="salesEndDate" class="glass-input" onchange="renderSalesTable()">
+          </div>
+
           <select class="glass-input filter-select" id="filterStatusSales" onchange="renderSalesTable()"><option value="ALL">Semua Status</option><option value="Selesai">Selesai</option><option value="Menunggu Pengambilan">Menunggu Pengambilan</option><option value="Sedang Transit">Sedang Transit</option><option value="Batal">Batal</option><option value="Return">Return</option><option value="Refund & Return">Refund & Return</option></select>
           <select class="glass-input filter-select" id="filterKelengkapanSales" onchange="renderSalesTable()"><option value="ALL">Semua Data</option><option value="AMAN">Data Valid</option><option value="ERROR">Butuh Koreksi</option></select>
           <input type="text" class="glass-input filter-input" id="searchSales" placeholder="Cari Order / LC / Produk..." onkeyup="renderSalesTable()">
         </div>
-        <div class="summary-box glass-card">
-          <div class="summary-item"><div class="summary-label">TOTAL OMSET</div><div class="summary-val" style="color:var(--ryux-cyan); text-shadow:0 0 15px rgba(0,240,255,0.4);" id="sumOmset">Rp 0</div></div>
-          <div class="summary-item"><div class="summary-label">NET PROFIT</div><div class="summary-val" style="color:var(--ryux-green); text-shadow:0 0 15px rgba(0,255,102,0.4);" id="sumProfit">Rp 0</div></div>
-          <div class="summary-item right"><div class="summary-label">TOTAL PESANAN</div><div class="summary-val" id="sumOrder">0</div></div>
-          <div class="summary-item right"><div class="summary-label">ITEM TERJUAL</div><div class="summary-val" id="sumQty">0 Pcs</div></div>
-        </div>
-        <div id="salesContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Data...</div></div>
-      </div>
 
       <!-- ============================================================== -->
       <!-- 4. SMART INVENTORY                                             -->
@@ -983,20 +991,65 @@
     
     var bSuccess = "badge badge-success"; var bWarning = "badge badge-warning"; var bDanger = "badge badge-danger"; var bInfo = "badge badge-info"; var bPurple = "badge badge-purple";
 
+    function toggleCustomDateSales() {
+      var val = document.getElementById('filterDateRangeSales').value;
+      var container = document.getElementById('customDateSalesContainer');
+      if (val === 'CUSTOM') {
+        container.style.display = 'flex';
+      } else {
+        container.style.display = 'none';
+        document.getElementById('salesStartDate').value = '';
+        document.getElementById('salesEndDate').value = '';
+      }
+    }
+
     function renderSalesTable() {
-      var selMonth = document.getElementById('filterMonthSales').value; 
+      var selDateStr = document.getElementById('filterDateRangeSales').value; 
+      var selStart = document.getElementById('salesStartDate').value;
+      var selEnd = document.getElementById('salesEndDate').value;
       var selStatus = document.getElementById('filterStatusSales').value; 
       var selKelengkapan = document.getElementById('filterKelengkapanSales').value; 
       var searchQ = document.getElementById('searchSales').value.toLowerCase(); 
       var container = document.getElementById('salesContainer');
       
+      // Setup Date Bounds
+      var now = new Date();
+      now.setHours(0,0,0,0);
+      var targetStart = null, targetEnd = null;
+
+      if (selDateStr === 'TODAY') {
+        targetStart = new Date(now); targetEnd = new Date(now);
+      } else if (selDateStr === 'YESTERDAY') {
+        targetStart = new Date(now); targetStart.setDate(now.getDate() - 1);
+        targetEnd = new Date(targetStart);
+      } else if (selDateStr === 'THIS_WEEK') {
+        var day = now.getDay() || 7; // Jadikan Senin sebagai awal pekan
+        targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1);
+        targetEnd = new Date(now);
+      } else if (selDateStr === 'THIS_MONTH') {
+        targetStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        targetEnd = new Date(now);
+      } else if (selDateStr === 'CUSTOM' && selStart && selEnd) {
+        targetStart = new Date(selStart); targetStart.setHours(0,0,0,0);
+        targetEnd = new Date(selEnd); targetEnd.setHours(0,0,0,0);
+      }
+      
       var filtered = globalSalesData.filter(item => { 
-        var mMatch = (selMonth === 'ALL' || item.valBulan === selMonth); 
+        var itemDate = new Date(item.tanggal);
+        itemDate.setHours(0,0,0,0);
+        
+        var dateMatch = true;
+        if (selDateStr !== 'ALL' && targetStart && targetEnd) {
+          dateMatch = (itemDate.getTime() >= targetStart.getTime() && itemDate.getTime() <= targetEnd.getTime());
+        } else if (selDateStr === 'CUSTOM' && (!selStart || !selEnd)) {
+          dateMatch = true; // Jika custom tapi belum diisi, tampilkan semua sementara
+        }
+
         var sMatch = (selStatus === 'ALL' || (item.status && item.status.trim().toLowerCase() === selStatus.trim().toLowerCase())); 
         var isError = item.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
         var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isError) || (selKelengkapan === 'ERROR' && isError); 
         var textMatch = !searchQ || item.noOrder.toLowerCase().includes(searchQ) || item.mpProductName.toLowerCase().includes(searchQ) || item.listingCode.toLowerCase().includes(searchQ) || item.items.some(k => k.sku.toLowerCase().includes(searchQ) || k.nama.toLowerCase().includes(searchQ)); 
-        return mMatch && sMatch && kMatch && textMatch; 
+        return dateMatch && sMatch && kMatch && textMatch; 
       });
       
       var sOmset = 0, sProfit = 0, sOrder = filtered.length, sQty = 0; var html = '';
@@ -1035,7 +1088,6 @@
       }
       rawSalesOmsetVal = formatRp(sOmset); rawSalesProfitVal = formatRp(sProfit); document.getElementById('sumOrder').innerText = sOrder.toLocaleString('id-ID'); document.getElementById('sumQty').innerText = sQty.toLocaleString('id-ID') + " Pcs"; container.innerHTML = html; applySalesPrivacy();
     }
-
     // AUTO-FIX SKU BUTTON RUNNER
     function runAutoFillSKU() { 
       var act = document.getElementById('headerActions'); 
