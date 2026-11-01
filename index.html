@@ -38,7 +38,6 @@
     
     @keyframes pulse-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    /* MENCEGAH CANVAS MENGHALANGI KLIK TOMBOL */
     #cyberRainCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.3; filter: blur(1px); }
 
     .glass-card, .mini-widget, .filter-bar, .summary-box {
@@ -85,7 +84,6 @@
     .btn-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3); }
     .btn-outline { background: rgba(255, 255, 255, 0.05); border-color: var(--glass-border); color: #cbd5e1; }
     .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; justify-content: center; }
-    
     .btn-gradient { background: linear-gradient(to right, var(--ryux-cyan), var(--ryux-purple)); color: white; border: none; font-size: 11px; letter-spacing: 2px; box-shadow: 0 0 20px rgba(176, 38, 255, 0.4); transition: 0.3s; }
 
     /* DASHBOARD CARDS */
@@ -105,19 +103,16 @@
 
     .summary-box { padding: 24px; margin-bottom: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; background: linear-gradient(to right, rgba(255,255,255,0.02), rgba(0,0,0,0.2)); }
     
-    /* TABLE */
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
     th { background: rgba(0, 0, 0, 0.4); padding: 16px; font-weight: 900; color: var(--ryux-muted); text-transform: uppercase; font-size: 9px; text-align: left; }
     td { padding: 16px; border-bottom: 1px solid var(--glass-border); font-weight: 500; }
 
-    /* MODALS - Fixed Z-Index */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 16px; }
     .hidden-section { display: none !important; }
     .modal-card { width: 100%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #0b0f19; border: 1px solid var(--ryux-cyan); }
     .modal-header { padding: 20px 24px; background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-weight: 900; }
     .modal-body { padding: 24px; overflow-y: auto; }
 
-    /* BADGES */
     .badge-info { background: rgba(0, 240, 255, 0.1); color: var(--ryux-cyan); border: 1px solid rgba(0, 240, 255, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
     .badge-success { background: rgba(0, 255, 102, 0.1); color: var(--ryux-green); border: 1px solid rgba(0, 255, 102, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
     .badge-warning { background: rgba(255, 215, 0, 0.1); color: var(--ryux-yellow); border: 1px solid rgba(255, 215, 0, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
@@ -126,7 +121,6 @@
 
     .loading-spinner { text-align: center; padding: 40px; color: var(--ryux-cyan); font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;}
     
-    /* DROPDOWN & TODO */
     .todo-list { list-style: none; padding: 0; margin: 0; }
     .todo-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px dashed var(--glass-border); font-size: 12px; color: white; }
     .todo-item.completed span { text-decoration: line-through; color: var(--ryux-muted); }
@@ -174,23 +168,16 @@
     
     <div class="content-scroll" id="mainScroll">
       
-      <!-- 1. DASHBOARD -->
+      <!-- 1. DASHBOARD UTAMA -->
       <div id="pageDashboard" class="page-section">
-        
-        <!-- Wadah 4 Kartu Metrik Utama -->
         <div class="dashboard-cards" id="dashCards">
-          <div class="loading-spinner" style="grid-column: span 4;">
-             <i class="fas fa-circle-notch fa-spin"></i> Initializing OS...
-          </div>
+          <div class="loading-spinner" style="grid-column: span 4;"><i class="fas fa-circle-notch fa-spin"></i> Initializing OS...</div>
         </div>
-
         <div style="display:grid; grid-template-columns:1fr; gap:24px;">
-            
             <div class="glass-card" style="padding:24px; height:320px;">
                 <div class="tiny-label">REVENUE MATRIX</div>
                 <div style="height:90%;"><canvas id="trendChart"></canvas></div>
             </div>
-            
             <div class="glass-card">
                 <div class="dg-header" style="color:var(--ryux-cyan);">TASK PROTOCOL</div>
                 <div style="padding:24px;">
@@ -201,21 +188,21 @@
                     <ul class="todo-list" id="todoListUI"></ul>
                 </div>
             </div>
-
         </div>
       </div>
+
       <!-- 2. FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section">
          <div style="display:flex; flex-wrap:wrap; gap:24px;">
             <div style="flex: 1; min-width: 300px; display:flex; flex-direction:column; gap:24px;">
-                <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.2); height:100%; justify-content:space-between; padding:32px;">
+                <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.3); height:100%; justify-content:space-between; padding:32px;">
                     <span class="tiny-label">Family Balance</span>
                     <div class="stat-value" id="finFamilyBal" style="font-size:36px; font-weight:300;">$85,300.00</div>
                     <div style="font-size:10px; color:var(--ryux-green); margin-top:8px; font-weight:800; letter-spacing:1px;">★ SHARE ACTIVE</div>
                 </div>
-                <div class="glass-card stat-card" style="border-color:rgba(176, 38, 255, 0.2); height:100%; justify-content:space-between; padding:32px;">
+                <div class="glass-card stat-card" style="border-color:rgba(176, 38, 255, 0.3); height:100%; justify-content:space-between; padding:32px;">
                     <span class="tiny-label">Total Business Balances</span>
-                    <div class="stat-value" id="finBizBal" style="color:white; font-size:36px; font-weight:300;">Rp 169.552.500</div>
+                    <div class="stat-value" style="color:white; font-size:36px; font-weight:300;" id="finBizBal">Rp 169.552.500</div>
                     <button class="btn btn-outline" style="margin-top:16px; width:fit-content;">Request Data</button>
                 </div>
             </div>
@@ -249,7 +236,7 @@
                         </div>
                         <div style="flex:1; min-width:200px; display:flex; flex-direction:column;">
                             <label class="tiny-label">Catatan (Smart Categorization)</label>
-                            <textarea id="finDeskripsi" class="glass-input" style="height:100%; min-height:120px; resize:none;" placeholder="Ketik deskripsi (Misal: 'Bayar PLN'). Sistem akan otomatis mencari kategori..." required></textarea>
+                            <textarea id="finDeskripsi" class="glass-input" style="height:100%; min-height:120px; resize:none;" placeholder="Ketik deskripsi (Misal: 'Bayar PLN'). Sistem otomatis mencari kategori..." required></textarea>
                         </div>
                     </form>
                 </div>
@@ -265,12 +252,7 @@
       <div id="pageSalesLog" class="page-section hidden-section">
         <div class="filter-bar glass-card">
           <select class="glass-input filter-select" id="filterDateRangeSales" onchange="toggleCustomDateSales(); renderSalesTable();">
-            <option value="ALL">Semua Waktu</option>
-            <option value="TODAY">Hari Ini</option>
-            <option value="YESTERDAY">Kemarin</option>
-            <option value="THIS_WEEK">Pekan Ini</option>
-            <option value="THIS_MONTH">Bulan Ini</option>
-            <option value="CUSTOM">Rentang Tanggal...</option>
+            <option value="ALL">Semua Waktu</option><option value="TODAY">Hari Ini</option><option value="YESTERDAY">Kemarin</option><option value="THIS_WEEK">Pekan Ini</option><option value="THIS_MONTH">Bulan Ini</option><option value="CUSTOM">Rentang Tanggal...</option>
           </select>
           
           <div id="customDateSalesContainer" style="display:none; gap:8px; align-items:center; flex:2;">
@@ -365,11 +347,10 @@
     </div>
   </div>
 
-  <!-- DATALISTS -->
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
   <!-- ============================================================== -->
-  <!-- MODALS (Z-INDEX 9999)                                          -->
+  <!-- MODALS -->
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section">
@@ -503,11 +484,9 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT API & LOGIC -->
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
     
-    // Polyfill untuk memanggil API
     if (typeof google === 'undefined') {
         window.google = { script: { run: (function() { 
           function createRunner(onSuccess, onError) { 
@@ -557,30 +536,19 @@
       
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       if(navEl) navEl.classList.add('active');
-      document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
-      if(navEl && navEl.classList.contains('bottom-nav-item')) navEl.classList.add('active');
 
       document.getElementById('headerActions').innerHTML = '';
-      if(pageId === 'pageDashboard') { setTimeout(() => initCharts(), 100); }
+      if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
       else if(pageId === 'pageFinance') { setTimeout(() => initFinanceChart(), 100); }
       else if(pageId === 'pageSalesLog') { 
         loadSalesData();
-        document.getElementById('headerActions').innerHTML = `
-          <button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button>
-          <button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button>
-          <button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>
-        `;
+        document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`;
       }
       else if(pageId === 'pageInventory') { loadInventoryData(); }
-      else if(pageId === 'pageProcurement') { 
-        loadProcurementData(); 
-        document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()">+ GRN</button>`;
-      }
+      else if(pageId === 'pageProcurement') { loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()">+ GRN</button>`; }
     }
 
     // CHARTS
-    let dashChartTrend = null; let dashChartDoughnut = null; let finChart = null;
-    // CHARTS (Hanya Trend Chart, tanpa Doughnut)
     let dashChartTrend = null; let finChart = null;
     function initCharts() {
       const trendEl = document.getElementById('trendChart');
@@ -604,6 +572,7 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { y: { display: false }, x: { grid: { display: false } } } } 
       });
     }
+
     function initFinanceChart() {
       const ctx = document.getElementById('financeChart');
       if(!ctx) return;
@@ -651,33 +620,19 @@
     }
     function onProductSelect(val) { var match = masterProductFullList.find(d => d.nama.toLowerCase() === val.toLowerCase() || d.nama.toLowerCase().includes(val.toLowerCase())); if(match) { document.getElementById('newSku').value = match.sku || ''; document.getElementById('newType').value = match.tipe !== '-' ? match.tipe : ''; document.getElementById('newCat').value = match.kategori !== '-' ? match.kategori : ''; document.getElementById('newVar').value = match.varian !== '-' ? match.varian : ''; document.getElementById('newLc').value = match.listingCode !== '-' ? match.listingCode : ''; document.getElementById('newCogs').value = match.cogs || 0; } }
 
-    // FETCH DATA DASHBOARD
+    // FETCH & RENDER DATA
     function loadDashboard() {
       google.script.run.withSuccessHandler(data => {
         document.getElementById('dashCards').innerHTML = `
-          <div class="stat-card glass-card" style="border-color:rgba(0,240,255,0.2);">
-             <div class="stat-title">Omset</div>
-             <div class="stat-value text-ryux-cyan">${data.omset}</div>
-          </div>
-          <div class="stat-card glass-card" style="border-color:rgba(0,255,102,0.2);">
-             <div class="stat-title">Profit</div>
-             <div class="stat-value text-ryux-green">${data.profit}</div>
-          </div>
-          <div class="stat-card glass-card" style="border-color:rgba(255,215,0,0.2);">
-             <div class="stat-title">Terjual</div>
-             <div class="stat-value text-ryux-yellow">${data.terjual}</div>
-          </div>
-          <div class="stat-card glass-card" style="border-color:rgba(176,38,255,0.2);">
-             <div class="stat-title">Stok Aktif</div>
-             <div class="stat-value text-ryux-purple">${data.stokQty}</div>
-             <div style="font-size:10px; color:var(--ryux-muted); margin-top:8px;">Aset: ${data.stokNilai}</div>
-          </div>
+          <div class="stat-card glass-card" style="border-color:rgba(0,240,255,0.2);"><div class="stat-title">Omset</div><div class="stat-value text-ryux-cyan">${data.omset}</div></div>
+          <div class="stat-card glass-card" style="border-color:rgba(0,255,102,0.2);"><div class="stat-title">Profit</div><div class="stat-value text-ryux-green">${data.profit}</div></div>
+          <div class="stat-card glass-card" style="border-color:rgba(255,215,0,0.2);"><div class="stat-title">Terjual</div><div class="stat-value text-ryux-yellow">${data.terjual}</div></div>
+          <div class="stat-card glass-card" style="border-color:rgba(176,38,255,0.2);"><div class="stat-title">Stok Aktif</div><div class="stat-value text-ryux-purple">${data.stokQty}</div><div style="font-size:10px; color:var(--ryux-muted); margin-top:8px;">Aset: ${data.stokNilai}</div></div>
         `;
       }).getDashboardData();
     }
     
-    function loadDashboardNotes() { google.script.run.withSuccessHandler(data => { document.getElementById('pengumumanText').value = data.pengumuman; todoItems = data.todoList || []; renderTodoList(); }).getDashboardNotes(); }
-    function saveNote() { var btn = document.getElementById('btnSavePin'); btn.innerHTML = "Saving..."; google.script.run.withSuccessHandler(res => { btn.innerHTML = "Save"; }).saveDashboardNote('pengumuman', document.getElementById('pengumumanText').value); }
+    function loadDashboardNotes() { google.script.run.withSuccessHandler(data => { todoItems = data.todoList || []; renderTodoList(); }).getDashboardNotes(); }
     function renderTodoList() { var listUI = document.getElementById('todoListUI'); if (!todoItems || todoItems.length === 0) { listUI.innerHTML = '<li style="text-align:center; opacity:0.5;">Kosong</li>'; return; } var html = ''; todoItems.forEach((item, index) => { var checked = item.done ? 'checked' : ''; var compClass = item.done ? 'completed' : ''; html += `<li class="todo-item ${compClass}"><input type="checkbox" class="todo-checkbox" ${checked} onchange="toggleTodo(${index})"><span style="flex:1;">${item.text}</span><button class="btn-icon" style="background:transparent; border:none; color:var(--ryux-muted);" onclick="deleteTodo(${index})"><i class="fas fa-times"></i></button></li>`; }); listUI.innerHTML = html; }
     function addTodo() { var input = document.getElementById('todoInput'); if (!input.value.trim()) return; todoItems.push({ text: input.value.trim(), done: false }); input.value = ''; renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
     function toggleTodo(index) { todoItems[index].done = !todoItems[index].done; renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
@@ -889,31 +844,14 @@
       google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p);
     }
     
-    // FORM SUBMIT FINANCE (Double Entry & Regex)
     function submitFinanceData() {
       var btn = document.getElementById('btnSubmitFinance');
-      var nominal = document.getElementById('finNominal').value;
-      var kategori = document.getElementById('finKategori').value;
-      var deskripsi = document.getElementById('finDeskripsi').value;
-
-      var payload = { nominal: nominal, kategori: kategori, deskripsi: deskripsi };
-
+      var p = { nominal: document.getElementById('finNominal').value, kategori: document.getElementById('finKategori').value, deskripsi: document.getElementById('finDeskripsi').value };
       btn.disabled = true; btn.innerText = "MENYIMPAN...";
-      google.script.run.withSuccessHandler(res => {
-        btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER";
-        if(res === "SUCCESS") {
-          alert("Transaksi berhasil dicatat & dikategorikan secara otomatis!");
-          document.getElementById('formFinance').reset();
-        } else {
-          alert(res);
-        }
-      }).withFailureHandler(err => {
-        btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER";
-        alert("Koneksi gagal: " + err);
-      }).simpanTransaksiFinance(payload);
+      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; if(res === "SUCCESS") { alert("Transaksi otomatis dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; alert("Gagal: " + err); }).simpanTransaksiFinance(p);
     }
 
-    window.onload = function() { showPage('pageDashboard', document.querySelector('.nav-item')); };
+    window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
   </script>
 </body>
 </html>
