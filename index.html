@@ -85,7 +85,6 @@
     .btn-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3); }
     .btn-outline { background: rgba(255, 255, 255, 0.05); border-color: var(--glass-border); color: #cbd5e1; }
     .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; justify-content: center; }
-    .btn-gradient { background: linear-gradient(to right, var(--ryux-cyan), var(--ryux-purple)); color: white; border: none; font-size: 11px; letter-spacing: 2px; box-shadow: 0 0 20px rgba(176, 38, 255, 0.4); transition: 0.3s; }
 
     /* DASHBOARD CARDS */
     .dashboard-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -195,7 +194,7 @@
       <!-- 2. FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section">
          
-         <!-- WIDGET BENTO MULTI-WALLET -->
+         <!-- WIDGET BENTO MULTI-WALLET (Diletakkan di bagian atas halaman Finance) -->
          <div id="fm_wallet_bento" class="w-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 shadow-2xl mb-6">
              <div class="flex justify-between items-center mb-6">
                  <div>
@@ -215,9 +214,8 @@
              </div>
          </div>
 
-         <!-- AREA BAWAH FINANCE -->
+         <!-- FINANCE CONTENT CARDS -->
          <div style="display:flex; flex-wrap:wrap; gap:24px;">
-            <!-- KOLOM KIRI (Family & Biz Balance) -->
             <div style="flex: 1; min-width: 300px; display:flex; flex-direction:column; gap:24px;">
                 <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.3); height:100%; justify-content:space-between; padding:32px;">
                     <span class="tiny-label">Family Balance</span>
@@ -231,7 +229,6 @@
                 </div>
             </div>
             
-            <!-- KOLOM KANAN (Buku Kas & Cash Flow) -->
             <div style="flex: 2; min-width: 500px; display:flex; flex-direction:column; gap:24px;">
                 
                 <!-- AREA RIWAYAT TRANSAKSI (Buku Kas) -->
@@ -557,7 +554,6 @@
         </div>
         <div class="modal-body">
             <form id="fm_transaksi_form" onsubmit="fm_submitTransaksi(event)">
-                <!-- Jenis Transaksi -->
                 <div class="flex gap-4 mb-5">
                     <label class="flex-1 cursor-pointer">
                         <input type="radio" name="fm_tx_type" value="IN" class="peer sr-only" required>
@@ -572,7 +568,7 @@
                 <div style="display:flex; gap:16px; margin-bottom:16px;">
                     <div class="form-group" style="flex:1;">
                         <label class="tiny-label">Nominal (Rp)</label>
-                        <input type="number" id="fm_tx_amount" required value="0" min="1" step="any" class="glass-input text-lg font-bold text-white">
+                        <input type="number" id="fm_tx_amount" required value="0" min="1" class="glass-input text-lg font-bold text-white">
                     </div>
                     <div class="form-group" style="flex:1;">
                         <label class="tiny-label">Tanggal</label>
@@ -584,7 +580,6 @@
                     <label class="tiny-label">Pilih Dompet (Sumber/Tujuan)</label>
                     <select id="fm_tx_wallet" required class="glass-input">
                         <option value="">-- Pilih Akun Dompet --</option>
-                        <!-- Akan diisi otomatis oleh JS berdasarkan dompet yang ada -->
                     </select>
                 </div>
 
@@ -617,7 +612,6 @@
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
     }
 
-    // --- LOGIKA WALLET ---
     function fm_openWalletModal(action = 'add', walletId = null) {
         const modal = document.getElementById('fm_wallet_modal');
         const form = document.getElementById('fm_wallet_form');
@@ -692,7 +686,6 @@
         let htmlContent = '';
         
         globalWallets.forEach(wallet => {
-            // Kalkulasi Total Saldo
             if (wallet.category === 'Bisnis') {
                 totalSaldoBisnis += wallet.balance;
             } else if (wallet.category === 'Keluarga') {
@@ -783,7 +776,7 @@
         }
     }
 
-    // --- LOGIKA TRANSAKSI ---
+    // TRANSAKSI LOGIC
     function fm_openTransaksiModal() {
         const modal = document.getElementById('fm_transaksi_modal');
         const walletSelect = document.getElementById('fm_tx_wallet');
@@ -805,25 +798,20 @@
         const modal = document.getElementById('fm_transaksi_modal');
         modal.classList.add('hidden-section');
         modal.style.display = 'none';
-        document.getElementById('fm_transaksi_form').reset();
     }
 
     function fm_submitTransaksi(event) {
         event.preventDefault();
         const btn = document.getElementById('fm_btn_submit_tx');
         
-        const typeEl = document.querySelector('input[name="fm_tx_type"]:checked');
-        if(!typeEl) return alert("Pilih jenis transaksi!");
-        
-        const type = typeEl.value;
+        const type = document.querySelector('input[name="fm_tx_type"]:checked').value;
         const walletId = document.getElementById('fm_tx_wallet').value;
-        const amount = parseFloat(document.getElementById('fm_tx_amount').value);
         const walletObj = globalWallets.find(w => w.id === walletId);
 
         const newTx = {
             id: 'tx_' + Date.now(),
             type: type,
-            amount: amount,
+            amount: parseFloat(document.getElementById('fm_tx_amount').value),
             date: document.getElementById('fm_tx_date').value,
             walletId: walletId,
             walletName: walletObj ? walletObj.name : 'Unknown',
@@ -835,15 +823,7 @@
 
         setTimeout(() => {
             globalTransactions.unshift(newTx); 
-            
-            // Logika potong saldo dompet di Frontend
-            if (walletObj) {
-                if(type === 'IN') walletObj.balance += amount;
-                else if (type === 'OUT') walletObj.balance -= amount;
-            }
-
             fm_renderTransactions(); 
-            fm_renderWallets(); // Refresh saldo wallet di UI
             fm_closeTransaksiModal();
             btn.innerText = "Simpan Transaksi";
             btn.disabled = false;
@@ -888,7 +868,7 @@
         container.innerHTML = html;
     }
     
-    // POLYFILL & MOCK DATA LAMA
+    // POLYFILL & MOCK DATA
     if (typeof google === 'undefined') {
         window.google = { script: { run: (function() { 
           function createRunner(onSuccess, onError) { 
@@ -944,6 +924,7 @@
     }
 
     var globalSalesData = []; var globalInvData = []; var globalProcData = []; var masterProductFullList = []; var todoItems = [];
+    function formatRp(num) { return "Rp " + parseFloat(num).toLocaleString('id-ID'); }
 
     // ROUTING
     function showPage(pageId, navEl) {
@@ -955,11 +936,7 @@
 
       document.getElementById('headerActions').innerHTML = '';
       if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
-      else if(pageId === 'pageFinance') { 
-          fm_loadWallets(); 
-          fm_renderTransactions(); // Pastikan dipanggil
-          setTimeout(() => initFinanceChart(), 100); 
-      }
+      else if(pageId === 'pageFinance') { fm_loadWallets(); fm_renderTransactions(); setTimeout(() => initFinanceChart(), 100); }
       else if(pageId === 'pageSalesLog') { 
         loadSalesData();
         document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`;
@@ -1250,4 +1227,28 @@
     function openGrnModal() { document.getElementById('modalGrn').classList.remove('hidden-section'); document.getElementById('modalGrn').style.display='flex'; }
     function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); document.getElementById('modalGrn').style.display='none'; }
     function addGrnRow() { document.getElementById('grnItemsContainer').innerHTML += `<div class="grn-item-row" style="display:flex; gap:12px; margin-bottom:12px;"><input type="text" class="glass-input grn-sku" data-custom-list="skuSuggestions" placeholder="SKU"><input type="number" class="glass-input grn-qty" placeholder="Qty" style="width:80px;" value="1" oninput="calcGrn()"><input type="number" class="glass-input grn-hrg" placeholder="Harga" oninput="calcGrn()"></div>`; }
-    function calcGrn() { var sub = 0; document.querySelectorAll('.grn-item-row').forEach(r => { sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); }); var v = parseFloat(document.getElementById('grnVoc').value)||0; var f = parseFloat(document.getElementById('grnFee').value)||0; var o = parseFloat(document.getElementById('grnOng').value)||0; document.getElementById('grnSubtotalLabel
+    function calcGrn() { var sub = 0; document.querySelectorAll('.grn-item-row').forEach(r => { sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); }); var v = parseFloat(document.getElementById('grnVoc').value)||0; var f = parseFloat(document.getElementById('grnFee').value)||0; var o = parseFloat(document.getElementById('grnOng').value)||0; document.getElementById('grnSubtotalLabel').innerText = formatRp(sub); document.getElementById('grnTotalBersihLabel').innerText = formatRp(sub - v + f + o); }
+    function submitGrnData() {
+      var nota = { noOrder: document.getElementById('grnNota').value, tglOrder: document.getElementById('grnTgl').value, marketplace: document.getElementById('grnMp').value, supplier: document.getElementById('grnSupp').value, voucher: document.getElementById('grnVoc').value, ongkir: document.getElementById('grnOng').value, fee: document.getElementById('grnFee').value };
+      var items = []; document.querySelectorAll('.grn-item-row').forEach(row => { var s = row.querySelector('.grn-sku').value; if(s) items.push({ skuLengkap: s, qty: row.querySelector('.grn-qty').value, harga: row.querySelector('.grn-hrg').value }); });
+      if(items.length===0) return alert("Pilih item!");
+      document.getElementById('btnSubmitGrn').innerText = "Processing...";
+      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('btnSubmitGrn').innerText="Simpan GRN"; closeGrnModal(); loadProcurementData(); }).simpanDataGRNBaru(nota, items);
+    }
+    
+    function submitSkuBaru() {
+      var p = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value };
+      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p);
+    }
+
+    // Initialize the app on load
+    window.onload = function() { 
+        loadDashboardNotes(); 
+        preloadDatalists(); 
+        showPage('pageDashboard', document.querySelector('.nav-item')); 
+        fm_loadWallets(); 
+        fm_renderTransactions();
+    };
+  </script>
+</body>
+</html>
