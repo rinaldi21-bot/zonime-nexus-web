@@ -626,14 +626,28 @@
         if(!container) return;
         container.innerHTML = ''; 
 
+        // Variabel untuk menghitung total saldo otomatis
+        let totalSaldoBisnis = 0;
+        let totalSaldoKeluarga = 0;
+
         if (globalWallets.length === 0) {
             container.innerHTML = '<div class="w-full text-center py-4 text-gray-500 text-sm italic">Belum ada pos keuangan. Silakan tambahkan.</div>';
+            // Update tampilan total jadi 0 jika kosong
+            document.getElementById('finBizBal').innerText = fm_formatRupiah(0);
+            document.getElementById('finFamilyBal').innerText = fm_formatRupiah(0);
             return;
         }
 
         let htmlContent = '';
         
         globalWallets.forEach(wallet => {
+            // Kalkulasi Total Saldo berdasarkan kategori
+            if (wallet.category === 'Bisnis') {
+                totalSaldoBisnis += wallet.balance;
+            } else if (wallet.category === 'Keluarga') {
+                totalSaldoKeluarga += wallet.balance;
+            }
+
             const badgeColor = wallet.category === 'Bisnis' 
                 ? 'bg-blue-500/10 text-blue-300 border-blue-500/20' 
                 : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20';
@@ -662,8 +676,15 @@
         });
 
         container.innerHTML = htmlContent;
-    }
 
+        // --- UPDATE ANGKA DI KOTAK UTAMA ---
+        // Mencari elemen berdasarkan ID dan memperbarui angkanya dengan format Rupiah
+        const elementBizBal = document.getElementById('finBizBal');
+        const elementFamBal = document.getElementById('finFamilyBal');
+        
+        if(elementBizBal) elementBizBal.innerText = fm_formatRupiah(totalSaldoBisnis);
+        if(elementFamBal) elementFamBal.innerText = fm_formatRupiah(totalSaldoKeluarga);
+    }
     function fm_submitWalletForm(event) {
         event.preventDefault();
         const btnSubmit = document.getElementById('fm_btn_submit');
