@@ -466,7 +466,6 @@
       <!-- ============================================================== -->
       <div id="pageSalesLog" class="page-section hidden-section">
         <div class="filter-bar glass-card" style="flex-wrap: wrap;">
-          <!-- FILTER TANGGAL BARU -->
           <select class="glass-input filter-select" id="filterDateRangeSales" onchange="toggleCustomDateSales(); renderSalesTable();">
             <option value="ALL">Semua Waktu</option>
             <option value="TODAY">Hari Ini</option>
@@ -476,7 +475,6 @@
             <option value="CUSTOM">Rentang Tanggal...</option>
           </select>
           
-          <!-- INPUT RENTANG TANGGAL (Sembunyi by default) -->
           <div id="customDateSalesContainer" style="display:none; gap:8px; align-items:center; flex:2; min-width:250px;">
             <input type="date" id="salesStartDate" class="glass-input" onchange="renderSalesTable()">
             <span style="color:var(--ryux-muted); font-weight:900;">-</span>
@@ -487,6 +485,15 @@
           <select class="glass-input filter-select" id="filterKelengkapanSales" onchange="renderSalesTable()"><option value="ALL">Semua Data</option><option value="AMAN">Data Valid</option><option value="ERROR">Butuh Koreksi</option></select>
           <input type="text" class="glass-input filter-input" id="searchSales" placeholder="Cari Order / LC / Produk..." onkeyup="renderSalesTable()">
         </div>
+        
+        <div class="summary-box glass-card">
+          <div class="summary-item"><div class="summary-label">TOTAL OMSET</div><div class="summary-val" style="color:var(--ryux-cyan); text-shadow:0 0 15px rgba(0,240,255,0.4);" id="sumOmset">Rp 0</div></div>
+          <div class="summary-item"><div class="summary-label">NET PROFIT</div><div class="summary-val" style="color:var(--ryux-green); text-shadow:0 0 15px rgba(0,255,102,0.4);" id="sumProfit">Rp 0</div></div>
+          <div class="summary-item right"><div class="summary-label">TOTAL PESANAN</div><div class="summary-val" id="sumOrder">0</div></div>
+          <div class="summary-item right"><div class="summary-label">ITEM TERJUAL</div><div class="summary-val" id="sumQty">0 Pcs</div></div>
+        </div>
+        <div id="salesContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Data...</div></div>
+      </div>
 
       <!-- ============================================================== -->
       <!-- 4. SMART INVENTORY                                             -->
@@ -974,7 +981,7 @@
     function submitSkuBaru() { var btn = document.getElementById('btnSubmitSku'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; var data = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value }; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Inject to Database"; if(res === "SUCCESS") { alert("SKU Added!"); document.getElementById('formSkuBaru').reset(); preloadDatalists(); } else { alert(res); } }).simpanSkuBaru(data); }
 
     // -----------------------------------------------------------------
-    // SALES LOG & AUTO-FIX SKU
+    // SALES LOG & AUTO-FIX SKU + CUSTOM DATE FILTER
     // -----------------------------------------------------------------
     function loadSalesData() { 
       document.getElementById('salesContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales Stream...</div>'; 
@@ -1011,6 +1018,7 @@
       var selKelengkapan = document.getElementById('filterKelengkapanSales').value; 
       var searchQ = document.getElementById('searchSales').value.toLowerCase(); 
       var container = document.getElementById('salesContainer');
+      if (!container) return; // Mencegah crash jika elemen belum ada
       
       // Setup Date Bounds
       var now = new Date();
@@ -1031,7 +1039,7 @@
         targetEnd = new Date(now);
       } else if (selDateStr === 'CUSTOM' && selStart && selEnd) {
         targetStart = new Date(selStart); targetStart.setHours(0,0,0,0);
-        targetEnd = new Date(selEnd); targetEnd.setHours(0,0,0,0);
+        targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999);
       }
       
       var filtered = globalSalesData.filter(item => { 
@@ -1088,6 +1096,7 @@
       }
       rawSalesOmsetVal = formatRp(sOmset); rawSalesProfitVal = formatRp(sProfit); document.getElementById('sumOrder').innerText = sOrder.toLocaleString('id-ID'); document.getElementById('sumQty').innerText = sQty.toLocaleString('id-ID') + " Pcs"; container.innerHTML = html; applySalesPrivacy();
     }
+    
     // AUTO-FIX SKU BUTTON RUNNER
     function runAutoFillSKU() { 
       var act = document.getElementById('headerActions'); 
