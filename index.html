@@ -487,6 +487,7 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
     
+    // Polyfill untuk memanggil API
     if (typeof google === 'undefined') {
         window.google = { script: { run: (function() { 
           function createRunner(onSuccess, onError) { 
@@ -496,10 +497,16 @@
             }; 
             const _call = async function(action, payload) { 
               try { 
-                let options = { method: "POST", body: JSON.stringify({ action: action, payload: payload || {} }) }; 
+                // KUNCI PERBAIKAN: Parameter redirect & header text/plain wajib untuk bypass CORS Google
+                let options = { 
+                  method: "POST", 
+                  redirect: "follow", 
+                  headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                  body: JSON.stringify({ action: action, payload: payload || {} }) 
+                }; 
                 let res = await fetch(API_URL, options); let json = await res.json(); 
                 if (json.status === "success" && onSuccess) onSuccess(json.data !== undefined ? json.data : json); 
-              } catch (e) { if (onError) onError(e); } 
+              } catch (e) { console.error("API Error:", e); if (onError) onError(e); } 
             }; 
             runner.getDashboardData = function() { _call('getDashboardData'); }; 
             runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; 
