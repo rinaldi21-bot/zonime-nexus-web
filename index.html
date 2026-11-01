@@ -205,36 +205,57 @@
 
       <!-- 2. FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section">
-         <div class="dashboard-cards" style="grid-template-columns:1fr; gap:24px;">
-            <div style="display:grid; grid-template-columns:1fr; gap:24px;">
-                <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.3);">
+         <div style="display:flex; flex-wrap:wrap; gap:24px;">
+            <div style="flex: 1; min-width: 300px; display:flex; flex-direction:column; gap:24px;">
+                <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.2); height:100%; justify-content:space-between; padding:32px;">
                     <span class="tiny-label">Family Balance</span>
-                    <div class="stat-value" id="finFamilyBal">$85,300.00</div>
+                    <div class="stat-value" id="finFamilyBal" style="font-size:36px; font-weight:300;">$85,300.00</div>
+                    <div style="font-size:10px; color:var(--ryux-green); margin-top:8px; font-weight:800; letter-spacing:1px;">★ SHARE ACTIVE</div>
                 </div>
-                <div class="glass-card stat-card" style="border-color:rgba(176, 38, 255, 0.3);">
+                <div class="glass-card stat-card" style="border-color:rgba(176, 38, 255, 0.2); height:100%; justify-content:space-between; padding:32px;">
                     <span class="tiny-label">Total Business Balances</span>
-                    <div class="stat-value" style="color:white; font-size:36px;" id="finBizBal">Rp 169.552.500</div>
+                    <div class="stat-value" id="finBizBal" style="color:white; font-size:36px; font-weight:300;">Rp 169.552.500</div>
+                    <button class="btn btn-outline" style="margin-top:16px; width:fit-content;">Request Data</button>
                 </div>
             </div>
-            <div class="glass-card" style="padding:24px;">
-                <div style="margin-bottom:16px; font-weight:900; text-transform:uppercase; font-size:12px;">Tambah Transaksi</div>
-                <form onsubmit="event.preventDefault(); alert('Transaksi Tersimpan');" style="display:flex; flex-direction:column; gap:16px;">
-                    <div><label class="tiny-label">Nominal</label><input type="number" class="glass-input" placeholder="Rp 0"></div>
-                    <div><label class="tiny-label">Kategori</label>
-                        <select class="glass-input">
-                            <option value="in">Pemasukan Bisnis</option>
-                            <option value="out">Pengeluaran Bisnis</option>
-                            <option value="fam_in">Pemasukan Keluarga</option>
-                            <option value="fam_out">Pengeluaran Keluarga</option>
-                        </select>
-                    </div>
-                    <div><label class="tiny-label">Deskripsi</label><textarea class="glass-input" style="height:80px;"></textarea></div>
-                    <button type="submit" class="btn btn-gradient" style="padding:16px;">+ Tambah Data</button>
-                </form>
-            </div>
-            <div class="glass-card" style="padding:24px; height:250px;">
-                <div class="tiny-label">CASH FLOW</div>
-                <div style="height:90%;"><canvas id="financeChart"></canvas></div>
+            <div style="flex: 2; min-width: 500px; display:flex; flex-direction:column; gap:24px;">
+                <div class="glass-card" style="padding:32px;">
+                    <div style="margin-bottom:24px; font-weight:900; text-transform:uppercase; font-size:12px; color:var(--ryux-muted); letter-spacing:2px;">Tambah Transaksi Terpadu</div>
+                    <form id="formFinance" onsubmit="event.preventDefault(); submitFinanceData();" style="display:flex; flex-wrap:wrap; gap:24px;">
+                        <div style="flex:1; min-width:200px; display:flex; flex-direction:column; gap:16px;">
+                            <div>
+                                <label class="tiny-label">Nominal</label>
+                                <input type="number" id="finNominal" class="glass-input" placeholder="Rp 0" required>
+                            </div>
+                            <div>
+                                <label class="tiny-label">Kategori Dompet & Aksi</label>
+                                <select id="finKategori" class="glass-input" required>
+                                    <optgroup label="Single Entry (Bisnis)" style="background:#05030a;">
+                                        <option value="biz_in">Pemasukan Bisnis</option>
+                                        <option value="biz_out">Pengeluaran Bisnis</option>
+                                    </optgroup>
+                                    <optgroup label="Single Entry (Keluarga)" style="background:#05030a;">
+                                        <option value="fam_in">Pemasukan Keluarga</option>
+                                        <option value="fam_out">Pengeluaran Keluarga</option>
+                                    </optgroup>
+                                    <optgroup label="Double-Entry (Mutasi Antar Dompet)" style="background:#05030a;">
+                                        <option value="transfer_biz_to_fam">Transfer: Bisnis ➔ Pribadi</option>
+                                        <option value="transfer_fam_to_biz">Transfer: Pribadi ➔ Bisnis</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <button type="submit" id="btnSubmitFinance" class="btn btn-outline" style="padding:16px; border-style:dashed;">Simpan ke Ledger</button>
+                        </div>
+                        <div style="flex:1; min-width:200px; display:flex; flex-direction:column;">
+                            <label class="tiny-label">Catatan (Smart Categorization)</label>
+                            <textarea id="finDeskripsi" class="glass-input" style="height:100%; min-height:120px; resize:none;" placeholder="Ketik deskripsi (Misal: 'Bayar PLN'). Sistem akan otomatis mencari kategori..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="glass-card" style="padding:32px; height:250px;">
+                    <div class="tiny-label">CASH FLOW</div>
+                    <div style="height:90%;"><canvas id="financeChart"></canvas></div>
+                </div>
             </div>
          </div>
       </div>
@@ -519,6 +540,7 @@
             runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
             runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
             runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
+            runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
             return runner; 
           } return createRunner(null, null); 
         })() } };
@@ -783,7 +805,7 @@
 
     function openInvActionModal(sku, nama, stok, cogs) {
       document.getElementById('invActSku').value = sku; document.getElementById('invActCogs').value = cogs;
-      document.getElementById('invActSkuLabel').innerText = sku; document.getElementById('invActNamaLabel').innerText = nama; document.getElementById('invActStokSistem').value = stok;
+      document.getElementById('invActSkuLabel').innerText = sku; document.getElementById('invActStokSistem').value = stok;
       switchInvTab('OPNAME'); document.getElementById('modalInvAction').classList.remove('hidden-section'); document.getElementById('modalInvAction').style.display='flex';
     }
     function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden-section'); document.getElementById('modalInvAction').style.display='none'; }
@@ -857,6 +879,30 @@
     function submitSkuBaru() {
       var p = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value };
       google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p);
+    }
+    
+    // FORM SUBMIT FINANCE (Double Entry & Regex)
+    function submitFinanceData() {
+      var btn = document.getElementById('btnSubmitFinance');
+      var nominal = document.getElementById('finNominal').value;
+      var kategori = document.getElementById('finKategori').value;
+      var deskripsi = document.getElementById('finDeskripsi').value;
+
+      var payload = { nominal: nominal, kategori: kategori, deskripsi: deskripsi };
+
+      btn.disabled = true; btn.innerText = "MENYIMPAN...";
+      google.script.run.withSuccessHandler(res => {
+        btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER";
+        if(res === "SUCCESS") {
+          alert("Transaksi berhasil dicatat & dikategorikan secara otomatis!");
+          document.getElementById('formFinance').reset();
+        } else {
+          alert(res);
+        }
+      }).withFailureHandler(err => {
+        btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER";
+        alert("Koneksi gagal: " + err);
+      }).simpanTransaksiFinance(payload);
     }
 
     window.onload = function() { showPage('pageDashboard', document.querySelector('.nav-item')); };
