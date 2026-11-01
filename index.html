@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
+  <!-- Jika menggunakan utilitas Tailwind untuk margin/padding di widget, pastikan CDN Tailwind ada. Jika Anda murni pakai custom CSS, saya sesuaikan widget agar tidak pecah. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
   <style>
     :root {
       --ryux-cyan: #00F0FF; --ryux-green: #00FF66; --ryux-yellow: #FFD700;
@@ -193,6 +196,28 @@
 
       <!-- 2. FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section">
+         
+         <!-- WIDGET BENTO MULTI-WALLET (Diletakkan di bagian atas halaman Finance) -->
+         <div id="fm_wallet_bento" class="w-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 shadow-2xl mb-6">
+             <div class="flex justify-between items-center mb-6">
+                 <div>
+                     <h2 class="text-xl font-semibold text-gray-100 tracking-wide">Pos Keuangan (Wallets)</h2>
+                     <p class="text-sm text-gray-400 mt-1">Kelola saldo dari berbagai sumber akun Bisnis dan Pribadi Anda.</p>
+                 </div>
+                 <button onclick="fm_openWalletModal()" class="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-gray-200 text-sm rounded-lg transition-all duration-300 flex items-center gap-2">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                     Tambah Akun
+                 </button>
+             </div>
+         
+             <div id="fm_wallet_container" class="flex flex-wrap gap-4">
+                 <div class="w-full text-center py-4 text-gray-500 text-sm italic" id="fm_wallet_loading">
+                     Memuat data dompet...
+                 </div>
+             </div>
+         </div>
+
+         <!-- EXISTING FINANCE CARDS -->
          <div style="display:flex; flex-wrap:wrap; gap:24px;">
             <div style="flex: 1; min-width: 300px; display:flex; flex-direction:column; gap:24px;">
                 <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.3); height:100%; justify-content:space-between; padding:32px;">
@@ -323,7 +348,7 @@
         <div class="glass-card" style="max-width:650px; margin:0 auto;">
           <div class="dg-header" style="color:var(--ryux-green);"><i class="fas fa-plus-circle"></i> Create New SKU Master</div>
           <div class="dg-body">
-            <form onsubmit="event.preventDefault(); submitSkuBaru();">
+            <form id="formSkuBaru" onsubmit="event.preventDefault(); submitSkuBaru();">
               <div class="form-group"><label class="tiny-label">KODE SKU</label><input type="text" id="newSku" class="glass-input" style="text-transform:uppercase;" required></div>
               <div style="display:flex; gap:16px; margin-bottom:16px;">
                 <div style="flex:1;"><label class="tiny-label">Tipe</label><input type="text" id="newType" data-custom-list="listTypes" class="glass-input" autocomplete="off"></div>
@@ -350,7 +375,7 @@
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
   <!-- ============================================================== -->
-  <!-- MODALS -->
+  <!-- MODALS (DILETAKKAN DI LUAR CONTAINER UTAMA)                    -->
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section">
@@ -484,201 +509,156 @@
     </div>
   </div>
 
-  <!-- ======================================================= -->
-<!-- MODUL FINANCE MANAGER: MULTI-WALLET WIDGET (BENTO GRID) -->
-<!-- ======================================================= -->
-<div id="fm_wallet_bento" class="w-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 shadow-2xl mb-6">
-    <!-- Header Area -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h2 class="text-xl font-semibold text-gray-100 tracking-wide">Pos Keuangan (Wallets)</h2>
-            <p class="text-sm text-gray-400 mt-1">Kelola saldo dari berbagai sumber akun Bisnis dan Pribadi Anda.</p>
+  <!-- MODAL BARU: TAMBAH POS KEUANGAN (WALLET) -->
+  <div id="fm_wallet_modal" class="modal-overlay hidden-section" style="display:none; z-index:99999;">
+    <div class="modal-card" style="max-width:450px;">
+        <div class="modal-header">
+            <span style="color:var(--ryux-cyan);"><i class="fas fa-wallet"></i> Tambah Pos Keuangan</span>
+            <button onclick="fm_closeWalletModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button>
         </div>
-        <button onclick="fm_openWalletModal()" class="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-gray-200 text-sm rounded-lg transition-all duration-300 flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Tambah Akun
-        </button>
-    </div>
-
-    <!-- Wallet Cards Container (Horizontal Flex/Grid) -->
-    <div id="fm_wallet_container" class="flex flex-wrap gap-4">
-        <!-- Data wallet akan dirender oleh JavaScript di sini -->
-        <div class="w-full text-center py-4 text-gray-500 text-sm italic" id="fm_wallet_loading">
-            Memuat data dompet...
+        <div class="modal-body">
+            <form id="fm_wallet_form" onsubmit="fm_submitNewWallet(event)">
+                <div class="form-group mb-4">
+                    <label class="tiny-label">Nama Akun</label>
+                    <input type="text" id="fm_input_name" required placeholder="Contoh: BCA Operasional" class="glass-input">
+                </div>
+                <div style="display:flex; gap:16px; margin-bottom:16px;">
+                    <div class="form-group" style="flex:1;">
+                        <label class="tiny-label">Tipe</label>
+                        <select id="fm_input_type" class="glass-input">
+                            <option value="Tunai">💵 Kas Tunai</option>
+                            <option value="Bank">🏦 Rekening Bank</option>
+                            <option value="E-Wallet">📱 E-Wallet</option>
+                            <option value="Kredit">💳 Kartu Kredit</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="tiny-label">Peruntukan</label>
+                        <select id="fm_input_category" class="glass-input">
+                            <option value="Bisnis">🏢 Bisnis</option>
+                            <option value="Keluarga">🏠 Pribadi/Keluarga</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb-6">
+                    <label class="tiny-label" style="color:var(--ryux-green);">Saldo Awal (Rp)</label>
+                    <input type="number" id="fm_input_balance" required value="0" min="0" class="glass-input">
+                </div>
+                <button type="submit" id="fm_btn_submit" class="btn btn-primary" style="width:100%; padding:16px;">Simpan Akun</button>
+            </form>
         </div>
     </div>
-</div>
+  </div>
 
-<!-- ======================================================= -->
-<!-- MODAL TAMBAH WALLET (Tersembunyi secara default)        -->
-<!-- ======================================================= -->
-<div id="fm_wallet_modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
-    <div class="bg-[#121212] border border-white/[0.08] rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
-        <!-- Close Button -->
-        <button onclick="fm_closeWalletModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        
-        <h3 class="text-lg font-semibold text-white mb-4">Tambah Pos Keuangan</h3>
-        
-        <form id="fm_wallet_form" onsubmit="fm_submitNewWallet(event)">
-            <!-- Input Nama -->
-            <div class="mb-4">
-                <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Nama Akun</label>
-                <input type="text" id="fm_input_name" required placeholder="Contoh: BCA Operasional" class="w-full bg-black/40 border border-white/[0.1] text-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:border-white/[0.3] transition-colors">
-            </div>
-
-            <!-- Tipe Akun & Kategori (Grid 2 Kolom) -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tipe</label>
-                    <select id="fm_input_type" class="w-full bg-black/40 border border-white/[0.1] text-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:border-white/[0.3] appearance-none">
-                        <option value="Tunai">💵 Kas Tunai</option>
-                        <option value="Bank">🏦 Rekening Bank</option>
-                        <option value="E-Wallet">📱 E-Wallet</option>
-                        <option value="Kredit">💳 Kartu Kredit</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Peruntukan</label>
-                    <select id="fm_input_category" class="w-full bg-black/40 border border-white/[0.1] text-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:border-white/[0.3] appearance-none">
-                        <option value="Bisnis">🏢 Bisnis</option>
-                        <option value="Keluarga">🏠 Pribadi/Keluarga</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Saldo Awal -->
-            <div class="mb-6">
-                <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Saldo Awal (Rp)</label>
-                <input type="number" id="fm_input_balance" required value="0" min="0" class="w-full bg-black/40 border border-white/[0.1] text-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:border-white/[0.3] transition-colors">
-            </div>
-
-            <!-- Submit -->
-            <button type="submit" id="fm_btn_submit" class="w-full bg-white/[0.1] hover:bg-white/[0.15] border border-white/[0.1] text-white font-medium py-2.5 rounded-lg transition-all duration-300">
-                Simpan Akun
-            </button>
-        </form>
-    </div>
-</div>
-
-  
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
 
     // =======================================================
-// MODUL FINANCE MANAGER: JAVASCRIPT LOGIC
-// =======================================================
+    // MODUL FINANCE MANAGER: JAVASCRIPT LOGIC
+    // =======================================================
 
-// Fungsi untuk format Rupiah
-function fm_formatRupiah(angka) {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-}
-
-// Buka/Tutup Modal
-function fm_openWalletModal() {
-    document.getElementById('fm_wallet_modal').classList.remove('hidden');
-}
-
-function fm_closeWalletModal() {
-    document.getElementById('fm_wallet_modal').classList.add('hidden');
-    document.getElementById('fm_wallet_form').reset();
-}
-
-// Fetch data dari Google Apps Script
-function fm_loadWallets() {
-    const container = document.getElementById('fm_wallet_container');
-    container.innerHTML = '<div class="w-full text-center py-4 text-gray-500 text-sm italic">Memuat data dompet...</div>';
-
-    // Panggil fungsi backend GAS. Ganti dengan google.script.run yang asli saat implementasi.
-    google.script.run
-        .withSuccessHandler(fm_renderWallets)
-        .withFailureHandler((err) => {
-            container.innerHTML = `<div class="w-full text-center py-4 text-red-400 text-sm">Gagal memuat: ${err.message}</div>`;
-        })
-        .fm_getWalletsData(); 
-}
-
-// Render data ke dalam HTML (Card Bento)
-function fm_renderWallets(walletsArray) {
-    const container = document.getElementById('fm_wallet_container');
-    container.innerHTML = ''; // Bersihkan loading
-
-    if (!walletsArray || walletsArray.length === 0) {
-        container.innerHTML = '<div class="w-full text-center py-4 text-gray-500 text-sm italic">Belum ada pos keuangan. Silakan tambahkan.</div>';
-        return;
+    function fm_formatRupiah(angka) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
     }
 
-    let htmlContent = '';
-    
-    walletsArray.forEach(wallet => {
-        // Tentukan warna badge berdasarkan peruntukan (Sober/Kalem)
-        const badgeColor = wallet.category === 'Bisnis' 
-            ? 'bg-blue-500/10 text-blue-300 border-blue-500/20' 
-            : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20';
+    // UPDATE: Buka/Tutup Modal menggunakan fungsi toggle class display yang benar
+    function fm_openWalletModal() {
+        const modal = document.getElementById('fm_wallet_modal');
+        modal.classList.remove('hidden-section');
+        modal.style.display = 'flex';
+    }
 
-        // Tentukan ikon berdasarkan tipe
-        let icon = '💳';
-        if(wallet.type === 'Tunai') icon = '💵';
-        if(wallet.type === 'Bank') icon = '🏦';
-        if(wallet.type === 'E-Wallet') icon = '📱';
+    function fm_closeWalletModal() {
+        const modal = document.getElementById('fm_wallet_modal');
+        modal.classList.add('hidden-section');
+        modal.style.display = 'none';
+        document.getElementById('fm_wallet_form').reset();
+    }
 
-        htmlContent += `
-        <div class="min-w-[220px] flex-1 bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 rounded-xl p-4 cursor-pointer flex flex-col justify-between">
-            <div class="flex justify-between items-start mb-5">
-                <span class="text-gray-400 text-sm flex items-center gap-1">${icon} ${wallet.type}</span>
-                <span class="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${badgeColor}">${wallet.category}</span>
+    function fm_loadWallets() {
+        const container = document.getElementById('fm_wallet_container');
+        if(container) container.innerHTML = '<div class="w-full text-center py-4 text-gray-500 text-sm italic">Memuat data dompet...</div>';
+
+        if(typeof google !== 'undefined') {
+            google.script.run
+                .withSuccessHandler(fm_renderWallets)
+                .withFailureHandler((err) => {
+                    if(container) container.innerHTML = `<div class="w-full text-center py-4 text-red-400 text-sm">Gagal memuat: ${err.message}</div>`;
+                })
+                .fm_getWalletsData(); 
+        }
+    }
+
+    function fm_renderWallets(walletsArray) {
+        const container = document.getElementById('fm_wallet_container');
+        if(!container) return;
+        container.innerHTML = ''; 
+
+        if (!walletsArray || walletsArray.length === 0) {
+            container.innerHTML = '<div class="w-full text-center py-4 text-gray-500 text-sm italic">Belum ada pos keuangan. Silakan tambahkan.</div>';
+            return;
+        }
+
+        let htmlContent = '';
+        
+        walletsArray.forEach(wallet => {
+            const badgeColor = wallet.category === 'Bisnis' 
+                ? 'bg-blue-500/10 text-blue-300 border-blue-500/20' 
+                : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20';
+
+            let icon = '💳';
+            if(wallet.type === 'Tunai') icon = '💵';
+            if(wallet.type === 'Bank') icon = '🏦';
+            if(wallet.type === 'E-Wallet') icon = '📱';
+
+            htmlContent += `
+            <div class="min-w-[220px] flex-1 bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 rounded-xl p-4 cursor-pointer flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-5">
+                    <span class="text-gray-400 text-sm flex items-center gap-1">${icon} ${wallet.type}</span>
+                    <span class="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${badgeColor}">${wallet.category}</span>
+                </div>
+                <div>
+                    <div class="text-gray-300 text-sm mb-1">${wallet.name}</div>
+                    <div class="text-xl font-bold text-gray-100 tracking-tight">${fm_formatRupiah(wallet.balance)}</div>
+                </div>
             </div>
-            <div>
-                <div class="text-gray-300 text-sm mb-1">${wallet.name}</div>
-                <div class="text-xl font-bold text-gray-100 tracking-tight">${fm_formatRupiah(wallet.balance)}</div>
-            </div>
-        </div>
-        `;
-    });
+            `;
+        });
 
-    container.innerHTML = htmlContent;
-}
+        container.innerHTML = htmlContent;
+    }
 
-// Handle Submit Form Wallet Baru
-function fm_submitNewWallet(event) {
-    event.preventDefault();
-    const btnSubmit = document.getElementById('fm_btn_submit');
+    function fm_submitNewWallet(event) {
+        event.preventDefault();
+        const btnSubmit = document.getElementById('fm_btn_submit');
+        
+        const newWallet = {
+            name: document.getElementById('fm_input_name').value,
+            type: document.getElementById('fm_input_type').value,
+            category: document.getElementById('fm_input_category').value,
+            balance: document.getElementById('fm_input_balance').value
+        };
+
+        btnSubmit.innerText = "Menyimpan...";
+        btnSubmit.disabled = true;
+
+        google.script.run
+            .withSuccessHandler((res) => {
+                fm_closeWalletModal();
+                btnSubmit.innerText = "Simpan Akun";
+                btnSubmit.disabled = false;
+                fm_loadWallets(); 
+            })
+            .withFailureHandler((err) => {
+                alert("Gagal menyimpan: " + err.message);
+                btnSubmit.innerText = "Simpan Akun";
+                btnSubmit.disabled = false;
+            })
+            .fm_saveNewWallet(newWallet);
+    }
     
-    const newWallet = {
-        name: document.getElementById('fm_input_name').value,
-        type: document.getElementById('fm_input_type').value,
-        category: document.getElementById('fm_input_category').value,
-        balance: document.getElementById('fm_input_balance').value
-    };
-
-    btnSubmit.innerText = "Menyimpan...";
-    btnSubmit.disabled = true;
-
-    // Kirim ke GAS Backend
-    google.script.run
-        .withSuccessHandler((res) => {
-            fm_closeWalletModal();
-            btnSubmit.innerText = "Simpan Akun";
-            btnSubmit.disabled = false;
-            fm_loadWallets(); // Reload data setelah sukses
-        })
-        .withFailureHandler((err) => {
-            alert("Gagal menyimpan: " + err.message);
-            btnSubmit.innerText = "Simpan Akun";
-            btnSubmit.disabled = false;
-        })
-        .fm_saveNewWallet(newWallet);
-}
-
-// Load data saat halaman pertama kali dibuka
-// Pastikan tidak menimpa window.onload lama Anda
-window.addEventListener('load', function() {
-    fm_loadWallets();
-});
-    
-    // Polyfill untuk memanggil API
+    // Polyfill API tetap sama
     if (typeof google === 'undefined') {
         window.google = { script: { run: (function() { 
           function createRunner(onSuccess, onError) { 
@@ -688,7 +668,6 @@ window.addEventListener('load', function() {
             }; 
             const _call = async function(action, payload) { 
               try { 
-                // KUNCI PERBAIKAN: Parameter redirect & header text/plain wajib untuk bypass CORS Google
                 let options = { 
                   method: "POST", 
                   redirect: "follow", 
@@ -719,6 +698,16 @@ window.addEventListener('load', function() {
             runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
             runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
             runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
+            // Mock response untuk frontend design test
+            runner.fm_getWalletsData = function() { 
+                if(onSuccess) onSuccess([
+                    { name: "Kasir Toko (Fisik)", type: "Tunai", category: "Bisnis", balance: 2500000 },
+                    { name: "BCA Operasional", type: "Bank", category: "Bisnis", balance: 45000000 },
+                    { name: "ShopeePay", type: "E-Wallet", category: "Keluarga", balance: 1200000 },
+                    { name: "Kartu Kredit Mandiri", type: "Kredit", category: "Keluarga", balance: 0 }
+                ]); 
+            };
+            runner.fm_saveNewWallet = function(payload) { if(onSuccess) onSuccess("SUCCESS"); };
             return runner; 
           } return createRunner(null, null); 
         })() } };
@@ -737,7 +726,7 @@ window.addEventListener('load', function() {
 
       document.getElementById('headerActions').innerHTML = '';
       if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
-      else if(pageId === 'pageFinance') { setTimeout(() => initFinanceChart(), 100); }
+      else if(pageId === 'pageFinance') { fm_loadWallets(); setTimeout(() => initFinanceChart(), 100); }
       else if(pageId === 'pageSalesLog') { 
         loadSalesData();
         document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`;
@@ -1049,7 +1038,8 @@ window.addEventListener('load', function() {
       google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; if(res === "SUCCESS") { alert("Transaksi otomatis dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; alert("Gagal: " + err); }).simpanTransaksiFinance(p);
     }
 
-    window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
+    // Panggil fm_loadWallets agar widget terisi saat web pertama dibuka (untuk testing UI/UX tanpa backend)
+    window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); fm_loadWallets(); };
   </script>
 </body>
 </html>
