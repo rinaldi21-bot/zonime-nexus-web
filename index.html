@@ -195,7 +195,7 @@
       <!-- 2. FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section">
          
-         <!-- WIDGET BENTO MULTI-WALLET (Diletakkan di bagian atas halaman Finance) -->
+         <!-- WIDGET BENTO MULTI-WALLET -->
          <div id="fm_wallet_bento" class="w-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 shadow-2xl mb-6">
              <div class="flex justify-between items-center mb-6">
                  <div>
@@ -215,54 +215,51 @@
              </div>
          </div>
 
-         <!-- EXISTING FINANCE CARDS -->
+         <!-- AREA BAWAH FINANCE -->
          <div style="display:flex; flex-wrap:wrap; gap:24px;">
+            <!-- KOLOM KIRI (Family & Biz Balance) -->
             <div style="flex: 1; min-width: 300px; display:flex; flex-direction:column; gap:24px;">
                 <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.3); height:100%; justify-content:space-between; padding:32px;">
                     <span class="tiny-label">Family Balance</span>
-                    <div class="stat-value" id="finFamilyBal" style="font-size:36px; font-weight:300;">$85,300.00</div>
+                    <div class="stat-value" id="finFamilyBal" style="font-size:36px; font-weight:300;">Rp 0</div>
                     <div style="font-size:10px; color:var(--ryux-green); margin-top:8px; font-weight:800; letter-spacing:1px;">★ SHARE ACTIVE</div>
                 </div>
                 <div class="glass-card stat-card" style="border-color:rgba(176, 38, 255, 0.3); height:100%; justify-content:space-between; padding:32px;">
                     <span class="tiny-label">Total Business Balances</span>
-                    <div class="stat-value" style="color:white; font-size:36px; font-weight:300;" id="finBizBal">Rp 169.552.500</div>
+                    <div class="stat-value" style="color:white; font-size:36px; font-weight:300;" id="finBizBal">Rp 0</div>
                     <button class="btn btn-outline" style="margin-top:16px; width:fit-content;">Request Data</button>
                 </div>
             </div>
+            
+            <!-- KOLOM KANAN (Buku Kas & Cash Flow) -->
             <div style="flex: 2; min-width: 500px; display:flex; flex-direction:column; gap:24px;">
-                <div class="glass-card" style="padding:32px;">
-                    <div style="margin-bottom:24px; font-weight:900; text-transform:uppercase; font-size:12px; color:var(--ryux-muted); letter-spacing:2px;">Tambah Transaksi Terpadu</div>
-                    <form id="formFinance" onsubmit="event.preventDefault(); submitFinanceData();" style="display:flex; flex-wrap:wrap; gap:24px;">
-                        <div style="flex:1; min-width:200px; display:flex; flex-direction:column; gap:16px;">
-                            <div>
-                                <label class="tiny-label">Nominal</label>
-                                <input type="number" id="finNominal" class="glass-input" placeholder="Rp 0" required>
-                            </div>
-                            <div>
-                                <label class="tiny-label">Kategori Dompet & Aksi</label>
-                                <select id="finKategori" class="glass-input" required>
-                                    <optgroup label="Single Entry (Bisnis)" style="background:#05030a;">
-                                        <option value="biz_in">Pemasukan Bisnis</option>
-                                        <option value="biz_out">Pengeluaran Bisnis</option>
-                                    </optgroup>
-                                    <optgroup label="Single Entry (Keluarga)" style="background:#05030a;">
-                                        <option value="fam_in">Pemasukan Keluarga</option>
-                                        <option value="fam_out">Pengeluaran Keluarga</option>
-                                    </optgroup>
-                                    <optgroup label="Double-Entry (Mutasi Antar Dompet)" style="background:#05030a;">
-                                        <option value="transfer_biz_to_fam">Transfer: Bisnis ➔ Pribadi</option>
-                                        <option value="transfer_fam_to_biz">Transfer: Pribadi ➔ Bisnis</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <button type="submit" id="btnSubmitFinance" class="btn btn-outline" style="padding:16px; border-style:dashed;">Simpan ke Ledger</button>
+                
+                <!-- AREA RIWAYAT TRANSAKSI (Buku Kas) -->
+                <div class="glass-card flex flex-col" style="padding:24px; height:350px;">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <div class="tiny-label">Buku Kas</div>
+                            <div class="text-white font-bold text-lg">Riwayat Transaksi</div>
                         </div>
-                        <div style="flex:1; min-width:200px; display:flex; flex-direction:column;">
-                            <label class="tiny-label">Catatan (Smart Categorization)</label>
-                            <textarea id="finDeskripsi" class="glass-input" style="height:100%; min-height:120px; resize:none;" placeholder="Ketik deskripsi (Misal: 'Bayar PLN'). Sistem otomatis mencari kategori..." required></textarea>
-                        </div>
-                    </form>
+                        <button onclick="fm_openTransaksiModal()" class="btn btn-primary" style="padding: 10px 16px;">
+                            <i class="fas fa-plus"></i> Transaksi
+                        </button>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="flex gap-4 border-b border-white/[0.05] pb-2 mb-4">
+                        <button class="text-xs font-bold text-ryux-cyan uppercase tracking-widest border-b-2 border-ryux-cyan pb-2 px-1">Semua</button>
+                        <button class="text-xs font-bold text-gray-500 hover:text-gray-300 uppercase tracking-widest pb-2 px-1 transition-colors">Pemasukan</button>
+                        <button class="text-xs font-bold text-gray-500 hover:text-gray-300 uppercase tracking-widest pb-2 px-1 transition-colors">Pengeluaran</button>
+                    </div>
+
+                    <!-- Transaction List Container -->
+                    <div id="fm_transaction_list" class="flex-1 overflow-y-auto pr-2 flex flex-col gap-3">
+                        <div class="text-center text-gray-500 text-xs italic py-4">Memuat transaksi...</div>
+                    </div>
                 </div>
+
+                <!-- CASH FLOW CHART -->
                 <div class="glass-card" style="padding:32px; height:250px;">
                     <div class="tiny-label">CASH FLOW</div>
                     <div style="height:90%;"><canvas id="financeChart"></canvas></div>
@@ -507,7 +504,7 @@
     </div>
   </div>
 
-  <!-- MODAL BARU: TAMBAH/EDIT POS KEUANGAN (WALLET) -->
+  <!-- MODAL: TAMBAH/EDIT POS KEUANGAN (WALLET) -->
   <div id="fm_wallet_modal" class="modal-overlay hidden-section" style="display:none; z-index:99999;">
     <div class="modal-card" style="max-width:450px;">
         <div class="modal-header">
@@ -551,6 +548,57 @@
     </div>
   </div>
 
+  <!-- MODAL BARU: TAMBAH TRANSAKSI -->
+  <div id="fm_transaksi_modal" class="modal-overlay hidden-section" style="display:none; z-index:99999;">
+    <div class="modal-card" style="max-width:500px;">
+        <div class="modal-header">
+            <span style="color:var(--ryux-cyan);"><i class="fas fa-exchange-alt"></i> Catat Transaksi Baru</span>
+            <button onclick="fm_closeTransaksiModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="fm_transaksi_form" onsubmit="fm_submitTransaksi(event)">
+                <!-- Jenis Transaksi -->
+                <div class="flex gap-4 mb-5">
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" name="fm_tx_type" value="IN" class="peer sr-only" required>
+                        <div class="text-center py-3 rounded-lg border border-white/[0.1] text-gray-400 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/30 peer-checked:text-emerald-400 transition-all text-xs font-bold uppercase tracking-widest"><i class="fas fa-arrow-down mr-1"></i> Pemasukan</div>
+                    </label>
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" name="fm_tx_type" value="OUT" class="peer sr-only">
+                        <div class="text-center py-3 rounded-lg border border-white/[0.1] text-gray-400 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/30 peer-checked:text-rose-400 transition-all text-xs font-bold uppercase tracking-widest"><i class="fas fa-arrow-up mr-1"></i> Pengeluaran</div>
+                    </label>
+                </div>
+
+                <div style="display:flex; gap:16px; margin-bottom:16px;">
+                    <div class="form-group" style="flex:1;">
+                        <label class="tiny-label">Nominal (Rp)</label>
+                        <input type="number" id="fm_tx_amount" required value="0" min="1" step="any" class="glass-input text-lg font-bold text-white">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="tiny-label">Tanggal</label>
+                        <input type="date" id="fm_tx_date" required class="glass-input">
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="tiny-label">Pilih Dompet (Sumber/Tujuan)</label>
+                    <select id="fm_tx_wallet" required class="glass-input">
+                        <option value="">-- Pilih Akun Dompet --</option>
+                        <!-- Akan diisi otomatis oleh JS berdasarkan dompet yang ada -->
+                    </select>
+                </div>
+
+                <div class="form-group mb-6">
+                    <label class="tiny-label">Catatan / Deskripsi</label>
+                    <input type="text" id="fm_tx_note" required placeholder="Cth: Bayar tagihan listrik PLN" class="glass-input">
+                </div>
+
+                <button type="submit" id="fm_btn_submit_tx" class="btn btn-primary" style="width:100%; padding:16px;">Simpan Transaksi</button>
+            </form>
+        </div>
+    </div>
+  </div>
+
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
@@ -560,11 +608,16 @@
     // =======================================================
 
     let globalWallets = [];
+    let globalTransactions = [
+        { id: "tx_1", type: "IN", amount: 5000000, date: "2026-11-01", walletId: "w_2", walletName: "BCA Operasional", note: "DP Proyek Alpha" },
+        { id: "tx_2", type: "OUT", amount: 150000, date: "2026-11-01", walletId: "w_3", walletName: "ShopeePay", note: "Beli ATK Kantor" }
+    ];
 
     function fm_formatRupiah(angka) {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
     }
 
+    // --- LOGIKA WALLET ---
     function fm_openWalletModal(action = 'add', walletId = null) {
         const modal = document.getElementById('fm_wallet_modal');
         const form = document.getElementById('fm_wallet_form');
@@ -626,13 +679,11 @@
         if(!container) return;
         container.innerHTML = ''; 
 
-        // Variabel untuk menghitung total saldo otomatis
         let totalSaldoBisnis = 0;
         let totalSaldoKeluarga = 0;
 
         if (globalWallets.length === 0) {
             container.innerHTML = '<div class="w-full text-center py-4 text-gray-500 text-sm italic">Belum ada pos keuangan. Silakan tambahkan.</div>';
-            // Update tampilan total jadi 0 jika kosong
             document.getElementById('finBizBal').innerText = fm_formatRupiah(0);
             document.getElementById('finFamilyBal').innerText = fm_formatRupiah(0);
             return;
@@ -641,7 +692,7 @@
         let htmlContent = '';
         
         globalWallets.forEach(wallet => {
-            // Kalkulasi Total Saldo berdasarkan kategori
+            // Kalkulasi Total Saldo
             if (wallet.category === 'Bisnis') {
                 totalSaldoBisnis += wallet.balance;
             } else if (wallet.category === 'Keluarga') {
@@ -677,14 +728,12 @@
 
         container.innerHTML = htmlContent;
 
-        // --- UPDATE ANGKA DI KOTAK UTAMA ---
-        // Mencari elemen berdasarkan ID dan memperbarui angkanya dengan format Rupiah
         const elementBizBal = document.getElementById('finBizBal');
         const elementFamBal = document.getElementById('finFamilyBal');
-        
         if(elementBizBal) elementBizBal.innerText = fm_formatRupiah(totalSaldoBisnis);
         if(elementFamBal) elementFamBal.innerText = fm_formatRupiah(totalSaldoKeluarga);
     }
+
     function fm_submitWalletForm(event) {
         event.preventDefault();
         const btnSubmit = document.getElementById('fm_btn_submit');
@@ -733,8 +782,113 @@
              fm_renderWallets();
         }
     }
+
+    // --- LOGIKA TRANSAKSI ---
+    function fm_openTransaksiModal() {
+        const modal = document.getElementById('fm_transaksi_modal');
+        const walletSelect = document.getElementById('fm_tx_wallet');
+        
+        walletSelect.innerHTML = '<option value="">-- Pilih Akun Dompet --</option>';
+        globalWallets.forEach(w => {
+            walletSelect.innerHTML += `<option value="${w.id}">${w.name} (${w.category})</option>`;
+        });
+
+        document.getElementById('fm_tx_date').valueAsDate = new Date();
+        document.getElementById('fm_tx_amount').value = '';
+        document.getElementById('fm_tx_note').value = '';
+
+        modal.classList.remove('hidden-section');
+        modal.style.display = 'flex';
+    }
+
+    function fm_closeTransaksiModal() {
+        const modal = document.getElementById('fm_transaksi_modal');
+        modal.classList.add('hidden-section');
+        modal.style.display = 'none';
+        document.getElementById('fm_transaksi_form').reset();
+    }
+
+    function fm_submitTransaksi(event) {
+        event.preventDefault();
+        const btn = document.getElementById('fm_btn_submit_tx');
+        
+        const typeEl = document.querySelector('input[name="fm_tx_type"]:checked');
+        if(!typeEl) return alert("Pilih jenis transaksi!");
+        
+        const type = typeEl.value;
+        const walletId = document.getElementById('fm_tx_wallet').value;
+        const amount = parseFloat(document.getElementById('fm_tx_amount').value);
+        const walletObj = globalWallets.find(w => w.id === walletId);
+
+        const newTx = {
+            id: 'tx_' + Date.now(),
+            type: type,
+            amount: amount,
+            date: document.getElementById('fm_tx_date').value,
+            walletId: walletId,
+            walletName: walletObj ? walletObj.name : 'Unknown',
+            note: document.getElementById('fm_tx_note').value
+        };
+
+        btn.innerText = "Memproses...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+            globalTransactions.unshift(newTx); 
+            
+            // Logika potong saldo dompet di Frontend
+            if (walletObj) {
+                if(type === 'IN') walletObj.balance += amount;
+                else if (type === 'OUT') walletObj.balance -= amount;
+            }
+
+            fm_renderTransactions(); 
+            fm_renderWallets(); // Refresh saldo wallet di UI
+            fm_closeTransaksiModal();
+            btn.innerText = "Simpan Transaksi";
+            btn.disabled = false;
+        }, 500);
+    }
+
+    function fm_renderTransactions() {
+        const container = document.getElementById('fm_transaction_list');
+        if(!container) return;
+
+        if (globalTransactions.length === 0) {
+            container.innerHTML = '<div class="text-center text-gray-500 text-xs italic py-4">Belum ada transaksi.</div>';
+            return;
+        }
+
+        let html = '';
+        globalTransactions.forEach(tx => {
+            const isIncome = tx.type === 'IN';
+            const colorClass = isIncome ? 'text-emerald-400' : 'text-rose-400';
+            const bgIcon = isIncome ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20';
+            const iconObj = isIncome ? 'fa-arrow-down' : 'fa-arrow-up';
+            const sign = isIncome ? '+' : '-';
+
+            html += `
+            <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.06] transition-colors">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full border ${bgIcon} ${colorClass} flex items-center justify-center">
+                        <i class="fas ${iconObj} text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-white text-sm font-semibold">${tx.note}</div>
+                        <div class="text-xs text-gray-500 mt-0.5">${tx.date} • ${tx.walletName}</div>
+                    </div>
+                </div>
+                <div class="${colorClass} font-bold text-sm tracking-wide">
+                    ${sign} ${fm_formatRupiah(tx.amount)}
+                </div>
+            </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
     
-    // POLYFILL & MOCK DATA
+    // POLYFILL & MOCK DATA LAMA
     if (typeof google === 'undefined') {
         window.google = { script: { run: (function() { 
           function createRunner(onSuccess, onError) { 
@@ -773,7 +927,6 @@
             runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
             runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
             runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
-            runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
             
             // Mock Finance Manager
             runner.fm_getWalletsData = function() { 
@@ -791,7 +944,6 @@
     }
 
     var globalSalesData = []; var globalInvData = []; var globalProcData = []; var masterProductFullList = []; var todoItems = [];
-    function formatRp(num) { return "Rp " + parseFloat(num).toLocaleString('id-ID'); }
 
     // ROUTING
     function showPage(pageId, navEl) {
@@ -803,7 +955,11 @@
 
       document.getElementById('headerActions').innerHTML = '';
       if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
-      else if(pageId === 'pageFinance') { fm_loadWallets(); setTimeout(() => initFinanceChart(), 100); }
+      else if(pageId === 'pageFinance') { 
+          fm_loadWallets(); 
+          fm_renderTransactions(); // Pastikan dipanggil
+          setTimeout(() => initFinanceChart(), 100); 
+      }
       else if(pageId === 'pageSalesLog') { 
         loadSalesData();
         document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`;
@@ -1094,29 +1250,4 @@
     function openGrnModal() { document.getElementById('modalGrn').classList.remove('hidden-section'); document.getElementById('modalGrn').style.display='flex'; }
     function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); document.getElementById('modalGrn').style.display='none'; }
     function addGrnRow() { document.getElementById('grnItemsContainer').innerHTML += `<div class="grn-item-row" style="display:flex; gap:12px; margin-bottom:12px;"><input type="text" class="glass-input grn-sku" data-custom-list="skuSuggestions" placeholder="SKU"><input type="number" class="glass-input grn-qty" placeholder="Qty" style="width:80px;" value="1" oninput="calcGrn()"><input type="number" class="glass-input grn-hrg" placeholder="Harga" oninput="calcGrn()"></div>`; }
-    function calcGrn() { var sub = 0; document.querySelectorAll('.grn-item-row').forEach(r => { sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); }); var v = parseFloat(document.getElementById('grnVoc').value)||0; var f = parseFloat(document.getElementById('grnFee').value)||0; var o = parseFloat(document.getElementById('grnOng').value)||0; document.getElementById('grnSubtotalLabel').innerText = formatRp(sub); document.getElementById('grnTotalBersihLabel').innerText = formatRp(sub - v + f + o); }
-    function submitGrnData() {
-      var nota = { noOrder: document.getElementById('grnNota').value, tglOrder: document.getElementById('grnTgl').value, marketplace: document.getElementById('grnMp').value, supplier: document.getElementById('grnSupp').value, voucher: document.getElementById('grnVoc').value, ongkir: document.getElementById('grnOng').value, fee: document.getElementById('grnFee').value };
-      var items = []; document.querySelectorAll('.grn-item-row').forEach(row => { var s = row.querySelector('.grn-sku').value; if(s) items.push({ skuLengkap: s, qty: row.querySelector('.grn-qty').value, harga: row.querySelector('.grn-hrg').value }); });
-      if(items.length===0) return alert("Pilih item!");
-      document.getElementById('btnSubmitGrn').innerText = "Processing...";
-      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('btnSubmitGrn').innerText="Simpan GRN"; closeGrnModal(); loadProcurementData(); }).simpanDataGRNBaru(nota, items);
-    }
-    
-    function submitSkuBaru() {
-      var p = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value };
-      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p);
-    }
-    
-    function submitFinanceData() {
-      var btn = document.getElementById('btnSubmitFinance');
-      var p = { nominal: document.getElementById('finNominal').value, kategori: document.getElementById('finKategori').value, deskripsi: document.getElementById('finDeskripsi').value };
-      btn.disabled = true; btn.innerText = "MENYIMPAN...";
-      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; if(res === "SUCCESS") { alert("Transaksi otomatis dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; alert("Gagal: " + err); }).simpanTransaksiFinance(p);
-    }
-
-    // Panggil fm_loadWallets agar widget terisi saat web pertama dibuka (untuk testing UI/UX tanpa backend)
-    window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); fm_loadWallets(); };
-  </script>
-</body>
-</html>
+    function calcGrn() { var sub = 0; document.querySelectorAll('.grn-item-row').forEach(r => { sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); }); var v = parseFloat(document.getElementById('grnVoc').value)||0; var f = parseFloat(document.getElementById('grnFee').value)||0; var o = parseFloat(document.getElementById('grnOng').value)||0; document.getElementById('grnSubtotalLabel
