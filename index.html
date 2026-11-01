@@ -176,33 +176,34 @@
       
       <!-- 1. DASHBOARD -->
       <div id="pageDashboard" class="page-section">
+        
+        <!-- Wadah 4 Kartu Metrik Utama -->
         <div class="dashboard-cards" id="dashCards">
-          <div class="loading-spinner" style="grid-column: span 4;"><i class="fas fa-circle-notch fa-spin"></i> Initializing OS...</div>
+          <div class="loading-spinner" style="grid-column: span 4;">
+             <i class="fas fa-circle-notch fa-spin"></i> Initializing OS...
+          </div>
         </div>
+
         <div style="display:grid; grid-template-columns:1fr; gap:24px;">
+            
             <div class="glass-card" style="padding:24px; height:320px;">
                 <div class="tiny-label">REVENUE MATRIX</div>
                 <div style="height:90%;"><canvas id="trendChart"></canvas></div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr; gap:24px;">
-                <div class="glass-card" style="padding:24px;">
-                    <div class="tiny-label">MARKETPLACE SHARE</div>
-                    <div style="height:150px;"><canvas id="doughnutChart"></canvas></div>
-                </div>
-                <div class="glass-card">
-                    <div class="dg-header" style="color:var(--ryux-cyan);">TASK PROTOCOL</div>
-                    <div style="padding:24px;">
-                        <div style="display:flex; gap:12px; margin-bottom:16px;">
-                            <input type="text" id="todoInput" class="glass-input" placeholder="Enter command..." onkeypress="if(event.key === 'Enter') addTodo()">
-                            <button class="btn btn-primary" onclick="addTodo()">ADD</button>
-                        </div>
-                        <ul class="todo-list" id="todoListUI"></ul>
+            
+            <div class="glass-card">
+                <div class="dg-header" style="color:var(--ryux-cyan);">TASK PROTOCOL</div>
+                <div style="padding:24px;">
+                    <div style="display:flex; gap:12px; margin-bottom:16px;">
+                        <input type="text" id="todoInput" class="glass-input" placeholder="Enter command..." onkeypress="if(event.key === 'Enter') addTodo()">
+                        <button class="btn btn-primary" onclick="addTodo()">ADD</button>
                     </div>
+                    <ul class="todo-list" id="todoListUI"></ul>
                 </div>
             </div>
+
         </div>
       </div>
-
       <!-- 2. FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section">
          <div style="display:flex; flex-wrap:wrap; gap:24px;">
@@ -579,14 +580,15 @@
 
     // CHARTS
     let dashChartTrend = null; let dashChartDoughnut = null; let finChart = null;
+    // CHARTS (Hanya Trend Chart, tanpa Doughnut)
+    let dashChartTrend = null; let finChart = null;
     function initCharts() {
-      const trendEl = document.getElementById('trendChart'); const doughnutEl = document.getElementById('doughnutChart');
-      if (!trendEl || !doughnutEl) return;
+      const trendEl = document.getElementById('trendChart');
+      if (!trendEl) return;
       if (dashChartTrend) { dashChartTrend.destroy(); }
-      if (dashChartDoughnut) { dashChartDoughnut.destroy(); }
       
       Chart.defaults.color = '#94a3b8'; Chart.defaults.font.family = '"Plus Jakarta Sans"';
-      const ctxTrend = trendEl.getContext('2d'); const ctxDoughnut = doughnutEl.getContext('2d');
+      const ctxTrend = trendEl.getContext('2d');
       let gradientFill = ctxTrend.createLinearGradient(0, 0, 0, 300);
       gradientFill.addColorStop(0, 'rgba(0, 240, 255, 0.3)'); gradientFill.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
       
@@ -601,14 +603,7 @@
         }, 
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { y: { display: false }, x: { grid: { display: false } } } } 
       });
-      
-      dashChartDoughnut = new Chart(ctxDoughnut, { 
-        type: 'doughnut', 
-        data: { labels: ['Shopee', 'TikTok', 'Tokopedia'], datasets: [{ data: [55, 30, 15], backgroundColor: ['#B026FF', '#00F0FF', '#00FF66'], borderWidth: 0 }] }, 
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } }, cutout: '75%' } 
-      });
     }
-
     function initFinanceChart() {
       const ctx = document.getElementById('financeChart');
       if(!ctx) return;
@@ -656,14 +651,27 @@
     }
     function onProductSelect(val) { var match = masterProductFullList.find(d => d.nama.toLowerCase() === val.toLowerCase() || d.nama.toLowerCase().includes(val.toLowerCase())); if(match) { document.getElementById('newSku').value = match.sku || ''; document.getElementById('newType').value = match.tipe !== '-' ? match.tipe : ''; document.getElementById('newCat').value = match.kategori !== '-' ? match.kategori : ''; document.getElementById('newVar').value = match.varian !== '-' ? match.varian : ''; document.getElementById('newLc').value = match.listingCode !== '-' ? match.listingCode : ''; document.getElementById('newCogs').value = match.cogs || 0; } }
 
-    // FETCH & RENDER DATA
+    // FETCH DATA DASHBOARD
     function loadDashboard() {
       google.script.run.withSuccessHandler(data => {
         document.getElementById('dashCards').innerHTML = `
-          <div class="stat-card glass-card"><div class="stat-title">Omset</div><div class="stat-value text-ryux-cyan">${data.omset}</div></div>
-          <div class="stat-card glass-card"><div class="stat-title">Profit</div><div class="stat-value text-ryux-green">${data.profit}</div></div>
-          <div class="stat-card glass-card"><div class="stat-title">Terjual</div><div class="stat-value text-ryux-yellow">${data.terjual}</div></div>
-          <div class="stat-card glass-card"><div class="stat-title">Stok</div><div class="stat-value text-ryux-purple">${data.stokQty}</div></div>
+          <div class="stat-card glass-card" style="border-color:rgba(0,240,255,0.2);">
+             <div class="stat-title">Omset</div>
+             <div class="stat-value text-ryux-cyan">${data.omset}</div>
+          </div>
+          <div class="stat-card glass-card" style="border-color:rgba(0,255,102,0.2);">
+             <div class="stat-title">Profit</div>
+             <div class="stat-value text-ryux-green">${data.profit}</div>
+          </div>
+          <div class="stat-card glass-card" style="border-color:rgba(255,215,0,0.2);">
+             <div class="stat-title">Terjual</div>
+             <div class="stat-value text-ryux-yellow">${data.terjual}</div>
+          </div>
+          <div class="stat-card glass-card" style="border-color:rgba(176,38,255,0.2);">
+             <div class="stat-title">Stok Aktif</div>
+             <div class="stat-value text-ryux-purple">${data.stokQty}</div>
+             <div style="font-size:10px; color:var(--ryux-muted); margin-top:8px;">Aset: ${data.stokNilai}</div>
+          </div>
         `;
       }).getDashboardData();
     }
