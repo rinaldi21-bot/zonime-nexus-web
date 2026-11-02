@@ -103,16 +103,9 @@
     th { background: rgba(0, 0, 0, 0.4); padding: 16px; font-weight: 900; color: var(--ryux-muted); text-transform: uppercase; font-size: 9px; text-align: left; }
     td { padding: 16px; border-bottom: 1px solid var(--glass-border); font-weight: 500; }
 
-    /* CORE FIX: Mengatur pointer-events secara ketat pada Modal */
-    .modal-overlay { 
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); 
-      display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 16px; 
-      pointer-events: auto; /* Aktifkan klik HANYA saat terbuka */
-    }
-    .hidden-section { 
-      display: none !important; 
-      pointer-events: none !important; /* Nonaktifkan klik saat tersembunyi */
-    }
+    /* CORE FIX: Mengatur pointer-events pada Modal agar Menu di bawahnya bisa diklik */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 16px; pointer-events: auto; }
+    .hidden-section { display: none !important; pointer-events: none !important; }
 
     .modal-card { width: 100%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #0b0f19; border: 1px solid var(--ryux-cyan); }
     .modal-header { padding: 20px 24px; background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-weight: 900; }
@@ -197,29 +190,25 @@
         </div>
       </div>
 
-      <!-- VIEW: FINANCE MANAGER (SUPERCHARGED HYBRID) -->
+      <!-- VIEW: FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section flex flex-col gap-4">
          
-         <!-- BARIS 1: WIDGET MULTI-WALLET -->
-         <div id="fm_wallet_bento" class="w-full glass-card p-6 shadow-2xl shrink-0">
+         <div id="fm_wallet_bento" class="w-full glass-card p-6 shadow-2xl shrink-0 relative z-20">
              <div class="flex justify-between items-center mb-6">
                  <div>
                      <h2 class="text-xl font-bold text-white tracking-wide">Pos Keuangan (Wallets)</h2>
                      <p class="text-[10px] text-slate-400 mt-1">Kelola saldo dari berbagai sumber akun Bisnis dan Pribadi Anda.</p>
                  </div>
-                 <button onclick="fm_openWalletModal('add')" class="btn btn-outline"><i class="fa-solid fa-plus mr-1"></i> Tambah Akun</button>
+                 <button onclick="fm_openWalletModal('add')" class="btn btn-outline relative z-30"><i class="fa-solid fa-plus mr-1"></i> Tambah Akun</button>
              </div>
-             <div id="fm_wallet_container" class="flex flex-wrap gap-4">
+             <div id="fm_wallet_container" class="flex flex-wrap gap-4 relative z-20">
                  <div class="w-full text-center py-4 text-slate-500 text-xs italic" id="fm_wallet_loading">Memuat data dompet...</div>
              </div>
          </div>
 
-         <!-- BARIS 2: 3 KOLOM ANALITIK & TRANSAKSI -->
          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start;">
             
-            <!-- KOLOM KIRI: BALANCES & BUKU KAS -->
             <div style="display:flex; flex-direction:column; gap:24px;">
-                <!-- Ringkasan Saldo -->
                 <div class="flex gap-4">
                     <div class="glass-card stat-card flex-1" style="border-color:rgba(0, 240, 255, 0.2); padding:20px;">
                         <span class="tiny-label">Family Balance</span>
@@ -233,30 +222,29 @@
                     </div>
                 </div>
 
-                <!-- BUKU KAS (Riwayat Transaksi) -->
-                <div class="glass-card flex flex-col p-5 h-[320px]">
+                <div class="glass-card flex flex-col p-5 h-[320px] relative z-20">
                     <div class="flex justify-between items-center mb-4">
                         <div><div class="tiny-label">Buku Kas</div><div class="text-white font-bold text-sm">Riwayat Transaksi</div></div>
                     </div>
-                    <div class="flex gap-3 border-b border-white/10 pb-2 mb-3">
-                        <button class="text-[9px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-1 px-1">Semua</button>
-                        <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors">Masuk</button>
-                        <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors">Keluar</button>
+                    <!-- FIX BUKU KAS: Z-index & Pointer-events ditingkatkan agar tombol tab bisa diklik -->
+                    <div class="flex gap-3 border-b border-white/10 pb-2 mb-3 relative z-30">
+                        <button class="text-[9px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-1 px-1 pointer-events-auto cursor-pointer">Semua</button>
+                        <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors pointer-events-auto cursor-pointer">Masuk</button>
+                        <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors pointer-events-auto cursor-pointer">Keluar</button>
                     </div>
-                    <div id="fm_transaction_list" class="flex-1 overflow-y-auto custom-scroll pr-1 flex flex-col gap-2">
+                    <div id="fm_transaction_list" class="flex-1 overflow-y-auto custom-scroll pr-1 flex flex-col gap-2 relative z-20">
                         <div class="text-center text-slate-500 text-xs italic py-4">Memuat transaksi...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- KOLOM TENGAH: TOMBOL QUICK TRANSAKSI & VIRTUAL POCKETS -->
             <div style="display:flex; flex-direction:column; gap:24px;">
-                <div class="glass-card" style="padding:24px;">
+                <div class="glass-card relative z-20" style="padding:24px;">
                     <div class="flex justify-between items-center mb-4">
                         <div style="font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Catat Transaksi Cepat</div>
                     </div>
                     <p class="text-[10px] text-slate-400 mb-4">Mulai proses entri catatan transaksi keuangan Anda melalui panel lengkap (Pop-Up Modal).</p>
-                    <button onclick="fm_openTransaksiModal()" class="btn btn-primary w-full py-4 text-sm font-bold tracking-widest uppercase"><i class="fas fa-plus mr-2"></i> Input Transaksi</button>
+                    <button onclick="fm_openTransaksiModal()" class="btn btn-primary w-full py-4 text-sm font-bold tracking-widest uppercase relative z-30"><i class="fas fa-plus mr-2"></i> Input Transaksi</button>
                 </div>
 
                 <div class="glass-card" style="padding:24px; flex:1;">
@@ -278,7 +266,6 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: CASH FLOW, HEALTH SCORE, UTANG PIUTANG -->
             <div style="display:flex; flex-direction:column; gap:24px;">
                 <div class="glass-card flex justify-between items-center" style="padding:20px; border-color:rgba(0,255,102,0.15);">
                     <div><span class="tiny-label">Health Score</span><div style="font-size:10px; color:var(--ryux-muted); font-weight:600; margin-top:4px;">Indeks Likuiditas Aman</div></div>
@@ -290,12 +277,12 @@
                     <div style="height:120px; position:relative;"><canvas id="financeChart"></canvas></div>
                 </div>
 
-                <div class="glass-card p-5 flex-1 flex flex-col">
+                <div class="glass-card p-5 flex-1 flex flex-col relative z-20">
                     <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
                         <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang</span>
-                        <button class="btn btn-outline btn-icon" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus"></i></button>
+                        <button class="btn btn-outline btn-icon relative z-30" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus"></i></button>
                     </div>
-                    <div class="flex flex-col gap-3 overflow-y-auto max-h-[120px] custom-scroll">
+                    <div class="flex flex-col gap-3 overflow-y-auto max-h-[120px] custom-scroll relative z-20">
                         <div class="flex justify-between items-center">
                             <div class="flex flex-col"><span class="text-[10px] font-bold text-white">Client Beta</span><span class="text-[8px] text-slate-500 uppercase">Jatuh Tempo: 15 Nov</span></div>
                             <div class="flex flex-col items-end"><span class="text-[11px] font-bold text-emerald-400">Rp 8.500.000</span><span class="text-[8px] text-emerald-500/80 uppercase">Piutang</span></div>
@@ -413,7 +400,7 @@
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
   <!-- ============================================================== -->
-  <!-- MODALS -->
+  <!-- SEMUA MODALS (Z-INDEX 9999, POINTER EVENTS AUTO)               -->
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section">
@@ -642,7 +629,7 @@
             runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
             runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
             runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
-            runner.fm_saveWalletData = function(payload, action) { _call('fm_saveWalletData', { payload: payload, action: action }); };
+            runner.fm_saveWalletData = function(payload) { _call('fm_saveWalletData', payload); };
             runner.fm_getWalletsData = function() { _call('fm_getWalletsData'); };
             runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
             runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
@@ -655,6 +642,7 @@
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     function formatRp(num) { return fmtAkuntan.format(num); }
 
+    // ROUTING
     function showPage(pageId, navEl) {
       document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden-section'));
       document.getElementById(pageId).classList.remove('hidden-section');
@@ -673,6 +661,7 @@
       else if(pageId === 'pageProcurement') { loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()">+ GRN</button>`; }
     }
 
+    // CHARTS
     let dashChartTrend = null; let finChart = null;
     function initCharts() {
       const trendEl = document.getElementById('trendChart');
@@ -999,10 +988,10 @@
     
     function fm_submitWalletForm(e) {
         e.preventDefault(); const btn = document.getElementById('fm_btn_submit'); const act = document.getElementById('fm_input_action').value;
-        const d = { name: document.getElementById('fm_input_name').value, type: document.getElementById('fm_input_type').value, category: document.getElementById('fm_input_category').value, balance: parseFloat(document.getElementById('fm_input_balance').value) };
+        const d = { payload: { id: document.getElementById('fm_input_id').value || ('w_'+Date.now()), name: document.getElementById('fm_input_name').value, type: document.getElementById('fm_input_type').value, category: document.getElementById('fm_input_category').value, balance: parseFloat(document.getElementById('fm_input_balance').value) }, action: act };
         btn.innerText = "Menyimpan..."; btn.disabled = true;
-        if(act==='add') { d.id = 'w_'+Date.now(); globalWallets.push(d); } else { d.id = document.getElementById('fm_input_id').value; const idx = globalWallets.findIndex(x=>x.id===d.id); if(idx!==-1) globalWallets[idx] = d; }
-        google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; fm_renderWallets(); }).fm_saveWalletData(d, act);
+        if(act==='add') { globalWallets.push(d.payload); } else { const idx = globalWallets.findIndex(x=>x.id===d.payload.id); if(idx!==-1) globalWallets[idx] = d.payload; }
+        google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; fm_renderWallets(); }).fm_saveWalletData(d);
     }
 
     // FINANCE TRANSACTIONS
@@ -1021,20 +1010,20 @@
         google.script.run.withSuccessHandler(res => { btn.disabled=false; btn.innerText="Simpan Transaksi"; if(res==="SUCCESS") { fm_closeTransaksiModal(); document.getElementById('fm_transaksi_form').reset(); alert("Transaksi disimpan!"); } else alert(res); }).withFailureHandler(err => { btn.disabled=false; btn.innerText="Simpan Transaksi"; alert(err); }).simpanTransaksiFinance(d);
     }
 
-    function fm_renderTransactions() {
-        const c = document.getElementById('fm_transaction_list'); if(!c) return;
-        c.innerHTML = '<div class="text-slate-500 py-4 text-center">Menunggu integrasi riwayat backend...</div>';
-    }
-
     function openUtangModal() { document.getElementById('modalUtangPiutang').classList.remove('hidden-section'); }
     function closeUtangModal() { document.getElementById('modalUtangPiutang').classList.add('hidden-section'); }
-    function submitUtangData() { alert('Catatan disiapkan! (Menunggu backend)'); closeUtangModal(); document.getElementById('formUtang').reset(); }
+    function submitUtangData() { 
+      var btn = document.getElementById('btnSubmitUtang');
+      var p = { tipe: document.getElementById('utangTipe').value, nama: document.getElementById('utangNama').value, nominal: document.getElementById('utangNominal').value, tempo: document.getElementById('utangTempo').value };
+      btn.disabled = true; btn.innerText = "MENYIMPAN...";
+      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Catatan"; if (res === "SUCCESS") { alert("Catatan Utang/Piutang berhasil disimpan!"); document.getElementById('formUtang').reset(); closeUtangModal(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Catatan"; alert("Gagal: " + err); }).simpanUtangPiutang(p);
+    }
     
     function submitFinanceData() {
       var btn = document.getElementById('btnSubmitFinance');
       var p = { nominal: document.getElementById('finNominal').value, kategori: document.getElementById('finKategori').value, deskripsi: document.getElementById('finDeskripsi').value };
       btn.disabled = true; btn.innerText = "SIMPAN...";
-      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Cepat"; if(res === "SUCCESS") { alert("Transaksi dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Cepat"; alert(err); }).simpanTransaksiFinance(p);
+      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Cepat"; if(res === "SUCCESS") { alert("Transaksi dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Cepat"; alert("Gagal: " + err); }).simpanTransaksiFinance(p);
     }
 
     window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
