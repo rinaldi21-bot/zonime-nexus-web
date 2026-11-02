@@ -9,6 +9,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
     :root {
@@ -102,8 +103,17 @@
     th { background: rgba(0, 0, 0, 0.4); padding: 16px; font-weight: 900; color: var(--ryux-muted); text-transform: uppercase; font-size: 9px; text-align: left; }
     td { padding: 16px; border-bottom: 1px solid var(--glass-border); font-weight: 500; }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 16px; pointer-events: auto; }
-    .hidden-section { display: none !important; pointer-events: none; }
+    /* CORE FIX: Mengatur pointer-events pada modal overlay agar klik tembus saat modal ditutup */
+    .modal-overlay { 
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); 
+      display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 16px; 
+      pointer-events: auto; /* Saat modal terbuka, tangkap klik */
+    }
+    .hidden-section { 
+      display: none !important; 
+      pointer-events: none; /* Saat modal/section tersembunyi, jangan blokir klik */
+    }
+
     .modal-card { width: 100%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #0b0f19; border: 1px solid var(--ryux-cyan); }
     .modal-header { padding: 20px 24px; background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-weight: 900; }
     .modal-body { padding: 24px; overflow-y: auto; }
@@ -188,16 +198,16 @@
       </div>
 
       <!-- VIEW: FINANCE MANAGER (SUPERCHARGED HYBRID) -->
-      <div id="view-finance" class="page-section h-full flex flex-col p-5 gap-4 overflow-y-auto custom-scroll hidden">
+      <div id="pageFinance" class="page-section hidden-section flex flex-col gap-4">
          
          <!-- BARIS 1: WIDGET MULTI-WALLET -->
-         <div id="fm_wallet_bento" class="w-full glass-card p-6 shadow-2xl mb-2 shrink-0">
+         <div id="fm_wallet_bento" class="w-full glass-card p-6 shadow-2xl shrink-0">
              <div class="flex justify-between items-center mb-6">
                  <div>
                      <h2 class="text-xl font-bold text-white tracking-wide">Pos Keuangan (Wallets)</h2>
                      <p class="text-[10px] text-slate-400 mt-1">Kelola saldo dari berbagai sumber akun Bisnis dan Pribadi Anda.</p>
                  </div>
-                 <button onclick="fm_openWalletModal('add')" class="btn-outline text-[10px]"><i class="fa-solid fa-plus mr-1"></i> Tambah Akun</button>
+                 <button onclick="fm_openWalletModal('add')" class="btn btn-outline"><i class="fa-solid fa-plus mr-1"></i> Tambah Akun</button>
              </div>
              <div id="fm_wallet_container" class="flex flex-wrap gap-4">
                  <div class="w-full text-center py-4 text-slate-500 text-xs italic" id="fm_wallet_loading">Memuat data dompet...</div>
@@ -219,7 +229,7 @@
                     <div class="glass-card stat-card flex-1" style="border-color:rgba(176, 38, 255, 0.2); padding:20px;">
                         <span class="tiny-label">Biz Balance</span>
                         <div class="stat-value text-white" id="finBizBal" style="font-size:24px; font-weight:300;">Rp 0</div>
-                        <button class="btn btn-outline p-1 text-[8px] mt-2 w-full">Request</button>
+                        <button class="btn btn-outline w-full mt-2 text-[8px] py-1 px-1">Request</button>
                     </div>
                 </div>
 
@@ -244,7 +254,7 @@
                 <div class="glass-card" style="padding:24px;">
                     <div class="flex justify-between items-center mb-4">
                         <div style="font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Catat Transaksi</div>
-                        <button onclick="fm_openTransaksiModal()" class="btn-primary py-1 px-2 text-[9px]"><i class="fas fa-plus"></i></button>
+                        <button onclick="fm_openTransaksiModal()" class="btn btn-primary btn-icon"><i class="fas fa-plus"></i></button>
                     </div>
                     <form id="formFinance" onsubmit="event.preventDefault(); submitFinanceData();" style="display:flex; flex-direction:column; gap:12px;">
                         <input type="number" id="finNominal" class="glass-input text-[11px]" placeholder="Nominal (Rp)" required>
@@ -253,7 +263,7 @@
                             <optgroup label="Double-Entry" style="background:#05030a;"><option value="transfer_biz_to_fam">Transfer: Bisnis ➔ Pribadi</option></optgroup>
                         </select>
                         <textarea id="finDeskripsi" class="glass-input text-[11px]" style="height:50px; resize:none;" placeholder="Catatan (Otomatis dikategorikan)" required></textarea>
-                        <button type="submit" id="btnSubmitFinance" class="btn btn-outline py-2 border-dashed text-[10px]">Simpan Cepat</button>
+                        <button type="submit" id="btnSubmitFinance" class="btn btn-outline py-2 border-dashed">Simpan Cepat</button>
                     </form>
                 </div>
 
@@ -279,7 +289,7 @@
             <!-- KOLOM KANAN: CASH FLOW, HEALTH SCORE, UTANG PIUTANG -->
             <div style="display:flex; flex-direction:column; gap:24px;">
                 <div class="glass-card flex justify-between items-center" style="padding:20px; border-color:rgba(0,255,102,0.15);">
-                    <div><span class="tiny-label">Health Score</span><div style="font-size:10px; color:var(--ryux-muted); font-weight:600; mt-1">Indeks Likuiditas Aman</div></div>
+                    <div><span class="tiny-label">Health Score</span><div style="font-size:10px; color:var(--ryux-muted); font-weight:600; margin-top:4px;">Indeks Likuiditas Aman</div></div>
                     <div style="width:50px; height:50px; border-radius:50%; border:2px solid rgba(0,255,102,0.3); display:flex; align-items:center; justify-content:center;"><span style="font-size:20px; font-weight:700; color:var(--ryux-green);">88</span></div>
                 </div>
 
@@ -290,8 +300,8 @@
 
                 <div class="glass-card p-5 flex-1 flex flex-col">
                     <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
-                        <span class="font-bold uppercase text-[11px] color-slate-400 tracking-wider">Utang & Piutang</span>
-                        <button class="btn btn-outline btn-icon" style="width:24px; height:24px; font-size:10px;" onclick="openUtangModal()"><i class="fas fa-plus"></i></button>
+                        <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang</span>
+                        <button class="btn btn-outline btn-icon" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus"></i></button>
                     </div>
                     <div class="flex flex-col gap-3 overflow-y-auto max-h-[120px] custom-scroll">
                         <div class="flex justify-between items-center">
@@ -411,7 +421,7 @@
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
   <!-- ============================================================== -->
-  <!-- MODALS -->
+  <!-- MODALS (Z-INDEX 9999) TINGKATKAN POINTER-EVENTS                -->
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section">
@@ -545,6 +555,45 @@
     </div>
   </div>
   
+  <div id="fm_wallet_modal" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:450px;">
+      <div class="modal-header"><span style="color:var(--ryux-cyan);" id="fm_modal_title"><i class="fas fa-wallet"></i> Tambah Pos Keuangan</span><button onclick="fm_closeWalletModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div>
+      <div class="modal-body">
+        <form id="fm_wallet_form" onsubmit="fm_submitWalletForm(event)">
+          <input type="hidden" id="fm_input_action" value="add"><input type="hidden" id="fm_input_id">
+          <div class="form-group"><label class="tiny-label">Nama Akun</label><input type="text" id="fm_input_name" required class="glass-input"></div>
+          <div style="display:flex; gap:16px; margin-bottom:16px;">
+            <div class="form-group" style="flex:1;"><label class="tiny-label">Tipe</label><select id="fm_input_type" class="glass-input"><option value="Tunai">Tunai</option><option value="Bank">Bank</option><option value="E-Wallet">E-Wallet</option><option value="Kredit">Kredit</option></select></div>
+            <div class="form-group" style="flex:1;"><label class="tiny-label">Kategori</label><select id="fm_input_category" class="glass-input"><option value="Bisnis">Bisnis</option><option value="Keluarga">Keluarga</option></select></div>
+          </div>
+          <div class="form-group mb-5"><label class="tiny-label" style="color:var(--ryux-green)">Saldo Awal</label><input type="number" id="fm_input_balance" required value="0" class="glass-input font-bold"></div>
+          <button type="submit" id="fm_btn_submit" class="btn btn-primary" style="width:100%; padding:16px;">Simpan Akun</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="fm_transaksi_modal" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:500px;">
+      <div class="modal-header"><span style="color:var(--ryux-cyan);"><i class="fas fa-exchange-alt"></i> Catat Transaksi Baru</span><button onclick="fm_closeTransaksiModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div>
+      <div class="modal-body">
+        <form id="fm_transaksi_form" onsubmit="fm_submitTransaksi(event)">
+          <div style="display:flex; gap:16px; margin-bottom:20px;">
+            <label style="flex:1; cursor:pointer;"><input type="radio" name="fm_tx_type" value="IN" class="peer sr-only" required><div class="text-center py-2 rounded-lg border border-white/10 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-down"></i> Masuk</div></label>
+            <label style="flex:1; cursor:pointer;"><input type="radio" name="fm_tx_type" value="OUT" class="peer sr-only"><div class="text-center py-2 rounded-lg border border-white/10 text-slate-400 peer-checked:bg-rose-500/20 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-up"></i> Keluar</div></label>
+          </div>
+          <div style="display:flex; gap:16px; margin-bottom:16px;">
+            <div class="form-group" style="flex:1;"><label class="tiny-label">Nominal (Rp)</label><input type="number" id="fm_tx_amount" required min="1" class="glass-input text-lg font-bold text-white"></div>
+            <div class="form-group" style="flex:1;"><label class="tiny-label">Tanggal</label><input type="date" id="fm_tx_date" required class="glass-input"></div>
+          </div>
+          <div class="form-group"><label class="tiny-label">Pilih Dompet (Sumber/Tujuan)</label><select id="fm_tx_wallet" required class="glass-input"><option value="">-- Pilih --</option></select></div>
+          <div class="form-group mb-5"><label class="tiny-label">Catatan</label><input type="text" id="fm_tx_note" required class="glass-input"></div>
+          <button type="submit" id="fm_btn_submit_tx" class="btn btn-primary" style="width:100%; padding:16px;">Simpan Transaksi</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <div id="modalUtangPiutang" class="modal-overlay hidden-section">
     <div class="modal-card" style="max-width:450px;">
       <div class="modal-header"><span style="color:var(--ryux-cyan);"><i class="fas fa-handshake"></i> Catat Utang / Piutang</span><button onclick="closeUtangModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div>
@@ -559,7 +608,7 @@
           </div>
           <div class="form-group"><label class="tiny-label">Nama Pihak (Klien/Vendor)</label><input type="text" id="utangNama" class="glass-input" required></div>
           <div style="display:flex; gap:16px; margin-bottom:16px;">
-            <div style="flex:1;"><label class="tiny-label">Nominal (Rp)</label><input type="number" id="utangNominal" class="glass-input" required></div>
+            <div style="flex:1;"><label class="tiny-label">Nominal (Rp)</label><input type="number" id="utangNominal" class="glass-input" required min="1"></div>
             <div style="flex:1;"><label class="tiny-label">Jatuh Tempo</label><input type="date" id="utangTempo" class="glass-input" required></div>
           </div>
           <button type="submit" id="btnSubmitUtang" class="btn btn-primary" style="width:100%; padding:16px;">Simpan Catatan</button>
@@ -571,7 +620,6 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
     
-    // POLYFILL MENGGUNAKAN CORS BYPASS
     if (typeof google === 'undefined') {
         window.google = { script: { run: (function() { 
           function createRunner(onSuccess, onError) { 
@@ -606,13 +654,25 @@
             runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
             runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
             runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
+            
+            // Mock Finance Wallets
+            runner.fm_getWalletsData = function() { 
+                if(onSuccess) onSuccess([
+                    { id: "w_1", name: "Kasir Toko (Fisik)", type: "Tunai", category: "Bisnis", balance: 1500000 },
+                    { id: "w_2", name: "BCA Operasional", type: "Bank", category: "Bisnis", balance: 168052500 },
+                    { id: "w_3", name: "ShopeePay", type: "E-Wallet", category: "Keluarga", balance: 500000 },
+                    { id: "w_4", name: "Mandiri Pribadi", type: "Bank", category: "Keluarga", balance: 85300000 }
+                ]); 
+            };
+            runner.fm_saveWalletData = function(payload, action) { if(onSuccess) onSuccess("SUCCESS"); };
             return runner; 
           } return createRunner(null, null); 
         })() } };
     }
 
     var globalSalesData = []; var globalInvData = []; var globalProcData = []; var masterProductFullList = []; var todoItems = [];
-    function formatRp(num) { return "Rp " + parseFloat(num).toLocaleString('id-ID'); }
+    var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    function formatRp(num) { return fmtAkuntan.format(num); }
 
     // ROUTING
     function showPage(pageId, navEl) {
@@ -624,7 +684,7 @@
 
       document.getElementById('headerActions').innerHTML = '';
       if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
-      else if(pageId === 'pageFinance') { setTimeout(() => initFinanceChart(), 100); }
+      else if(pageId === 'pageFinance') { fm_loadWallets(); fm_renderTransactions(); setTimeout(() => initFinanceChart(), 100); }
       else if(pageId === 'pageSalesLog') { 
         loadSalesData();
         document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`;
@@ -839,8 +899,8 @@
     }
 
     // MODAL FUNCTIONS
-    function openImportModal() { document.getElementById('modalImport').classList.remove('hidden-section'); document.getElementById('modalImport').style.display='flex'; }
-    function closeImportModal() { document.getElementById('modalImport').classList.add('hidden-section'); document.getElementById('modalImport').style.display='none'; }
+    function openImportModal() { document.getElementById('modalImport').classList.remove('hidden-section'); }
+    function closeImportModal() { document.getElementById('modalImport').classList.add('hidden-section'); }
     function executeImport() { 
       var acc = document.getElementById('importAccount').value;
       document.getElementById('btnExecImport').innerText = "Syncing...";
@@ -852,9 +912,9 @@
     function openInvActionModal(sku, nama, stok, cogs) {
       document.getElementById('invActSku').value = sku; document.getElementById('invActCogs').value = cogs;
       document.getElementById('invActSkuLabel').innerText = sku; document.getElementById('invActStokSistem').value = stok;
-      switchInvTab('OPNAME'); document.getElementById('modalInvAction').classList.remove('hidden-section'); document.getElementById('modalInvAction').style.display='flex';
+      switchInvTab('OPNAME'); document.getElementById('modalInvAction').classList.remove('hidden-section'); 
     }
-    function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden-section'); document.getElementById('modalInvAction').style.display='none'; }
+    function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden-section'); }
     function switchInvTab(tab) {
       document.getElementById('tabOpname').style.display = tab === 'OPNAME' ? 'block' : 'none';
       document.getElementById('tabBs').style.display = tab === 'BS' ? 'block' : 'none';
@@ -881,9 +941,9 @@
       document.getElementById('fixRefBox').innerHTML = `<div class="tiny-label">MP REF</div><div style="font-weight:900; color:white;">${item.mpProductName}</div><div style="font-size:10px; color:var(--ryux-yellow); margin-top:4px;">LC: ${item.listingCode}</div>`;
       document.getElementById('fixItemsContainer').innerHTML = "";
       item.items.forEach((itm, i) => { if(itm.qty>0 || itm.sku==="-") { addFixRowUI(itm.sku==='-'?'':itm.sku, itm.qty); } });
-      document.getElementById('modalFixSales').classList.remove('hidden-section'); document.getElementById('modalFixSales').style.display='flex';
+      document.getElementById('modalFixSales').classList.remove('hidden-section'); 
     }
-    function closeFixModal() { document.getElementById('modalFixSales').classList.add('hidden-section'); document.getElementById('modalFixSales').style.display='none'; }
+    function closeFixModal() { document.getElementById('modalFixSales').classList.add('hidden-section'); }
     function addFixRowUI(sku='', qty=1) { document.getElementById('fixItemsContainer').innerHTML += `<div style="display:flex; gap:12px;"><input type="text" class="glass-input fix-sku-input" data-custom-list="skuSuggestions" placeholder="SKU" value="${sku}"><input type="number" class="glass-input fix-qty-input" placeholder="QTY" style="width:80px;" value="${qty}"></div>`; }
     function saveFixModal() {
       var rowIdx = parseInt(document.getElementById('fixRowIdx').value);
@@ -897,21 +957,21 @@
       var item = globalSalesData.find(s => s.rowIdx === idx); var html = '';
       item.items.forEach(itm => { if(itm.qty>0 && itm.sku!=='-') html += `<div style="display:flex; justify-content:space-between; color:white; font-size:12px; margin-bottom:8px;"><span>${itm.sku}</span><span style="color:var(--ryux-cyan);">+${itm.qty}</span></div>`; });
       document.getElementById('returItemsList').innerHTML = html;
-      document.getElementById('modalRetur').classList.remove('hidden-section'); document.getElementById('modalRetur').style.display='flex';
+      document.getElementById('modalRetur').classList.remove('hidden-section'); 
     }
-    function closeReturModal() { document.getElementById('modalRetur').classList.add('hidden-section'); document.getElementById('modalRetur').style.display='none'; }
+    function closeReturModal() { document.getElementById('modalRetur').classList.add('hidden-section'); }
     function submitRetur() {
       var idx = parseInt(document.getElementById('returRowIdx').value); var item = globalSalesData.find(s => s.rowIdx === idx);
       var p = { rowIdx: idx, noOrder: document.getElementById('returNoOrderLabel').innerText, kondisi: document.getElementById('returKondisi').value, keterangan: document.getElementById('returKeterangan').value, items: item.items };
       google.script.run.withSuccessHandler(res => { alert(res); closeReturModal(); loadSalesData(); }).simpanTerimaRetur(p);
     }
 
-    function openReviseProcModal(no, sku, qty, harga) { document.getElementById('revProcNota').value = no; document.getElementById('revProcOldSku').value = sku; document.getElementById('revProcSku').value = sku; document.getElementById('revProcQty').value = qty; document.getElementById('revProcHarga').value = harga; document.getElementById('modalReviseProc').classList.remove('hidden-section'); document.getElementById('modalReviseProc').style.display='flex'; }
-    function closeReviseProcModal() { document.getElementById('modalReviseProc').classList.add('hidden-section'); document.getElementById('modalReviseProc').style.display='none'; }
+    function openReviseProcModal(no, sku, qty, harga) { document.getElementById('revProcNota').value = no; document.getElementById('revProcOldSku').value = sku; document.getElementById('revProcSku').value = sku; document.getElementById('revProcQty').value = qty; document.getElementById('revProcHarga').value = harga; document.getElementById('modalReviseProc').classList.remove('hidden-section'); }
+    function closeReviseProcModal() { document.getElementById('modalReviseProc').classList.add('hidden-section'); }
     function submitReviseProc() { google.script.run.withSuccessHandler(res => { alert(res); closeReviseProcModal(); loadProcurementData(); }).simpanRevisiProcurement(document.getElementById('revProcNota').value, document.getElementById('revProcOldSku').value, document.getElementById('revProcSku').value, document.getElementById('revProcQty').value, document.getElementById('revProcHarga').value); }
 
-    function openGrnModal() { document.getElementById('modalGrn').classList.remove('hidden-section'); document.getElementById('modalGrn').style.display='flex'; }
-    function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); document.getElementById('modalGrn').style.display='none'; }
+    function openGrnModal() { document.getElementById('modalGrn').classList.remove('hidden-section'); }
+    function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); }
     function addGrnRow() { document.getElementById('grnItemsContainer').innerHTML += `<div class="grn-item-row" style="display:flex; gap:12px; margin-bottom:12px;"><input type="text" class="glass-input grn-sku" data-custom-list="skuSuggestions" placeholder="SKU"><input type="number" class="glass-input grn-qty" placeholder="Qty" style="width:80px;" value="1" oninput="calcGrn()"><input type="number" class="glass-input grn-hrg" placeholder="Harga" oninput="calcGrn()"></div>`; }
     function calcGrn() { var sub = 0; document.querySelectorAll('.grn-item-row').forEach(r => { sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); }); var v = parseFloat(document.getElementById('grnVoc').value)||0; var f = parseFloat(document.getElementById('grnFee').value)||0; var o = parseFloat(document.getElementById('grnOng').value)||0; document.getElementById('grnSubtotalLabel').innerText = formatRp(sub); document.getElementById('grnTotalBersihLabel').innerText = formatRp(sub - v + f + o); }
     function submitGrnData() {
@@ -927,15 +987,83 @@
       google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p);
     }
 
-    function openUtangModal() { document.getElementById('modalUtangPiutang').classList.remove('hidden-section'); document.getElementById('modalUtangPiutang').style.display = 'flex'; }
-    function closeUtangModal() { document.getElementById('modalUtangPiutang').classList.add('hidden-section'); document.getElementById('modalUtangPiutang').style.display = 'none'; }
+    // FINANCE WALLET LOGIC
+    function fm_loadWallets() {
+        const c = document.getElementById('fm_wallet_container'); if(c) c.innerHTML = '<div class="text-slate-400 text-sm w-full text-center">Memuat dompet...</div>';
+        if(globalWallets.length === 0) { google.script.run.withSuccessHandler(data => { globalWallets = data; fm_renderWallets(); }).fm_getWalletsData(); } 
+        else { fm_renderWallets(); }
+    }
+
+    function fm_renderWallets() {
+        const c = document.getElementById('fm_wallet_container'); if(!c) return;
+        let tBiz = 0, tFam = 0, html = '';
+        if(globalWallets.length===0) { c.innerHTML='<div class="text-slate-400 w-full text-center">Kosong</div>'; } 
+        else {
+            globalWallets.forEach(w => {
+                if(w.category === 'Bisnis') tBiz += w.balance; else tFam += w.balance;
+                const badge = w.category==='Bisnis' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                html += `<div class="flex-1 min-w-[200px] bg-black/20 border border-white/10 rounded-xl p-4 flex flex-col relative group"><button onclick="fm_openWalletModal('edit', '${w.id}')" class="absolute top-2 right-2 text-slate-400 hover:text-white opacity-0 group-hover:opacity-100"><i class="fas fa-pen text-xs"></i></button><div class="flex justify-between mb-4"><span class="text-slate-300 text-[10px]"><i class="fas fa-wallet mr-1"></i>${w.type}</span><span class="text-[9px] px-2 py-0.5 rounded border uppercase ${badge}">${w.category}</span></div><div class="text-slate-400 text-[10px] mb-1">${w.name}</div><div class="text-lg font-bold text-white">${formatRp(w.balance)}</div></div>`;
+            });
+            c.innerHTML = html;
+        }
+        const bB = document.getElementById('finBizBal'); const fB = document.getElementById('finFamilyBal');
+        if(bB) bB.innerText = formatRp(tBiz); if(fB) fB.innerText = formatRp(tFam);
+    }
+
+    function fm_openWalletModal(act='add', id=null) {
+        document.getElementById('fm_wallet_form').reset(); document.getElementById('fm_input_action').value = act;
+        const title = document.getElementById('fm_modal_title');
+        if(act==='edit' && id) { title.innerHTML='<i class="fas fa-edit"></i> Edit Pos'; const w = globalWallets.find(x=>x.id===id); if(w) { document.getElementById('fm_input_id').value = w.id; document.getElementById('fm_input_name').value = w.name; document.getElementById('fm_input_type').value = w.type; document.getElementById('fm_input_category').value = w.category; document.getElementById('fm_input_balance').value = w.balance; } }
+        else { title.innerHTML='<i class="fas fa-wallet"></i> Tambah Pos'; document.getElementById('fm_input_id').value = ''; document.getElementById('fm_input_balance').value = 0; }
+        document.getElementById('fm_wallet_modal').classList.remove('hidden-section');
+    }
+    function fm_closeWalletModal() { document.getElementById('fm_wallet_modal').classList.add('hidden-section'); }
+    
+    function fm_submitWalletForm(e) {
+        e.preventDefault(); const btn = document.getElementById('fm_btn_submit'); const act = document.getElementById('fm_input_action').value;
+        const d = { name: document.getElementById('fm_input_name').value, type: document.getElementById('fm_input_type').value, category: document.getElementById('fm_input_category').value, balance: parseFloat(document.getElementById('fm_input_balance').value) };
+        btn.innerText = "Menyimpan..."; btn.disabled = true;
+        if(act==='add') { d.id = 'w_'+Date.now(); globalWallets.push(d); } else { d.id = document.getElementById('fm_input_id').value; const idx = globalWallets.findIndex(x=>x.id===d.id); if(idx!==-1) globalWallets[idx] = d; }
+        google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; fm_renderWallets(); }).fm_saveWalletData(d, act);
+    }
+
+    // FINANCE TRANSACTIONS
+    function fm_openTransaksiModal() {
+        const sel = document.getElementById('fm_tx_wallet'); sel.innerHTML = '<option value="">-- Pilih Akun --</option>';
+        globalWallets.forEach(w => { sel.innerHTML += `<option value="${w.id}">${w.name} (${w.category})</option>`; });
+        document.getElementById('fm_tx_date').valueAsDate = new Date(); document.getElementById('fm_tx_amount').value=''; document.getElementById('fm_tx_note').value='';
+        document.getElementById('fm_transaksi_modal').classList.remove('hidden-section'); 
+    }
+    function fm_closeTransaksiModal() { document.getElementById('fm_transaksi_modal').classList.add('hidden-section'); }
+    
+    function fm_submitTransaksi(e) {
+        e.preventDefault(); const btn = document.getElementById('fm_btn_submit_tx');
+        const d = { nominal: document.getElementById('fm_tx_amount').value, kategori: document.querySelector('input[name="fm_tx_type"]:checked').value, deskripsi: document.getElementById('fm_tx_note').value };
+        const wId = document.getElementById('fm_tx_wallet').value; const wObj = globalWallets.find(x=>x.id===wId);
+        btn.innerText = "Menyimpan..."; btn.disabled = true;
+        google.script.run.withSuccessHandler(res => { btn.disabled=false; btn.innerText="Simpan Transaksi"; if(res==="SUCCESS") { globalTransactions.unshift({ id: 'tx_'+Date.now(), type: d.kategori, amount: parseFloat(d.nominal), date: document.getElementById('fm_tx_date').value, walletId: wId, walletName: wObj?wObj.name:'', note: d.deskripsi }); fm_renderTransactions(); fm_closeTransaksiModal(); } else alert(res); }).simpanTransaksiFinance(d);
+    }
+
+    function fm_renderTransactions() {
+        const c = document.getElementById('fm_transaction_list'); if(!c) return;
+        if(globalTransactions.length===0) { c.innerHTML = '<div class="text-slate-500 py-4 text-center">Belum ada transaksi.</div>'; return; }
+        let html = '';
+        globalTransactions.forEach(tx => {
+            const isInc = tx.type==='IN'; const color = isInc?'text-emerald-400':'text-rose-400'; const bg = isInc?'bg-emerald-500/10 border-emerald-500/20':'bg-rose-500/10 border-rose-500/20'; const icon = isInc?'fa-arrow-down':'fa-arrow-up'; const sign = isInc?'+':'-';
+            html += `<div class="flex justify-between items-center p-3 bg-black/20 rounded-xl border border-white/10 hover:bg-black/40"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div><div class="text-white text-xs font-bold">${tx.note}</div><div class="text-[9px] text-slate-400 mt-0.5">${tx.date} • ${tx.walletName}</div></div></div><div class="${color} font-black text-sm">${sign} ${formatRp(tx.amount)}</div></div>`;
+        });
+        c.innerHTML = html;
+    }
+
+    function openUtangModal() { document.getElementById('modalUtangPiutang').classList.remove('hidden-section'); }
+    function closeUtangModal() { document.getElementById('modalUtangPiutang').classList.add('hidden-section'); }
     function submitUtangData() { alert('Catatan Utang/Piutang disiapkan! (Menunggu integrasi backend)'); closeUtangModal(); document.getElementById('formUtang').reset(); }
     
     function submitFinanceData() {
       var btn = document.getElementById('btnSubmitFinance');
       var p = { nominal: document.getElementById('finNominal').value, kategori: document.getElementById('finKategori').value, deskripsi: document.getElementById('finDeskripsi').value };
-      btn.disabled = true; btn.innerText = "MENYIMPAN...";
-      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; if(res === "SUCCESS") { alert("Transaksi otomatis dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "SIMPAN KE LEDGER"; alert("Gagal: " + err); }).simpanTransaksiFinance(p);
+      btn.disabled = true; btn.innerText = "SIMPAN...";
+      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Cepat"; if(res === "SUCCESS") { alert("Transaksi otomatis dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Cepat"; alert("Gagal: " + err); }).simpanTransaksiFinance(p);
     }
 
     window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
