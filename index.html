@@ -103,15 +103,15 @@
     th { background: rgba(0, 0, 0, 0.4); padding: 16px; font-weight: 900; color: var(--ryux-muted); text-transform: uppercase; font-size: 9px; text-align: left; }
     td { padding: 16px; border-bottom: 1px solid var(--glass-border); font-weight: 500; }
 
-    /* CORE FIX: Mengatur pointer-events pada modal overlay agar klik tembus saat modal ditutup */
+    /* CORE FIX: Mengatur pointer-events secara ketat pada Modal */
     .modal-overlay { 
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); 
       display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 16px; 
-      pointer-events: auto; /* Saat modal terbuka, tangkap klik */
+      pointer-events: auto; /* Aktifkan klik HANYA saat terbuka */
     }
     .hidden-section { 
       display: none !important; 
-      pointer-events: none; /* Saat modal/section tersembunyi, jangan blokir klik */
+      pointer-events: none !important; /* Nonaktifkan klik saat tersembunyi */
     }
 
     .modal-card { width: 100%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #0b0f19; border: 1px solid var(--ryux-cyan); }
@@ -249,22 +249,14 @@
                 </div>
             </div>
 
-            <!-- KOLOM TENGAH: FORM INPUT & VIRTUAL POCKETS -->
+            <!-- KOLOM TENGAH: TOMBOL QUICK TRANSAKSI & VIRTUAL POCKETS -->
             <div style="display:flex; flex-direction:column; gap:24px;">
                 <div class="glass-card" style="padding:24px;">
                     <div class="flex justify-between items-center mb-4">
-                        <div style="font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Catat Transaksi</div>
-                        <button onclick="fm_openTransaksiModal()" class="btn btn-primary btn-icon"><i class="fas fa-plus"></i></button>
+                        <div style="font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Catat Transaksi Cepat</div>
                     </div>
-                    <form id="formFinance" onsubmit="event.preventDefault(); submitFinanceData();" style="display:flex; flex-direction:column; gap:12px;">
-                        <input type="number" id="finNominal" class="glass-input text-[11px]" placeholder="Nominal (Rp)" required>
-                        <select id="finKategori" class="glass-input text-[11px]" required>
-                            <optgroup label="Single Entry" style="background:#05030a;"><option value="biz_in">Pemasukan Bisnis</option><option value="fam_out">Pengeluaran Keluarga</option></optgroup>
-                            <optgroup label="Double-Entry" style="background:#05030a;"><option value="transfer_biz_to_fam">Transfer: Bisnis ➔ Pribadi</option></optgroup>
-                        </select>
-                        <textarea id="finDeskripsi" class="glass-input text-[11px]" style="height:50px; resize:none;" placeholder="Catatan (Otomatis dikategorikan)" required></textarea>
-                        <button type="submit" id="btnSubmitFinance" class="btn btn-outline py-2 border-dashed">Simpan Cepat</button>
-                    </form>
+                    <p class="text-[10px] text-slate-400 mb-4">Mulai proses entri catatan transaksi keuangan Anda melalui panel lengkap (Pop-Up Modal).</p>
+                    <button onclick="fm_openTransaksiModal()" class="btn btn-primary w-full py-4 text-sm font-bold tracking-widest uppercase"><i class="fas fa-plus mr-2"></i> Input Transaksi</button>
                 </div>
 
                 <div class="glass-card" style="padding:24px; flex:1;">
@@ -421,7 +413,7 @@
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
   <!-- ============================================================== -->
-  <!-- MODALS (Z-INDEX 9999) TINGKATKAN POINTER-EVENTS                -->
+  <!-- MODALS -->
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section">
@@ -578,15 +570,12 @@
       <div class="modal-header"><span style="color:var(--ryux-cyan);"><i class="fas fa-exchange-alt"></i> Catat Transaksi Baru</span><button onclick="fm_closeTransaksiModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div>
       <div class="modal-body">
         <form id="fm_transaksi_form" onsubmit="fm_submitTransaksi(event)">
-          <div style="display:flex; gap:16px; margin-bottom:20px;">
-            <label style="flex:1; cursor:pointer;"><input type="radio" name="fm_tx_type" value="IN" class="peer sr-only" required><div class="text-center py-2 rounded-lg border border-white/10 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-down"></i> Masuk</div></label>
-            <label style="flex:1; cursor:pointer;"><input type="radio" name="fm_tx_type" value="OUT" class="peer sr-only"><div class="text-center py-2 rounded-lg border border-white/10 text-slate-400 peer-checked:bg-rose-500/20 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-up"></i> Keluar</div></label>
-          </div>
           <div style="display:flex; gap:16px; margin-bottom:16px;">
             <div class="form-group" style="flex:1;"><label class="tiny-label">Nominal (Rp)</label><input type="number" id="fm_tx_amount" required min="1" class="glass-input text-lg font-bold text-white"></div>
             <div class="form-group" style="flex:1;"><label class="tiny-label">Tanggal</label><input type="date" id="fm_tx_date" required class="glass-input"></div>
           </div>
           <div class="form-group"><label class="tiny-label">Pilih Dompet (Sumber/Tujuan)</label><select id="fm_tx_wallet" required class="glass-input"><option value="">-- Pilih --</option></select></div>
+          <div class="form-group"><label class="tiny-label">Kategori Dompet & Aksi</label><select id="fm_tx_kategori" class="glass-input" required><optgroup label="Single Entry" style="background:#05030a;"><option value="biz_in">Pemasukan Bisnis</option><option value="biz_out">Pengeluaran Bisnis</option><option value="fam_in">Pemasukan Keluarga</option><option value="fam_out">Pengeluaran Keluarga</option></optgroup><optgroup label="Double-Entry (Mutasi)" style="background:#05030a;"><option value="transfer_biz_to_fam">Transfer: Bisnis ➔ Pribadi</option><option value="transfer_fam_to_biz">Transfer: Pribadi ➔ Bisnis</option></optgroup></select></div>
           <div class="form-group mb-5"><label class="tiny-label">Catatan</label><input type="text" id="fm_tx_note" required class="glass-input"></div>
           <button type="submit" id="fm_btn_submit_tx" class="btn btn-primary" style="width:100%; padding:16px;">Simpan Transaksi</button>
         </form>
@@ -609,7 +598,7 @@
           <div class="form-group"><label class="tiny-label">Nama Pihak (Klien/Vendor)</label><input type="text" id="utangNama" class="glass-input" required></div>
           <div style="display:flex; gap:16px; margin-bottom:16px;">
             <div style="flex:1;"><label class="tiny-label">Nominal (Rp)</label><input type="number" id="utangNominal" class="glass-input" required min="1"></div>
-            <div style="flex:1;"><label class="tiny-label">Jatuh Tempo</label><input type="date" id="utangTempo" class="glass-input" required></div>
+            <div style="flex:1;"><label class="tiny-label">Jatuh Tempo (Opsional)</label><input type="date" id="utangTempo" class="glass-input"></div>
           </div>
           <button type="submit" id="btnSubmitUtang" class="btn btn-primary" style="width:100%; padding:16px;">Simpan Catatan</button>
         </form>
@@ -653,18 +642,9 @@
             runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
             runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
             runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
+            runner.fm_saveWalletData = function(payload, action) { _call('fm_saveWalletData', { payload: payload, action: action }); };
+            runner.fm_getWalletsData = function() { _call('fm_getWalletsData'); };
             runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
-            
-            // Mock Finance Wallets
-            runner.fm_getWalletsData = function() { 
-                if(onSuccess) onSuccess([
-                    { id: "w_1", name: "Kasir Toko (Fisik)", type: "Tunai", category: "Bisnis", balance: 1500000 },
-                    { id: "w_2", name: "BCA Operasional", type: "Bank", category: "Bisnis", balance: 168052500 },
-                    { id: "w_3", name: "ShopeePay", type: "E-Wallet", category: "Keluarga", balance: 500000 },
-                    { id: "w_4", name: "Mandiri Pribadi", type: "Bank", category: "Keluarga", balance: 85300000 }
-                ]); 
-            };
-            runner.fm_saveWalletData = function(payload, action) { if(onSuccess) onSuccess("SUCCESS"); };
             return runner; 
           } return createRunner(null, null); 
         })() } };
@@ -674,7 +654,6 @@
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     function formatRp(num) { return fmtAkuntan.format(num); }
 
-    // ROUTING
     function showPage(pageId, navEl) {
       document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden-section'));
       document.getElementById(pageId).classList.remove('hidden-section');
@@ -693,7 +672,6 @@
       else if(pageId === 'pageProcurement') { loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()">+ GRN</button>`; }
     }
 
-    // CHARTS
     let dashChartTrend = null; let finChart = null;
     function initCharts() {
       const trendEl = document.getElementById('trendChart');
@@ -898,7 +876,6 @@
       document.getElementById('procurementContainer').innerHTML = html || '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong</div>';
     }
 
-    // MODAL FUNCTIONS
     function openImportModal() { document.getElementById('modalImport').classList.remove('hidden-section'); }
     function closeImportModal() { document.getElementById('modalImport').classList.add('hidden-section'); }
     function executeImport() { 
@@ -1029,7 +1006,7 @@
 
     // FINANCE TRANSACTIONS
     function fm_openTransaksiModal() {
-        const sel = document.getElementById('fm_tx_wallet'); sel.innerHTML = '<option value="">-- Pilih Akun --</option>';
+        const sel = document.getElementById('fm_tx_wallet'); sel.innerHTML = '<option value="">-- Pilih --</option>';
         globalWallets.forEach(w => { sel.innerHTML += `<option value="${w.id}">${w.name} (${w.category})</option>`; });
         document.getElementById('fm_tx_date').valueAsDate = new Date(); document.getElementById('fm_tx_amount').value=''; document.getElementById('fm_tx_note').value='';
         document.getElementById('fm_transaksi_modal').classList.remove('hidden-section'); 
@@ -1038,32 +1015,25 @@
     
     function fm_submitTransaksi(e) {
         e.preventDefault(); const btn = document.getElementById('fm_btn_submit_tx');
-        const d = { nominal: document.getElementById('fm_tx_amount').value, kategori: document.querySelector('input[name="fm_tx_type"]:checked').value, deskripsi: document.getElementById('fm_tx_note').value };
-        const wId = document.getElementById('fm_tx_wallet').value; const wObj = globalWallets.find(x=>x.id===wId);
+        const d = { nominal: document.getElementById('fm_tx_amount').value, kategori: document.getElementById('fm_tx_kategori').value, deskripsi: document.getElementById('fm_tx_note').value };
         btn.innerText = "Menyimpan..."; btn.disabled = true;
-        google.script.run.withSuccessHandler(res => { btn.disabled=false; btn.innerText="Simpan Transaksi"; if(res==="SUCCESS") { globalTransactions.unshift({ id: 'tx_'+Date.now(), type: d.kategori, amount: parseFloat(d.nominal), date: document.getElementById('fm_tx_date').value, walletId: wId, walletName: wObj?wObj.name:'', note: d.deskripsi }); fm_renderTransactions(); fm_closeTransaksiModal(); } else alert(res); }).simpanTransaksiFinance(d);
+        google.script.run.withSuccessHandler(res => { btn.disabled=false; btn.innerText="Simpan Transaksi"; if(res==="SUCCESS") { fm_closeTransaksiModal(); document.getElementById('fm_transaksi_form').reset(); alert("Transaksi disimpan!"); } else alert(res); }).withFailureHandler(err => { btn.disabled=false; btn.innerText="Simpan Transaksi"; alert(err); }).simpanTransaksiFinance(d);
     }
 
     function fm_renderTransactions() {
         const c = document.getElementById('fm_transaction_list'); if(!c) return;
-        if(globalTransactions.length===0) { c.innerHTML = '<div class="text-slate-500 py-4 text-center">Belum ada transaksi.</div>'; return; }
-        let html = '';
-        globalTransactions.forEach(tx => {
-            const isInc = tx.type==='IN'; const color = isInc?'text-emerald-400':'text-rose-400'; const bg = isInc?'bg-emerald-500/10 border-emerald-500/20':'bg-rose-500/10 border-rose-500/20'; const icon = isInc?'fa-arrow-down':'fa-arrow-up'; const sign = isInc?'+':'-';
-            html += `<div class="flex justify-between items-center p-3 bg-black/20 rounded-xl border border-white/10 hover:bg-black/40"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div><div class="text-white text-xs font-bold">${tx.note}</div><div class="text-[9px] text-slate-400 mt-0.5">${tx.date} • ${tx.walletName}</div></div></div><div class="${color} font-black text-sm">${sign} ${formatRp(tx.amount)}</div></div>`;
-        });
-        c.innerHTML = html;
+        c.innerHTML = '<div class="text-slate-500 py-4 text-center">Menunggu integrasi riwayat backend...</div>';
     }
 
     function openUtangModal() { document.getElementById('modalUtangPiutang').classList.remove('hidden-section'); }
     function closeUtangModal() { document.getElementById('modalUtangPiutang').classList.add('hidden-section'); }
-    function submitUtangData() { alert('Catatan Utang/Piutang disiapkan! (Menunggu integrasi backend)'); closeUtangModal(); document.getElementById('formUtang').reset(); }
+    function submitUtangData() { alert('Catatan disiapkan! (Menunggu backend)'); closeUtangModal(); document.getElementById('formUtang').reset(); }
     
     function submitFinanceData() {
       var btn = document.getElementById('btnSubmitFinance');
       var p = { nominal: document.getElementById('finNominal').value, kategori: document.getElementById('finKategori').value, deskripsi: document.getElementById('finDeskripsi').value };
       btn.disabled = true; btn.innerText = "SIMPAN...";
-      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Cepat"; if(res === "SUCCESS") { alert("Transaksi otomatis dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Cepat"; alert("Gagal: " + err); }).simpanTransaksiFinance(p);
+      google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Cepat"; if(res === "SUCCESS") { alert("Transaksi dikategorikan!"); document.getElementById('formFinance').reset(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Cepat"; alert(err); }).simpanTransaksiFinance(p);
     }
 
     window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
