@@ -1025,11 +1025,65 @@
     function fm_closeTransaksiModal() { document.getElementById('fm_transaksi_modal').classList.add('hidden-section'); }
     
     function fm_submitTransaksi(e) {
-        e.preventDefault(); const btn = document.getElementById('fm_btn_submit_tx');
-        const wId = document.getElementById('fm_tx_wallet').value; const wObj = globalWallets.find(x=>x.id===wId);
-        const d = { nominal: document.getElementById('fm_tx_amount').value, kategori: document.querySelector('input[name="fm_tx_type"]:checked').value, deskripsi: document.getElementById('fm_tx_note').value, date: document.getElementById('fm_tx_date').value, walletId: wId, walletName: wObj?wObj.name:'' };
-        btn.innerText = "Menyimpan..."; btn.disabled = true;
-        google.script.run.withSuccessHandler(res => { btn.disabled=false; btn.innerText="Inject ke Ledger"; if(res==="SUCCESS") { fm_closeTransaksiModal(); document.getElementById('fm_transaksi_form').reset(); alert("Transaksi disimpan!"); globalTransactions.unshift({ id: 'tx_'+Date.now(), type: d.kategori, amount: parseFloat(d.nominal), date: d.date, walletName: d.walletName, note: d.deskripsi }); fm_renderTransactions(); fm_loadWallets(); } else alert(res); }).withFailureHandler(err => { btn.disabled=false; btn.innerText="Inject ke Ledger"; alert(err); }).simpanTransaksiFinance(d);
+        e.preventDefault(); 
+        const btn = document.getElementById('fm_btn_submit_tx');
+        const wId = document.getElementById('fm_tx_wallet').value; 
+        const wObj = globalWallets.find(x => x.id === wId);
+        
+        const d = { 
+            nominal: document.getElementById('fm_tx_amount').value, 
+            kategori: document.querySelector('input[name="fm_tx_type"]:checked').value, 
+            deskripsi: document.getElementById('fm_tx_note').value, 
+            date: document.getElementById('fm_tx_date').value, 
+            walletId: wId, 
+            walletName: wObj ? wObj.name : '' 
+        };
+        
+        btn.innerText = "Menyimpan..."; 
+        btn.disabled = true;
+
+        google.script.run
+            .withSuccessHandler(res => { 
+                btn.disabled = false; 
+                btn.innerText = "Inject ke Ledger"; 
+                
+                if(res === "SUCCESS") { 
+                    fm_closeTransaksiModal(); 
+                    document.getElementById('fm_transaksi_form').reset(); 
+                    alert("Transaksi berhasil disimpan!"); 
+                    
+                    // Simpan ke memori lokal untuk render instan
+                    globalTransactions.unshift({ 
+                        id: 'tx_' + Date.now(), 
+                        type: d.kategori, 
+                        amount: parseFloat(d.nominal), 
+                        date: d.date, 
+                        walletName: d.walletName, 
+                        note: d.deskripsi 
+                    }); 
+                    
+                    // KUNCI PERBAIKAN: Reset filter sebelum me-render tabel
+                    fm_resetTxFilter();
+                    
+                    // Perbarui saldo dompet di memori lokal secara instan
+                    if (wObj) {
+                        if (d.kategori === 'IN') {
+                            wObj.balance += parseFloat(d.nominal);
+                        } else {
+                            wObj.balance -= parseFloat(d.nominal);
+                        }
+                    }
+                    fm_renderWallets();
+                } else { 
+                    alert(res); 
+                } 
+            })
+            .withFailureHandler(err => { 
+                btn.disabled = false; 
+                btn.innerText = "Inject ke Ledger"; 
+                alert(err); 
+            })
+            .simpanTransaksiFinance(d);
     }
 
     function fm_renderTransactions() {
@@ -1090,8 +1144,10 @@
     function fm_resetTxFilter() {
         if(document.getElementById('fm_search_tx')) document.getElementById('fm_search_tx').value = '';
         if(document.getElementById('fm_filter_type')) document.getElementById('fm_filter_type').value = 'ALL';
+        // KOSONGKAN tanggal agar tampilkan SEMUA data secara default
         if(document.getElementById('fm_start_date')) document.getElementById('fm_start_date').value = '';
         if(document.getElementById('fm_end_date')) document.getElementById('fm_end_date').value = '';
+        
         fm_renderTransactions();
     }
 
