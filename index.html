@@ -187,137 +187,120 @@
         </div>
       </div>
 
-      <!-- 2. FINANCE MANAGER -->
-      <div id="pageFinance" class="page-section hidden-section">
+      <!-- VIEW: FINANCE MANAGER (SUPERCHARGED HYBRID) -->
+      <div id="view-finance" class="page-section h-full flex flex-col p-5 gap-4 overflow-y-auto custom-scroll hidden">
+         
+         <!-- BARIS 1: WIDGET MULTI-WALLET -->
+         <div id="fm_wallet_bento" class="w-full glass-card p-6 shadow-2xl mb-2 shrink-0">
+             <div class="flex justify-between items-center mb-6">
+                 <div>
+                     <h2 class="text-xl font-bold text-white tracking-wide">Pos Keuangan (Wallets)</h2>
+                     <p class="text-[10px] text-slate-400 mt-1">Kelola saldo dari berbagai sumber akun Bisnis dan Pribadi Anda.</p>
+                 </div>
+                 <button onclick="fm_openWalletModal('add')" class="btn-outline text-[10px]"><i class="fa-solid fa-plus mr-1"></i> Tambah Akun</button>
+             </div>
+             <div id="fm_wallet_container" class="flex flex-wrap gap-4">
+                 <div class="w-full text-center py-4 text-slate-500 text-xs italic" id="fm_wallet_loading">Memuat data dompet...</div>
+             </div>
+         </div>
+
+         <!-- BARIS 2: 3 KOLOM ANALITIK & TRANSAKSI -->
          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start;">
             
-            <!-- KOLOM 1: BALANCES & HEALTH SCORE -->
+            <!-- KOLOM KIRI: BALANCES & BUKU KAS -->
             <div style="display:flex; flex-direction:column; gap:24px;">
-                <div class="glass-card stat-card" style="border-color:rgba(0, 240, 255, 0.15); padding:32px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span class="tiny-label" style="margin:0;">Family Balance</span>
-                        <span style="font-size:9px; color:var(--ryux-green); font-weight:800; letter-spacing:1px; background:rgba(0,255,102,0.1); padding:4px 8px; border-radius:12px; border:1px solid rgba(0,255,102,0.3);">★ SHARE ACTIVE</span>
+                <!-- Ringkasan Saldo -->
+                <div class="flex gap-4">
+                    <div class="glass-card stat-card flex-1" style="border-color:rgba(0, 240, 255, 0.2); padding:20px;">
+                        <span class="tiny-label">Family Balance</span>
+                        <div class="stat-value text-white" id="finFamilyBal" style="font-size:24px; font-weight:300;">Rp 0</div>
+                        <div style="font-size:9px; color:var(--ryux-green); margin-top:8px; font-weight:800; letter-spacing:1px;">★ SHARE ACTIVE</div>
                     </div>
-                    <div class="stat-value" id="finFamilyBal" style="font-size:36px; font-weight:300; margin-top:16px;">$85,300.00</div>
+                    <div class="glass-card stat-card flex-1" style="border-color:rgba(176, 38, 255, 0.2); padding:20px;">
+                        <span class="tiny-label">Biz Balance</span>
+                        <div class="stat-value text-white" id="finBizBal" style="font-size:24px; font-weight:300;">Rp 0</div>
+                        <button class="btn btn-outline p-1 text-[8px] mt-2 w-full">Request</button>
+                    </div>
                 </div>
 
-                <div class="glass-card stat-card" style="border-color:rgba(176, 38, 255, 0.15); padding:32px;">
-                    <span class="tiny-label">Total Business Balances</span>
-                    <div class="stat-value" id="finBizBal" style="color:white; font-size:36px; font-weight:300; margin-top:16px;">Rp 169.552.500</div>
-                </div>
-
-                <div class="glass-card" style="padding:32px; display:flex; align-items:center; justify-content:space-between; border-color:rgba(0,255,102,0.15);">
-                    <div>
-                        <span class="tiny-label">Health Score</span>
-                        <div style="font-size:11px; color:var(--ryux-muted); font-weight:600; margin-top:6px;">Indeks Likuiditas Aman</div>
+                <!-- BUKU KAS (Riwayat Transaksi) -->
+                <div class="glass-card flex flex-col p-5 h-[320px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <div><div class="tiny-label">Buku Kas</div><div class="text-white font-bold text-sm">Riwayat Transaksi</div></div>
                     </div>
-                    <div style="width:70px; height:70px; border-radius:50%; border:2px solid rgba(0,255,102,0.25); display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(0,255,102,0.05) inset;">
-                        <span style="font-size:26px; font-weight:300; color:var(--ryux-green);">88</span>
+                    <div class="flex gap-3 border-b border-white/10 pb-2 mb-3">
+                        <button class="text-[9px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-1 px-1">Semua</button>
+                        <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors">Masuk</button>
+                        <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors">Keluar</button>
+                    </div>
+                    <div id="fm_transaction_list" class="flex-1 overflow-y-auto custom-scroll pr-1 flex flex-col gap-2">
+                        <div class="text-center text-slate-500 text-xs italic py-4">Memuat transaksi...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- KOLOM 2: TRANSAKSI & VIRTUAL POCKETS -->
+            <!-- KOLOM TENGAH: FORM INPUT & VIRTUAL POCKETS -->
             <div style="display:flex; flex-direction:column; gap:24px;">
-                <div class="glass-card" style="padding:32px;">
-                    <div style="margin-bottom:24px; font-weight:900; text-transform:uppercase; font-size:12px; color:var(--ryux-muted); letter-spacing:2px;">Catat Transaksi</div>
-                    <form id="formFinance" onsubmit="event.preventDefault(); submitFinanceData();" style="display:flex; flex-direction:column; gap:16px;">
-                        <div>
-                            <label class="tiny-label">Nominal Transaksi</label>
-                            <input type="number" id="finNominal" class="glass-input" placeholder="Rp 0" required>
-                        </div>
-                        <div>
-                            <label class="tiny-label">Kategori Dompet & Aksi</label>
-                            <select id="finKategori" class="glass-input" required>
-                                <optgroup label="Single Entry (Bisnis)" style="background:#05030a;">
-                                    <option value="biz_in">Pemasukan Bisnis</option>
-                                    <option value="biz_out">Pengeluaran Bisnis</option>
-                                </optgroup>
-                                <optgroup label="Single Entry (Keluarga)" style="background:#05030a;">
-                                    <option value="fam_in">Pemasukan Keluarga</option>
-                                    <option value="fam_out">Pengeluaran Keluarga</option>
-                                </optgroup>
-                                <optgroup label="Double-Entry (Mutasi)" style="background:#05030a;">
-                                    <option value="transfer_biz_to_fam">Transfer: Bisnis ➔ Pribadi</option>
-                                    <option value="transfer_fam_to_biz">Transfer: Pribadi ➔ Bisnis</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="tiny-label">Catatan (Auto Regex)</label>
-                            <textarea id="finDeskripsi" class="glass-input" style="height:70px; resize:none;" placeholder="Misal: 'Bayar listrik toko'. Otomatis dikategorikan..." required></textarea>
-                        </div>
-                        <button type="submit" id="btnSubmitFinance" class="btn btn-outline" style="padding:16px; border-style:dashed;">Simpan ke Ledger</button>
+                <div class="glass-card" style="padding:24px;">
+                    <div class="flex justify-between items-center mb-4">
+                        <div style="font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Catat Transaksi</div>
+                        <button onclick="fm_openTransaksiModal()" class="btn-primary py-1 px-2 text-[9px]"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <form id="formFinance" onsubmit="event.preventDefault(); submitFinanceData();" style="display:flex; flex-direction:column; gap:12px;">
+                        <input type="number" id="finNominal" class="glass-input text-[11px]" placeholder="Nominal (Rp)" required>
+                        <select id="finKategori" class="glass-input text-[11px]" required>
+                            <optgroup label="Single Entry" style="background:#05030a;"><option value="biz_in">Pemasukan Bisnis</option><option value="fam_out">Pengeluaran Keluarga</option></optgroup>
+                            <optgroup label="Double-Entry" style="background:#05030a;"><option value="transfer_biz_to_fam">Transfer: Bisnis ➔ Pribadi</option></optgroup>
+                        </select>
+                        <textarea id="finDeskripsi" class="glass-input text-[11px]" style="height:50px; resize:none;" placeholder="Catatan (Otomatis dikategorikan)" required></textarea>
+                        <button type="submit" id="btnSubmitFinance" class="btn btn-outline py-2 border-dashed text-[10px]">Simpan Cepat</button>
                     </form>
                 </div>
 
-                <div class="glass-card" style="padding:32px;">
-                    <div style="margin-bottom:24px; font-weight:900; text-transform:uppercase; font-size:12px; color:var(--ryux-muted); letter-spacing:2px;">Alokasi Kantong</div>
-                    <div style="display:flex; flex-direction:column; gap:20px;">
+                <div class="glass-card" style="padding:24px; flex:1;">
+                    <div style="margin-bottom:16px; font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Alokasi Kantong</div>
+                    <div style="display:flex; flex-direction:column; gap:16px;">
                         <div>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <span style="font-size:11px; color:white; font-weight:600;">Operasional Bisnis</span>
-                                <span style="font-size:10px; color:var(--ryux-cyan); font-weight:800;">60%</span>
-                            </div>
-                            <div style="width:100%; height:3px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
-                                <div style="width:60%; height:100%; background:var(--ryux-cyan);"></div>
-                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-size:10px; color:white; font-weight:600;">Operasional Biz</span><span style="font-size:9px; color:var(--ryux-cyan); font-weight:800;">60%</span></div>
+                            <div style="width:100%; height:3px; background:rgba(255,255,255,0.05); border-radius:2px;"><div style="width:60%; height:100%; background:var(--ryux-cyan);"></div></div>
                         </div>
                         <div>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <span style="font-size:11px; color:white; font-weight:600;">Pajak & Legalitas</span>
-                                <span style="font-size:10px; color:var(--ryux-yellow); font-weight:800;">11%</span>
-                            </div>
-                            <div style="width:100%; height:3px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
-                                <div style="width:11%; height:100%; background:var(--ryux-yellow);"></div>
-                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-size:10px; color:white; font-weight:600;">Pajak & Legal</span><span style="font-size:9px; color:var(--ryux-yellow); font-weight:800;">11%</span></div>
+                            <div style="width:100%; height:3px; background:rgba(255,255,255,0.05); border-radius:2px;"><div style="width:11%; height:100%; background:var(--ryux-yellow);"></div></div>
                         </div>
                         <div>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <span style="font-size:11px; color:white; font-weight:600;">Tabungan & Darurat</span>
-                                <span style="font-size:10px; color:var(--ryux-purple); font-weight:800;">29%</span>
-                            </div>
-                            <div style="width:100%; height:3px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
-                                <div style="width:29%; height:100%; background:var(--ryux-purple);"></div>
-                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-size:10px; color:white; font-weight:600;">Tabungan</span><span style="font-size:9px; color:var(--ryux-purple); font-weight:800;">29%</span></div>
+                            <div style="width:100%; height:3px; background:rgba(255,255,255,0.05); border-radius:2px;"><div style="width:29%; height:100%; background:var(--ryux-purple);"></div></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- KOLOM 3: CASH FLOW & UTANG PIUTANG -->
+            <!-- KOLOM KANAN: CASH FLOW, HEALTH SCORE, UTANG PIUTANG -->
             <div style="display:flex; flex-direction:column; gap:24px;">
-                <div class="glass-card" style="padding:32px; height:260px;">
-                    <div class="tiny-label">ARUS KAS BULANAN</div>
-                    <div style="height:100%; position:relative; margin-top:16px;"><canvas id="financeChart"></canvas></div>
+                <div class="glass-card flex justify-between items-center" style="padding:20px; border-color:rgba(0,255,102,0.15);">
+                    <div><span class="tiny-label">Health Score</span><div style="font-size:10px; color:var(--ryux-muted); font-weight:600; mt-1">Indeks Likuiditas Aman</div></div>
+                    <div style="width:50px; height:50px; border-radius:50%; border:2px solid rgba(0,255,102,0.3); display:flex; align-items:center; justify-content:center;"><span style="font-size:20px; font-weight:700; color:var(--ryux-green);">88</span></div>
                 </div>
 
-                <div class="glass-card" style="padding:32px; flex:1; display:flex; flex-direction:column;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding-bottom:16px; margin-bottom:20px;">
-                        <span style="font-weight:900; text-transform:uppercase; font-size:12px; color:var(--ryux-muted); letter-spacing:2px;">Utang & Piutang</span>
-                        <button class="btn btn-outline btn-icon" style="width:30px; height:30px; font-size:12px;" onclick="openUtangModal()"><i class="fas fa-plus"></i></button>
+                <div class="glass-card p-5 h-[180px]">
+                    <div class="tiny-label mb-2">CASH FLOW</div>
+                    <div style="height:120px; position:relative;"><canvas id="financeChart"></canvas></div>
+                </div>
+
+                <div class="glass-card p-5 flex-1 flex flex-col">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
+                        <span class="font-bold uppercase text-[11px] color-slate-400 tracking-wider">Utang & Piutang</span>
+                        <button class="btn btn-outline btn-icon" style="width:24px; height:24px; font-size:10px;" onclick="openUtangModal()"><i class="fas fa-plus"></i></button>
                     </div>
-                    
-                    <div style="display:flex; flex-direction:column; gap:20px; overflow-y:auto; max-height:200px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="display:flex; flex-direction:column; gap:4px;">
-                                <span style="font-size:12px; font-weight:700; color:white;">Client Beta (Proyek A)</span>
-                                <span style="font-size:9px; color:var(--ryux-muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Jatuh Tempo: 15 Nov</span>
-                            </div>
-                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-                                <span style="font-size:13px; font-weight:900; color:var(--ryux-green);">Rp 8.500.000</span>
-                                <span style="font-size:9px; color:rgba(0,255,102,0.8); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Piutang</span>
-                            </div>
+                    <div class="flex flex-col gap-3 overflow-y-auto max-h-[120px] custom-scroll">
+                        <div class="flex justify-between items-center">
+                            <div class="flex flex-col"><span class="text-[10px] font-bold text-white">Client Beta</span><span class="text-[8px] text-slate-500 uppercase">Jatuh Tempo: 15 Nov</span></div>
+                            <div class="flex flex-col items-end"><span class="text-[11px] font-bold text-emerald-400">Rp 8.500.000</span><span class="text-[8px] text-emerald-500/80 uppercase">Piutang</span></div>
                         </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="display:flex; flex-direction:column; gap:4px;">
-                                <span style="font-size:12px; font-weight:700; color:white;">Vendor Pabrik XYZ</span>
-                                <span style="font-size:9px; color:var(--ryux-muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Invoice #992</span>
-                            </div>
-                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-                                <span style="font-size:13px; font-weight:900; color:var(--ryux-red);">Rp 12.000.000</span>
-                                <span style="font-size:9px; color:rgba(255,0,85,0.8); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Utang</span>
-                            </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex flex-col"><span class="text-[10px] font-bold text-white">Vendor Pabrik XYZ</span><span class="text-[8px] text-slate-500 uppercase">Invoice #992</span></div>
+                            <div class="flex flex-col items-end"><span class="text-[11px] font-bold text-rose-400">Rp 12.000.000</span><span class="text-[8px] text-rose-500/80 uppercase">Utang</span></div>
                         </div>
                     </div>
                 </div>
