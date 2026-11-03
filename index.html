@@ -708,47 +708,68 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
     
+    // POLYFILL MENGGUNAKAN CORS BYPASS YANG DISAMARKAN
     if (typeof google === 'undefined') {
-        window.google = { script: { run: (function() { 
-          function createRunner(onSuccess, onError) { 
-            const runner = { 
-              withSuccessHandler: function(cb) { return createRunner(cb, onError); }, 
-              withFailureHandler: function(cb) { return createRunner(onSuccess, cb); } 
-            }; 
-            const _call = async function(action, payload) { 
-              try { 
-                let options = { method: "POST", redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: action, payload: payload || {} }) }; 
-                let res = await fetch(API_URL, options); let json = await res.json(); 
-                if (json.status === "success" && onSuccess) onSuccess(json.data !== undefined ? json.data : json); 
-                else if (json.status === "error" && onError) onError(json.message);
-              } catch (e) { console.error("API Error:", e); if (onError) onError(e.message); } 
-            }; 
-            runner.getDashboardData = function() { _call('getDashboardData'); }; 
-            runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; 
-            runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); };
-            runner.getSalesData = function() { _call('getSalesData'); }; 
-            runner.getInventoryData = function() { _call('getInventoryData'); }; 
-            runner.getProcurementData = function() { _call('getProcurementData'); }; 
-            runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; 
-            runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; 
-            runner.getSupplierSuggestions = function() { _call('getSupplierSuggestions'); }; 
-            runner.getInventoryDataFull = function() { _call('getInventoryDataFull'); }; 
-            runner.importTikTokFromTemp = function(acc) { _call('importTikTokFromTemp', acc); }; 
-            runner.syncTikTokAutoWorkflow = function() { _call('syncTikTokAutoWorkflow'); }; 
-            runner.autoFillMissingSKUs = function() { _call('autoFillMissingSKUs'); }; 
-            runner.simpanPenyesuaianStok = function(payload) { _call('simpanPenyesuaianStok', payload); };
-            runner.simpanDataGRNBaru = function(nota, items) { _call('simpanDataGRNBaru', {nota: nota, items: items}); };
-            runner.simpanKoreksiSales = function(row, arr) { _call('simpanKoreksiSales', {rowIdx: row, itemsArray: arr}); };
-            runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
-            runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
-            runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
-            runner.fm_saveWalletData = function(payload) { _call('fm_saveWalletData', payload); };
-            runner.fm_getWalletsData = function() { _call('fm_getWalletsData'); };
-            runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
-            runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
-            return runner; 
-          } return createRunner(null, null); 
-        })() } };
+        window.google = { 
+          script: { 
+            run: (function() { 
+              function createRunner(onSuccess, onError) { 
+                const runner = { 
+                  withSuccessHandler: function(cb) { return createRunner(cb, onError); }, 
+                  withFailureHandler: function(cb) { return createRunner(onSuccess, cb); } 
+                }; 
+                
+                const _call = function(action, payload) { 
+                  // Fallback menggunakan metode klasik form-urlencoded jika fetch POST murni diblokir CORS
+                  const urlParams = new URLSearchParams();
+                  urlParams.append("action", action);
+                  urlParams.append("payload", JSON.stringify(payload || {}));
+
+                  fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: urlParams.toString()
+                  })
+                  .then(response => response.json())
+                  .then(json => {
+                    if (json.status === "success" && onSuccess) onSuccess(json.data !== undefined ? json.data : json); 
+                    else if (json.status === "error" && onError) onError(json.message);
+                  })
+                  .catch(e => { 
+                    console.error("API Fetch Error:", e); 
+                    if (onError) onError(e.toString()); 
+                  });
+                }; 
+
+                runner.getDashboardData = function() { _call('getDashboardData'); }; 
+                runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; 
+                runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); };
+                runner.getSalesData = function() { _call('getSalesData'); }; 
+                runner.getInventoryData = function() { _call('getInventoryData'); }; 
+                runner.getProcurementData = function() { _call('getProcurementData'); }; 
+                runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; 
+                runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; 
+                runner.getSupplierSuggestions = function() { _call('getSupplierSuggestions'); }; 
+                runner.getInventoryDataFull = function() { _call('getInventoryDataFull'); }; 
+                runner.importTikTokFromTemp = function(acc) { _call('importTikTokFromTemp', acc); }; 
+                runner.syncTikTokAutoWorkflow = function() { _call('syncTikTokAutoWorkflow'); }; 
+                runner.autoFillMissingSKUs = function() { _call('autoFillMissingSKUs'); }; 
+                runner.simpanPenyesuaianStok = function(payload) { _call('simpanPenyesuaianStok', payload); };
+                runner.simpanDataGRNBaru = function(nota, items) { _call('simpanDataGRNBaru', {nota: nota, items: items}); };
+                runner.simpanKoreksiSales = function(row, arr) { _call('simpanKoreksiSales', {rowIdx: row, itemsArray: arr}); };
+                runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
+                runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
+                runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
+                runner.fm_saveWalletData = function(payload) { _call('fm_saveWalletData', payload); };
+                runner.fm_getWalletsData = function() { _call('fm_getWalletsData'); };
+                runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
+                runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
+                return runner; 
+              } 
+              return createRunner(null, null); 
+            })() 
+          } 
+        };
     }
 
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
