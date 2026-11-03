@@ -54,117 +54,39 @@
     }
     .glass-input:focus { border-color: var(--ryux-cyan); background: rgba(0, 0, 0, 0.4); }
     
-    .filter-bar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; padding: 16px; align-items: center; }
-    @media (min-width: 768px) { .filter-bar { flex-direction: row; } }
-
     .tiny-label { display: block; font-size: 10px; font-weight: 800; color: var(--ryux-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
     .form-group { margin-bottom: 16px; }
 
-    /* SIDEBAR MODIFICATIONS */
+    /* SIDEBAR MINIMIZE LOGIC */
     .sidebar { 
-      width: var(--sidebar-width); 
-      background: rgba(10, 13, 20, 0.8); 
-      backdrop-filter: blur(24px); 
-      border-right: 1px solid var(--glass-border); 
-      display: flex; 
-      flex-direction: column; 
-      z-index: 100; 
-      transition: width 0.3s ease;
-      position: relative;
+      width: var(--sidebar-width); background: rgba(10, 13, 20, 0.8); backdrop-filter: blur(24px); 
+      border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; z-index: 100; 
+      transition: width 0.3s ease; position: relative;
     }
+    .sidebar.collapsed { width: 80px; }
+    .sidebar.collapsed .logo h1, .sidebar.collapsed .logo span, .sidebar.collapsed .nav-group, .sidebar.collapsed .nav-text { display: none; }
+    .sidebar.collapsed .logo { align-items: center; padding: 28px 0; }
+    .sidebar.collapsed .logo::before { content: "Z"; font-size: 24px; font-weight: 900; color: white; filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.3)); }
+    .sidebar.collapsed .nav-item { justify-content: center; padding: 14px 0; margin: 4px 8px; }
+    .sidebar.collapsed .nav-item i { margin: 0; font-size: 18px; }
     
-    .sidebar.collapsed {
-        width: 80px;
-    }
-
-    .sidebar.collapsed .logo h1,
-    .sidebar.collapsed .logo span,
-    .sidebar.collapsed .nav-group,
-    .sidebar.collapsed .nav-text {
-        display: none;
-    }
-
-    .sidebar.collapsed .logo {
-        align-items: center;
-        padding: 28px 0;
-    }
-    
-    /* Make the first letter of ZONIME NEXUS visible when collapsed */
-    .sidebar.collapsed .logo::before {
-        content: "Z";
-        font-size: 24px;
-        font-weight: 900;
-        color: white;
-        filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.3));
-    }
-
-    .sidebar.collapsed .nav-item {
-        justify-content: center;
-        padding: 14px 0;
-        margin: 4px 8px;
-    }
-
-    .sidebar.collapsed .nav-item i {
-        margin: 0;
-        font-size: 18px;
-    }
-    
-    /* Toggle Button */
+    /* Toggle Button Sidebar */
     .sidebar-toggle {
-        position: absolute;
-        top: 20px;
-        right: -15px;
-        width: 30px;
-        height: 30px;
-        background: var(--ryux-cyan);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 101;
-        box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-        color: black;
-        transition: transform 0.3s ease;
+        position: absolute; top: 20px; right: -15px; width: 30px; height: 30px;
+        background: var(--ryux-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 101; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); color: black; transition: transform 0.3s ease;
     }
+    .sidebar.collapsed .sidebar-toggle { transform: rotate(180deg); }
     
-    .sidebar.collapsed .sidebar-toggle {
-        transform: rotate(180deg);
-    }
-    
-    /* Hide toggle on mobile */
+    /* Mobile Sidebar */
     @media (max-width: 767px) {
-        .sidebar {
-            position: fixed;
-            height: 100%;
-            transform: translateX(-100%);
-            width: var(--sidebar-width) !important; /* Force width on mobile */
-        }
-        .sidebar.active {
-            transform: translateX(0);
-        }
-        .sidebar-toggle {
-            display: none; 
-        }
-        /* Keep nav text visible on mobile when active */
-        .sidebar .logo h1,
-        .sidebar .logo span,
-        .sidebar .nav-group,
-        .sidebar .nav-text {
-            display: block !important;
-        }
-         .sidebar .logo::before {
-            display:none;
-        }
-         .sidebar .nav-item {
-            justify-content: flex-start;
-            padding: 14px 20px;
-            margin: 4px 16px;
-        }
-         .sidebar .logo {
-            align-items: flex-start;
-            padding: 28px;
-        }
+        .sidebar { position: fixed; height: 100%; transform: translateX(-100%); width: var(--sidebar-width) !important; }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-toggle { display: none; }
+        .sidebar .logo h1, .sidebar .logo span, .sidebar .nav-group, .sidebar .nav-text { display: block !important; }
+        .sidebar .logo::before { display:none; }
+        .sidebar .nav-item { justify-content: flex-start; padding: 14px 20px; margin: 4px 16px; }
+        .sidebar .logo { align-items: flex-start; padding: 28px; }
     }
 
     .logo { padding: 28px; display: flex; flex-direction: column; gap: 8px; }
@@ -177,16 +99,8 @@
 
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; z-index: 10; }
     
-    /* Mobile Menu Toggle */
-    .mobile-menu-toggle {
-        display: none;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-    }
-    @media (max-width: 767px) {
-        .mobile-menu-toggle { display: block; }
-    }
+    .mobile-menu-toggle { display: none; color: white; font-size: 24px; cursor: pointer; }
+    @media (max-width: 767px) { .mobile-menu-toggle { display: block; } }
 
     .header { padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
     .header h2 { margin: 0; font-size: 20px; display: flex; align-items: center; gap: 12px; font-weight: 900; color: white; }
@@ -235,7 +149,6 @@
     .badge-purple { background: rgba(176, 38, 255, 0.1); color: #d8b4fe; border: 1px solid rgba(176, 38, 255, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
 
     .loading-spinner { text-align: center; padding: 40px; color: var(--ryux-cyan); font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;}
-    
     .todo-list { list-style: none; padding: 0; margin: 0; }
     .todo-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px dashed var(--glass-border); font-size: 12px; color: white; }
     .todo-item.completed span { text-decoration: line-through; color: var(--ryux-muted); }
@@ -251,14 +164,14 @@
 
   <canvas id="cyberRainCanvas"></canvas>
 
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR (Bisa Minimize) -->
   <div class="sidebar" id="mainSidebar">
     <div class="sidebar-toggle" onclick="toggleSidebar()">
         <i class="fas fa-chevron-left"></i>
     </div>
-    <div class="p-7 flex flex-col gap-2 logo-container">
+    <div class="p-7 flex flex-col gap-2 logo-container text-center md:text-left">
       <h1 class="m-0 text-xl font-black filter drop-shadow-[0_0_15px_rgba(0,240,255,0.3)] text-white">ZONIME NEXUS</h1>
-      <span class="text-[9px] text-cyan-400 border border-cyan-400/30 px-3 py-1 rounded-full w-fit font-extrabold tracking-widest">Cyber OS v4.0</span>
+      <span class="text-[9px] text-cyan-400 border border-cyan-400/30 px-3 py-1 rounded-full w-fit font-extrabold tracking-widest mx-auto md:mx-0">Cyber OS v4.0</span>
     </div>
     <div class="flex-1 overflow-y-auto pb-6">
       <div class="px-7 py-3 text-[10px] uppercase text-slate-500 font-black nav-group">Workspace</div>
@@ -340,6 +253,7 @@
       <!-- VIEW: FINANCE MANAGER -->
       <div id="pageFinance" class="page-section hidden-section flex flex-col gap-5 relative h-full pointer-events-auto">
 
+         <!-- SUB-NAV TABS -->
          <div class="flex gap-4 border-b border-white/10 pb-2 shrink-0 z-20 relative pointer-events-auto">
              <button id="fm_tab_overview_btn" onclick="fm_switchTab('overview')" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Overview</button>
              <button id="fm_tab_ledger_btn" onclick="fm_switchTab('ledger')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Ledger (Buku Kas)</button>
@@ -384,7 +298,7 @@
                          <div class="tiny-label mb-2">CASH FLOW TREND (IN VS OUT)</div>
                          <div class="absolute inset-0 top-14 left-6 right-6 bottom-6"><canvas id="financeChart"></canvas></div>
                      </div>
-                     <div class="flex gap-6">
+                     <div class="flex flex-col md:flex-row gap-6">
                          <div class="glass-card p-6 flex-1 flex flex-col relative z-20 pointer-events-auto h-[220px]">
                              <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
                                  <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang</span>
@@ -440,12 +354,12 @@
                      <option value="Gaji & Fee">Gaji & Fee</option>
                      <option value="Pribadi">Pribadi / Lainnya</option>
                  </select>
-                 <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] pointer-events-auto">
+                 <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] pointer-events-auto border border-white/10">
                      <input type="date" id="fm_start_date" onchange="fm_filterTransactions()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer">
                      <span class="text-slate-400 mx-2 text-[10px]">-</span>
                      <input type="date" id="fm_end_date" onchange="fm_filterTransactions()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer">
                  </div>
-                 <button onclick="fm_resetTxFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border-none hover:bg-white/10" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
+                 <button onclick="fm_resetTxFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border-none hover:bg-white/10 rounded-xl" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
              </div>
              
              <div class="glass-card flex-1 p-0 flex flex-col overflow-hidden border-t-4 border-t-cyan-500/50 relative z-10 pointer-events-auto">
@@ -491,65 +405,97 @@
       </div>
 
       <!-- 3. LIVE SALES -->
-      <div id="pageSalesLog" class="page-section hidden-section">
-        <div class="filter-bar glass-card">
-          <select class="glass-input filter-select" id="filterDateRangeSales" onchange="toggleCustomDateSales(); renderSalesTable();"><option value="ALL">Semua Waktu</option><option value="TODAY">Hari Ini</option><option value="YESTERDAY">Kemarin</option><option value="THIS_WEEK">Pekan Ini</option><option value="THIS_MONTH">Bulan Ini</option><option value="CUSTOM">Rentang Tanggal...</option></select>
-          <div id="customDateSalesContainer" style="display:none; gap:8px; align-items:center; flex:2;"><input type="date" id="salesStartDate" class="glass-input" onchange="renderSalesTable()"><span style="font-weight:900;">-</span><input type="date" id="salesEndDate" class="glass-input" onchange="renderSalesTable()"></div>
-          <select class="glass-input filter-select" id="filterStatusSales" onchange="renderSalesTable()"><option value="ALL">Semua Status</option><option value="Selesai">Selesai</option><option value="Menunggu Pengambilan">Menunggu</option><option value="Sedang Transit">Transit</option><option value="Batal">Batal</option><option value="Return">Return</option><option value="Refund & Return">Refund</option></select>
-          <select class="glass-input filter-select" id="filterKelengkapanSales" onchange="renderSalesTable()"><option value="ALL">Semua Data</option><option value="AMAN">Data Valid</option><option value="ERROR">Butuh Koreksi</option></select>
-          <input type="text" class="glass-input filter-input" id="searchSales" placeholder="Cari Order / LC..." onkeyup="renderSalesTable()">
+      <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full">
+        <!-- FILTER BAR (Diperbaiki: Berjajar Horizontal Rapi) -->
+        <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20 mb-6">
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterDateRangeSales" onchange="toggleCustomDateSales(); renderSalesTable();">
+            <option value="ALL">Semua Waktu</option><option value="TODAY">Hari Ini</option><option value="YESTERDAY">Kemarin</option><option value="THIS_WEEK">Pekan Ini</option><option value="THIS_MONTH">Bulan Ini</option><option value="CUSTOM">Rentang Tanggal...</option>
+          </select>
+          
+          <div id="customDateSalesContainer" style="display:none;" class="date-range-container bg-black/40 px-3 rounded-xl items-center h-[35px] border border-white/10 flex-1 min-w-[200px]">
+            <input type="date" id="salesStartDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full" onchange="renderSalesTable()">
+            <span class="text-slate-400 mx-2 text-[10px]">-</span>
+            <input type="date" id="salesEndDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full" onchange="renderSalesTable()">
+          </div>
+
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterStatusSales" onchange="renderSalesTable()">
+            <option value="ALL">Semua Status</option><option value="Selesai">Selesai</option><option value="Menunggu Pengambilan">Menunggu</option><option value="Sedang Transit">Transit</option><option value="Batal">Batal</option><option value="Return">Return</option><option value="Refund & Return">Refund</option>
+          </select>
+
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterKelengkapanSales" onchange="renderSalesTable()">
+            <option value="ALL">Semua Data</option><option value="AMAN">Data Valid</option><option value="ERROR">Butuh Koreksi</option>
+          </select>
+
+          <div class="relative flex-2 min-w-[180px]">
+             <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
+             <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchSales" placeholder="Cari Order / LC..." onkeyup="renderSalesTable()">
+          </div>
         </div>
-        <div class="summary-box glass-card">
+        
+        <div class="summary-box glass-card shrink-0">
           <div style="width:45%;"><div class="tiny-label">TOTAL OMSET</div><div class="stat-value" style="color:var(--ryux-cyan);" id="sumOmset">Rp 0</div></div>
           <div style="width:45%;"><div class="tiny-label">NET PROFIT</div><div class="stat-value" style="color:var(--ryux-green);" id="sumProfit">Rp 0</div></div>
           <div style="width:45%;"><div class="tiny-label">TOTAL PESANAN</div><div class="stat-value" id="sumOrder">0</div></div>
           <div style="width:45%;"><div class="tiny-label">ITEM TERJUAL</div><div class="stat-value" id="sumQty">0 Pcs</div></div>
         </div>
-        <div id="salesContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div></div>
+        <div id="salesContainer" class="flex-1 overflow-y-auto custom-scroll pr-1 pb-10"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div></div>
       </div>
 
       <!-- 4. SMART INVENTORY -->
-      <div id="pageInventory" class="page-section hidden-section">
-        <div class="dashboard-cards">
+      <div id="pageInventory" class="page-section hidden-section flex flex-col h-full">
+        <div class="dashboard-cards shrink-0">
           <div class="glass-card stat-card"><div class="stat-title">Nilai Aset</div><div class="stat-value" style="color:var(--ryux-cyan);" id="invSumAset">Rp 0</div></div>
           <div class="glass-card stat-card"><div class="stat-title">Total Varian</div><div class="stat-value" id="invSumSku">0 SKU</div></div>
           <div class="glass-card stat-card"><div class="stat-title">Stok Fisik</div><div class="stat-value" style="color:var(--ryux-green);" id="invSumQty">0 Pcs</div></div>
           <div class="glass-card stat-card"><div class="stat-title">Butuh Restock</div><div class="stat-value" style="color:var(--ryux-red);" id="invSumRestock">0 SKU</div></div>
         </div>
-        <div class="filter-bar glass-card">
+        <div class="filter-bar glass-card shrink-0">
           <select class="glass-input filter-select" id="filterTypeInv" onchange="renderInventory()"><option value="ALL">Semua Tipe</option></select>
           <select class="glass-input filter-select" id="filterCatInv" onchange="renderInventory()"><option value="ALL">Semua Kategori</option></select>
           <select class="glass-input filter-select" id="filterStatusInv" onchange="renderInventory()"><option value="ALL">Semua Status</option><option value="SAFE">Aman</option><option value="RESTOCK NOW">Kritis</option></select>
           <input type="text" class="glass-input filter-input" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
         </div>
-        <div class="glass-card" style="overflow-x:auto;">
+        <div class="glass-card flex-1 overflow-y-auto custom-scroll">
           <table id="invTable">
-            <thead><tr><th>Kode SKU</th><th>Detail Produk</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
+            <thead class="sticky top-0 z-10 bg-black"><tr><th>Kode SKU</th><th>Detail Produk</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
       </div>
 
       <!-- 5. PROCUREMENT -->
-      <div id="pageProcurement" class="page-section hidden-section">
-        <div class="dashboard-cards" style="grid-template-columns: repeat(3, 1fr);">
+      <div id="pageProcurement" class="page-section hidden-section flex flex-col h-full">
+        <div class="dashboard-cards shrink-0" style="grid-template-columns: repeat(3, 1fr);">
           <div class="glass-card stat-card"><div class="stat-title">Total Belanja</div><div class="stat-value" style="color:var(--ryux-yellow);" id="procSumBelanja">Rp 0</div></div>
           <div class="glass-card stat-card"><div class="stat-title">Invoice</div><div class="stat-value" id="procSumInvoice">0</div></div>
           <div class="glass-card stat-card"><div class="stat-title">Qty Masuk</div><div class="stat-value" style="color:var(--ryux-cyan);" id="procSumQty">0 Pcs</div></div>
         </div>
-        <div class="filter-bar glass-card flex-wrap">
-          <select class="glass-input filter-select" id="filterMonthProc" onchange="renderProcurement()"><option value="ALL">Bulan</option></select>
-          <select class="glass-input filter-select" id="filterSellerProc" onchange="renderProcurement()"><option value="ALL">Semua Supplier</option></select>
-          <input type="text" class="glass-input filter-input" id="searchProc" placeholder="Cari Nota..." onkeyup="renderProcurement()">
-          <!-- Added Date Range for Procurement -->
-           <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] pointer-events-auto border border-white/10">
-               <input type="date" id="procStartDate" onchange="renderProcurement()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer">
-               <span class="text-slate-400 mx-2 text-[10px]">-</span>
-               <input type="date" id="procEndDate" onchange="renderProcurement()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer">
-           </div>
-           <button onclick="resetProcFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border border-white/10 hover:bg-white/10 rounded-xl" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
+        
+        <!-- FILTER BAR (Diperbaiki: Berjajar Horizontal Rapi) -->
+        <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20 mb-6">
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterMonthProc" onchange="renderProcurement()">
+              <option value="ALL">Semua Bulan</option>
+          </select>
+          
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[150px]" id="filterSellerProc" onchange="renderProcurement()">
+              <option value="ALL">Semua Supplier</option>
+          </select>
+          
+          <div class="relative flex-2 min-w-[180px]">
+             <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
+             <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchProc" placeholder="Cari Nota/Invoice..." onkeyup="renderProcurement()">
+          </div>
+
+          <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] border border-white/10 flex-2 min-w-[200px]">
+             <input type="date" id="procStartDate" onchange="renderProcurement()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full">
+             <span class="text-slate-400 mx-2 text-[10px]">-</span>
+             <input type="date" id="procEndDate" onchange="renderProcurement()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full">
+          </div>
+          
+          <button onclick="resetProcFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border border-white/10 hover:bg-white/10 rounded-xl shrink-0" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
         </div>
-        <div id="procurementContainer"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Loading Ledger...</div></div>
+
+        <div id="procurementContainer" class="flex-1 overflow-y-auto custom-scroll pr-1 pb-10"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Loading Ledger...</div></div>
       </div>
       
       <!-- 6. CREATE SKU -->
@@ -646,48 +592,67 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
     
-    // POLYFILL ASLI (TEXT/PLAIN) - KEMBALI KE VERSI STABIL
+    // POLYFILL MENGGUNAKAN CORS BYPASS YANG DISAMARKAN (x-www-form-urlencoded)
     if (typeof google === 'undefined') {
-        window.google = { script: { run: (function() { 
-          function createRunner(onSuccess, onError) { 
-            const runner = { 
-              withSuccessHandler: function(cb) { return createRunner(cb, onError); }, 
-              withFailureHandler: function(cb) { return createRunner(onSuccess, cb); } 
-            }; 
-            const _call = async function(action, payload) { 
-              try { 
-                let options = { method: "POST", redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: action, payload: payload || {} }) }; 
-                let res = await fetch(API_URL, options); let json = await res.json(); 
-                if (json.status === "success" && onSuccess) onSuccess(json.data !== undefined ? json.data : json); 
-                else if (json.status === "error" && onError) onError(json.message);
-              } catch (e) { console.error("API Error:", e); if (onError) onError(e.message); } 
-            }; 
-            runner.getDashboardData = function() { _call('getDashboardData'); }; 
-            runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; 
-            runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); };
-            runner.getSalesData = function() { _call('getSalesData'); }; 
-            runner.getInventoryData = function() { _call('getInventoryData'); }; 
-            runner.getProcurementData = function() { _call('getProcurementData'); }; 
-            runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; 
-            runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; 
-            runner.getSupplierSuggestions = function() { _call('getSupplierSuggestions'); }; 
-            runner.getInventoryDataFull = function() { _call('getInventoryDataFull'); }; 
-            runner.importTikTokFromTemp = function(acc) { _call('importTikTokFromTemp', acc); }; 
-            runner.syncTikTokAutoWorkflow = function() { _call('syncTikTokAutoWorkflow'); }; 
-            runner.autoFillMissingSKUs = function() { _call('autoFillMissingSKUs'); }; 
-            runner.simpanPenyesuaianStok = function(payload) { _call('simpanPenyesuaianStok', payload); };
-            runner.simpanDataGRNBaru = function(nota, items) { _call('simpanDataGRNBaru', {nota: nota, items: items}); };
-            runner.simpanKoreksiSales = function(row, arr) { _call('simpanKoreksiSales', {rowIdx: row, itemsArray: arr}); };
-            runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
-            runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
-            runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
-            runner.fm_saveWalletData = function(payload) { _call('fm_saveWalletData', payload); };
-            runner.fm_getWalletsData = function() { _call('fm_getWalletsData'); };
-            runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
-            runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
-            return runner; 
-          } return createRunner(null, null); 
-        })() } };
+        window.google = { 
+          script: { 
+            run: (function() { 
+              function createRunner(onSuccess, onError) { 
+                const runner = { 
+                  withSuccessHandler: function(cb) { return createRunner(cb, onError); }, 
+                  withFailureHandler: function(cb) { return createRunner(onSuccess, cb); } 
+                }; 
+                
+                const _call = function(action, payload) { 
+                  const urlParams = new URLSearchParams();
+                  urlParams.append("action", action);
+                  urlParams.append("payload", JSON.stringify(payload || {}));
+
+                  fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: urlParams.toString()
+                  })
+                  .then(response => response.json())
+                  .then(json => {
+                    if (json.status === "success" && onSuccess) onSuccess(json.data !== undefined ? json.data : json); 
+                    else if (json.status === "error" && onError) onError(json.message);
+                  })
+                  .catch(e => { 
+                    console.error("API Fetch Error:", e); 
+                    if (onError) onError(e.toString()); 
+                  });
+                }; 
+
+                runner.getDashboardData = function() { _call('getDashboardData'); }; 
+                runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; 
+                runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); };
+                runner.getSalesData = function() { _call('getSalesData'); }; 
+                runner.getInventoryData = function() { _call('getInventoryData'); }; 
+                runner.getProcurementData = function() { _call('getProcurementData'); }; 
+                runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; 
+                runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; 
+                runner.getSupplierSuggestions = function() { _call('getSupplierSuggestions'); }; 
+                runner.getInventoryDataFull = function() { _call('getInventoryDataFull'); }; 
+                runner.importTikTokFromTemp = function(acc) { _call('importTikTokFromTemp', acc); }; 
+                runner.syncTikTokAutoWorkflow = function() { _call('syncTikTokAutoWorkflow'); }; 
+                runner.autoFillMissingSKUs = function() { _call('autoFillMissingSKUs'); }; 
+                runner.simpanPenyesuaianStok = function(payload) { _call('simpanPenyesuaianStok', payload); };
+                runner.simpanDataGRNBaru = function(nota, items) { _call('simpanDataGRNBaru', {nota: nota, items: items}); };
+                runner.simpanKoreksiSales = function(row, arr) { _call('simpanKoreksiSales', {rowIdx: row, itemsArray: arr}); };
+                runner.simpanRevisiProcurement = function(no, oSku, nSku, q, h) { _call('simpanRevisiProcurement', {noOrder: no, oldSku: oSku, newSku: nSku, qty: q, harga: h}); };
+                runner.simpanTerimaRetur = function(payload) { _call('simpanTerimaRetur', payload); };
+                runner.simpanSkuBaru = function(data) { _call('simpanSkuBaru', data); };
+                runner.fm_saveWalletData = function(payload) { _call('fm_saveWalletData', payload); };
+                runner.fm_getWalletsData = function() { _call('fm_getWalletsData'); };
+                runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
+                runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
+                return runner; 
+              } 
+              return createRunner(null, null); 
+            })() 
+          } 
+        };
     }
 
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -712,10 +677,7 @@
       if(navEl) navEl.classList.add('active');
       document.getElementById('fabContainer').classList.add('hidden-section');
       
-      // Close sidebar on mobile after clicking a link
-      if(window.innerWidth < 768) {
-         document.getElementById('mainSidebar').classList.remove('active');
-      }
+      if(window.innerWidth < 768) { document.getElementById('mainSidebar').classList.remove('active'); }
 
       if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
       else if(pageId === 'pageFinance') { 
@@ -734,12 +696,10 @@
       const trendEl = document.getElementById('trendChart');
       if (!trendEl) return;
       if (dashChartTrend) { dashChartTrend.destroy(); }
-      
       Chart.defaults.color = '#94a3b8'; Chart.defaults.font.family = '"Plus Jakarta Sans"';
       const ctxTrend = trendEl.getContext('2d');
       let gradientFill = ctxTrend.createLinearGradient(0, 0, 0, 300);
       gradientFill.addColorStop(0, 'rgba(0, 240, 255, 0.3)'); gradientFill.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
-      
       dashChartTrend = new Chart(ctxTrend, { 
         type: 'line', 
         data: { 
@@ -867,28 +827,13 @@
           var matchMonth = (m === 'ALL' || d.valBulan === m);
           var matchSearch = (!sq || d.noOrder.toLowerCase().includes(sq) || d.supplier.toLowerCase().includes(sq));
           var matchSeller = (selSeller === 'ALL' || d.supplier === selSeller);
-          
           var matchDate = true;
           if(d.tanggal && (startObj || endObj)) {
-              // Convert dd-mm-yyyy to valid date object if needed, assuming d.tanggal is parseable
-              // This basic approach works if d.tanggal is yyyy-mm-dd or similar standard format
-              var parts = d.tanggal.split('-');
-              var txDate;
-              if (parts.length === 3) {
-                  // Assuming format might be dd-mm-yyyy from gas backend, convert to yyyy-mm-dd for parsing
-                  if(parts[0].length === 2 && parts[2].length === 4){
-                     txDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
-                  } else {
-                     txDate = new Date(d.tanggal).getTime();
-                  }
-              } else {
-                  txDate = new Date(d.tanggal).getTime();
-              }
-              
+              var parts = d.tanggal.split('-'); var txDate;
+              if (parts.length === 3) { if(parts[0].length === 2 && parts[2].length === 4){ txDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime(); } else { txDate = new Date(d.tanggal).getTime(); } } else { txDate = new Date(d.tanggal).getTime(); }
               if(startObj && txDate < startObj) matchDate = false;
               if(endObj && txDate > endObj) matchDate = false;
           }
-          
           return matchMonth && matchSearch && matchSeller && matchDate;
       });
 
@@ -942,7 +887,6 @@
         const overviewBtn = document.getElementById('fm_tab_overview_btn');
         const ledgerBtn = document.getElementById('fm_tab_ledger_btn');
         const reportBtn = document.getElementById('fm_tab_report_btn');
-        
         const overviewContent = document.getElementById('fm_tab_overview');
         const ledgerContent = document.getElementById('fm_tab_ledger');
         const reportContent = document.getElementById('fm_tab_report');
@@ -957,39 +901,24 @@
         reportContent.classList.add('hidden'); reportContent.classList.remove('flex');
 
         if(tab === 'overview') {
-            overviewBtn.className = activeClass;
-            overviewContent.classList.remove('hidden'); overviewContent.classList.add('flex');
-            fab.classList.remove('hidden-section');
+            overviewBtn.className = activeClass; overviewContent.classList.remove('hidden'); overviewContent.classList.add('flex'); fab.classList.remove('hidden-section');
         } else if(tab === 'ledger') {
-            ledgerBtn.className = activeClass;
-            ledgerContent.classList.remove('hidden'); ledgerContent.classList.add('flex');
-            fab.classList.remove('hidden-section');
-            fm_renderTransactions(); 
+            ledgerBtn.className = activeClass; ledgerContent.classList.remove('hidden'); ledgerContent.classList.add('flex'); fab.classList.remove('hidden-section'); fm_renderTransactions(); 
         } else if(tab === 'report') {
-            reportBtn.className = activeClass;
-            reportContent.classList.remove('hidden'); reportContent.classList.add('flex');
-            fab.classList.add('hidden-section');
-            fm_renderReport();
+            reportBtn.className = activeClass; reportContent.classList.remove('hidden'); reportContent.classList.add('flex'); fab.classList.add('hidden-section'); fm_renderReport();
         }
     }
 
     function fm_loadWallets() {
         const c = document.getElementById('fm_wallet_container'); 
         if(c) c.innerHTML = '<div class="w-full text-center py-4 text-cyan-400 text-xs italic"><i class="fas fa-circle-notch fa-spin text-lg mb-2 block"></i>Sinkronisasi brankas...</div>';
-        
-        if(globalWallets.length === 0) { 
-            google.script.run.withSuccessHandler(data => { globalWallets = data; fm_renderWallets(); }).withFailureHandler(err => { if(c) c.innerHTML = '<div class="text-rose-400 w-full text-center font-bold">Koneksi Database Gagal: '+err+'</div>'; }).fm_getWalletsData(); 
-        } else { 
-            fm_renderWallets(); 
-        }
+        if(globalWallets.length === 0) { google.script.run.withSuccessHandler(data => { globalWallets = data; fm_renderWallets(); }).withFailureHandler(err => { if(c) c.innerHTML = '<div class="text-rose-400 w-full text-center font-bold">Koneksi Database Gagal: '+err+'</div>'; }).fm_getWalletsData(); } else { fm_renderWallets(); }
     }
 
     function fm_renderWallets() {
         const c = document.getElementById('fm_wallet_container'); if(!c) return;
         let tBiz = 0, tFam = 0, html = '';
-        if(globalWallets.length === 0) { 
-            c.innerHTML='<div class="text-slate-500 w-full text-center py-4 text-xs">Belum ada pos keuangan yang didaftarkan.</div>'; 
-        } else {
+        if(globalWallets.length === 0) { c.innerHTML='<div class="text-slate-500 w-full text-center py-4 text-xs">Belum ada pos keuangan yang didaftarkan.</div>'; } else {
             globalWallets.forEach(w => {
                 if(w.category === 'Bisnis') tBiz += w.balance; else tFam += w.balance;
                 const badge = w.category==='Bisnis' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
@@ -1002,8 +931,7 @@
     }
 
     function fm_openWalletModal(act='add', id=null) {
-        document.getElementById('fm_wallet_form').reset(); document.getElementById('fm_input_action').value = act;
-        const title = document.getElementById('fm_modal_title');
+        document.getElementById('fm_wallet_form').reset(); document.getElementById('fm_input_action').value = act; const title = document.getElementById('fm_modal_title');
         if(act==='edit' && id) { title.innerHTML='<i class="fas fa-edit"></i> Edit Pos'; const w = globalWallets.find(x=>x.id===id); if(w) { document.getElementById('fm_input_id').value = w.id; document.getElementById('fm_input_name').value = w.name; document.getElementById('fm_input_type').value = w.type; document.getElementById('fm_input_category').value = w.category; document.getElementById('fm_input_balance').value = w.balance; } }
         else { title.innerHTML='<i class="fas fa-wallet"></i> Tambah Pos'; document.getElementById('fm_input_id').value = ''; document.getElementById('fm_input_balance').value = 0; }
         document.getElementById('fm_wallet_modal').classList.remove('hidden-section');
@@ -1015,39 +943,23 @@
         e.preventDefault(); const btn = document.getElementById('fm_btn_submit'); const act = document.getElementById('fm_input_action').value;
         const d = { payload: { id: document.getElementById('fm_input_id').value || ('w_'+Date.now()), name: document.getElementById('fm_input_name').value, type: document.getElementById('fm_input_type').value, category: document.getElementById('fm_input_category').value, balance: parseFloat(document.getElementById('fm_input_balance').value) }, action: act };
         btn.innerText = "Menyimpan..."; btn.disabled = true;
-        
         if(act==='add') { globalWallets.push(d.payload); } else { const idx = globalWallets.findIndex(x=>x.id===d.payload.id); if(idx!==-1) globalWallets[idx] = d.payload; }
         google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; fm_renderWallets(); }).withFailureHandler(err => { alert("Gagal: "+err); btn.innerText="Simpan Akun"; btn.disabled=false; }).fm_saveWalletData(d);
     }
 
     function fm_toggleMutasi(typeVal) {
-        const wrapTo = document.getElementById('fm_wrapper_wallet_to');
-        const wrapCat = document.getElementById('fm_wrapper_category');
-        const lblFrom = document.getElementById('fm_lbl_wallet_from');
-        
-        if(typeVal === 'MUTASI') {
-            wrapTo.classList.remove('hidden'); document.getElementById('fm_tx_wallet_to').required = true;
-            lblFrom.innerText = "Pilih Dompet Asal (Uang Keluar)"; lblFrom.classList.add('text-rose-400');
-            wrapCat.classList.add('hidden'); document.getElementById('fm_tx_subkategori').value = "-";
-        } else {
-            wrapTo.classList.add('hidden'); document.getElementById('fm_tx_wallet_to').required = false;
-            lblFrom.innerText = "Pilih Dompet Utama"; lblFrom.classList.remove('text-rose-400');
-            wrapCat.classList.remove('hidden');
-        }
+        const wrapTo = document.getElementById('fm_wrapper_wallet_to'); const wrapCat = document.getElementById('fm_wrapper_category'); const lblFrom = document.getElementById('fm_lbl_wallet_from');
+        if(typeVal === 'MUTASI') { wrapTo.classList.remove('hidden'); document.getElementById('fm_tx_wallet_to').required = true; lblFrom.innerText = "Pilih Dompet Asal (Uang Keluar)"; lblFrom.classList.add('text-rose-400'); wrapCat.classList.add('hidden'); document.getElementById('fm_tx_subkategori').value = "-"; } 
+        else { wrapTo.classList.add('hidden'); document.getElementById('fm_tx_wallet_to').required = false; lblFrom.innerText = "Pilih Dompet Utama"; lblFrom.classList.remove('text-rose-400'); wrapCat.classList.remove('hidden'); }
     }
 
     function fm_openTransaksiModal() {
         const sel = document.getElementById('fm_tx_wallet'); const selTo = document.getElementById('fm_tx_wallet_to');
         sel.innerHTML = '<option value="">-- Memuat Dompet... --</option>'; selTo.innerHTML = '<option value="">-- Pilih Dompet Tujuan --</option>';
         sel.innerHTML = '<option value="">-- Pilih Pos (Sumber/Tujuan) --</option>';
-        globalWallets.forEach(w => { 
-            let opt = `<option value="${w.id}">${w.name} (${w.category}) - ${formatRp(w.balance)}</option>`;
-            sel.innerHTML += opt; selTo.innerHTML += opt;
-        });
-        document.getElementById('fm_tx_date').valueAsDate = new Date(); 
-        document.getElementById('fm_tx_amount').value=''; document.getElementById('fm_tx_note').value='';
-        fm_toggleMutasi('IN'); document.querySelector('input[name="fm_tx_type"][value="IN"]').checked = true;
-        document.getElementById('fm_transaksi_modal').classList.remove('hidden-section'); 
+        globalWallets.forEach(w => { let opt = `<option value="${w.id}">${w.name} (${w.category}) - ${formatRp(w.balance)}</option>`; sel.innerHTML += opt; selTo.innerHTML += opt; });
+        document.getElementById('fm_tx_date').valueAsDate = new Date(); document.getElementById('fm_tx_amount').value=''; document.getElementById('fm_tx_note').value='';
+        fm_toggleMutasi('IN'); document.querySelector('input[name="fm_tx_type"][value="IN"]').checked = true; document.getElementById('fm_transaksi_modal').classList.remove('hidden-section'); 
     }
     
     function fm_closeTransaksiModal() { document.getElementById('fm_transaksi_modal').classList.add('hidden-section'); }
@@ -1055,27 +967,14 @@
     function fm_submitTransaksi(e) {
         e.preventDefault(); const btn = document.getElementById('fm_btn_submit_tx');
         const wId = document.getElementById('fm_tx_wallet').value; const wObj = globalWallets.find(x => x.id === wId);
-        const typeSelected = document.querySelector('input[name="fm_tx_type"]:checked').value;
-        const subKategori = document.getElementById('fm_tx_subkategori').value;
-        
-        const d = { 
-            nominal: document.getElementById('fm_tx_amount').value, kategori: typeSelected, subKategori: subKategori,
-            deskripsi: document.getElementById('fm_tx_note').value, date: document.getElementById('fm_tx_date').value, 
-            walletId: wId, walletName: wObj ? wObj.name : '' 
-        };
+        const typeSelected = document.querySelector('input[name="fm_tx_type"]:checked').value; const subKategori = document.getElementById('fm_tx_subkategori').value;
+        const d = { nominal: document.getElementById('fm_tx_amount').value, kategori: typeSelected, subKategori: subKategori, deskripsi: document.getElementById('fm_tx_note').value, date: document.getElementById('fm_tx_date').value, walletId: wId, walletName: wObj ? wObj.name : '' };
         
         let toWObj = null;
-        if (typeSelected === 'MUTASI') {
-            d.toWalletId = document.getElementById('fm_tx_wallet_to').value;
-            if (d.toWalletId === d.walletId) { alert("Dompet asal dan tujuan tidak boleh sama!"); return; }
-            toWObj = globalWallets.find(x => x.id === d.toWalletId);
-            d.toWalletName = toWObj ? toWObj.name : ''; d.subKategori = "Mutasi Antar Bank";
-        }
+        if (typeSelected === 'MUTASI') { d.toWalletId = document.getElementById('fm_tx_wallet_to').value; if (d.toWalletId === d.walletId) { alert("Dompet asal dan tujuan tidak boleh sama!"); return; } toWObj = globalWallets.find(x => x.id === d.toWalletId); d.toWalletName = toWObj ? toWObj.name : ''; d.subKategori = "Mutasi Antar Bank"; }
         
         btn.innerText = "Menyimpan..."; btn.disabled = true;
-
-        google.script.run
-            .withSuccessHandler(res => { 
+        google.script.run.withSuccessHandler(res => { 
                 btn.disabled = false; btn.innerText = "Inject ke Ledger"; 
                 if(res === "SUCCESS") { 
                     fm_closeTransaksiModal(); document.getElementById('fm_transaksi_form').reset(); alert("Catatan berhasil disimpan!"); 
@@ -1089,9 +988,7 @@
                     }
                     fm_resetTxFilter(); fm_renderWallets(); fm_renderReport();
                 } else { alert(res); } 
-            })
-            .withFailureHandler(err => { btn.disabled = false; btn.innerText = "Inject ke Ledger"; alert(err); })
-            .simpanTransaksiFinance(d);
+            }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Inject ke Ledger"; alert(err); }).simpanTransaksiFinance(d);
     }
 
     function fm_renderTransactions() {
@@ -1107,11 +1004,9 @@
         var filtered = globalTransactions.filter(tx => {
             var cat = tx.subKategori || '-';
             var matchKw = kw === '' || tx.note.toLowerCase().includes(kw) || tx.walletName.toLowerCase().includes(kw) || cat.toLowerCase().includes(kw);
-            var matchType = true;
-            if(typeFilter === 'MUTASI') { matchType = tx.note.includes("MUTASI"); } else if(typeFilter !== 'ALL') { matchType = tx.type === typeFilter && !tx.note.includes("MUTASI"); }
+            var matchType = true; if(typeFilter === 'MUTASI') { matchType = tx.note.includes("MUTASI"); } else if(typeFilter !== 'ALL') { matchType = tx.type === typeFilter && !tx.note.includes("MUTASI"); }
             var matchCat = catFilter === 'ALL' || cat === catFilter;
-            var matchDate = true;
-            if(tx.date && (startObj || endObj)) { var d = new Date(tx.date).getTime(); if(startObj && d < startObj) matchDate = false; if(endObj && d > endObj) matchDate = false; }
+            var matchDate = true; if(tx.date && (startObj || endObj)) { var d = new Date(tx.date).getTime(); if(startObj && d < startObj) matchDate = false; if(endObj && d > endObj) matchDate = false; }
             return matchKw && matchType && matchCat && matchDate;
         });
 
@@ -1124,8 +1019,7 @@
                     const isMutasi = tx.note.includes("MUTASI"); const isInc = tx.type === 'IN'; 
                     const color = isMutasi ? 'text-cyan-400' : (isInc ? 'text-emerald-400' : 'text-rose-400'); 
                     const bg = isMutasi ? 'bg-cyan-500/10 border-cyan-500/20' : (isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'); 
-                    const icon = isMutasi ? 'fa-exchange-alt' : (isInc ? 'fa-arrow-down' : 'fa-arrow-up'); 
-                    const sign = isMutasi ? '' : (isInc ? '+' : '-');
+                    const icon = isMutasi ? 'fa-exchange-alt' : (isInc ? 'fa-arrow-down' : 'fa-arrow-up'); const sign = isMutasi ? '' : (isInc ? '+' : '-');
                     const catBadge = tx.subKategori && tx.subKategori !== '-' ? `<span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded text-[8px] uppercase tracking-wider">${tx.subKategori}</span>` : '<span class="text-slate-600">-</span>';
                     htmlFull += `<div class="grid grid-cols-12 gap-4 p-3.5 rounded-xl border border-white/5 hover:bg-white/5 transition-colors items-center bg-black/20"><div class="col-span-2 text-[10px] text-slate-400 font-semibold">${tx.date}</div><div class="col-span-4 flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div class="text-white text-[12px] font-bold truncate" title="${tx.note}">${tx.note}</div></div><div class="col-span-2 text-center truncate">${catBadge}</div><div class="col-span-2 text-center text-[10px] text-slate-300 font-semibold truncate"><span class="bg-black/60 px-3 py-1.5 rounded-lg border border-white/5">${tx.walletName}</span></div><div class="col-span-2 text-right font-black text-[13px] ${color} pr-2 truncate">${sign} ${formatRp(tx.amount)}</div></div>`;
                 });
@@ -1140,8 +1034,7 @@
                     const isMutasi = tx.note.includes("MUTASI"); const isInc = tx.type === 'IN'; 
                     const color = isMutasi ? 'text-cyan-400' : (isInc ? 'text-emerald-400' : 'text-rose-400'); 
                     const bg = isMutasi ? 'bg-cyan-500/10 border-cyan-500/20' : (isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'); 
-                    const icon = isMutasi ? 'fa-exchange-alt' : (isInc ? 'fa-arrow-down' : 'fa-arrow-up'); 
-                    const sign = isMutasi ? '' : (isInc ? '+' : '-');
+                    const icon = isMutasi ? 'fa-exchange-alt' : (isInc ? 'fa-arrow-down' : 'fa-arrow-up'); const sign = isMutasi ? '' : (isInc ? '+' : '-');
                     htmlMini += `<div class="flex justify-between items-center p-3 bg-black/20 rounded-xl border border-white/10 hover:bg-black/40 cursor-default"><div class="flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div class="truncate"><div class="text-white text-[11px] font-bold truncate">${tx.note}</div><div class="text-[9px] text-slate-500 mt-0.5">${tx.date} • ${tx.walletName}</div></div></div><div class="${color} font-black text-xs shrink-0">${sign} ${formatRp(tx.amount)}</div></div>`;
                 });
                 listMini.innerHTML = htmlMini;
@@ -1164,7 +1057,6 @@
     function fm_renderReport() {
         const filter = document.getElementById('fm_report_month').value; const now = new Date(); const curMonth = now.getMonth(); const curYear = now.getFullYear();
         let catTotals = {}; let totalOut = 0;
-        
         globalTransactions.forEach(tx => {
             if (tx.type === 'OUT' && !tx.note.includes("MUTASI")) {
                 let match = true;
@@ -1178,11 +1070,7 @@
         let sortedCats = Object.keys(catTotals).map(k => ({ name: k, amount: catTotals[k] })).sort((a,b) => b.amount - a.amount);
         let labels = []; let dataPts = []; let colors = ['#00F0FF', '#00FF66', '#FFD700', '#B026FF', '#FF0055', '#94A3B8']; let htmlBars = '';
 
-        if(sortedCats.length === 0) {
-            document.getElementById('fm_category_breakdown').innerHTML = '<div class="text-slate-500 text-xs italic">Tidak ada data pengeluaran.</div>';
-            if(reportChartObj) reportChartObj.destroy();
-            return;
-        }
+        if(sortedCats.length === 0) { document.getElementById('fm_category_breakdown').innerHTML = '<div class="text-slate-500 text-xs italic">Tidak ada data pengeluaran.</div>'; if(reportChartObj) reportChartObj.destroy(); return; }
 
         sortedCats.forEach((item, idx) => {
             labels.push(item.name); dataPts.push(item.amount); let cColor = colors[idx % colors.length]; let pct = totalOut > 0 ? Math.round((item.amount / totalOut) * 100) : 0;
@@ -1190,12 +1078,8 @@
         });
         document.getElementById('fm_category_breakdown').innerHTML = htmlBars;
 
-        const ctx = document.getElementById('categoryChart');
-        if(reportChartObj) reportChartObj.destroy();
-        reportChartObj = new Chart(ctx, {
-            type: 'doughnut', data: { labels: labels, datasets: [{ data: dataPts, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(5,3,10,0.9)', titleColor: '#fff', bodyColor: '#fff', padding: 12, bodyFont: {size: 11, weight: 'bold'}, callbacks: { label: function(context){ return ' ' + formatRp(context.raw); } } } } }
-        });
+        const ctx = document.getElementById('categoryChart'); if(reportChartObj) reportChartObj.destroy();
+        reportChartObj = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: dataPts, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(5,3,10,0.9)', titleColor: '#fff', bodyColor: '#fff', padding: 12, bodyFont: {size: 11, weight: 'bold'}, callbacks: { label: function(context){ return ' ' + formatRp(context.raw); } } } } } });
     }
 
     function openUtangModal() { document.getElementById('modalUtangPiutang').classList.remove('hidden-section'); }
