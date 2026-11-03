@@ -1031,16 +1031,15 @@
             html += `<tr><td class="text-[10px] text-slate-400 font-semibold">${d.tanggal || '-'}</td><td><span class="border border-white/10 px-2 py-1 rounded text-[9px] uppercase font-bold ${color}">${d.tipe || '-'}</span></td><td><b class="text-white">${d.sku || '-'}</b></td><td class="text-center font-black ${d.qty < 0 ? 'text-rose-400' : 'text-emerald-400'}">${sign}${d.qty || 0}</td><td class="text-[11px]">${d.ket || '-'}</td></tr>`;
         });
         tbody.innerHTML = html;
-    }    function renderInventory() {
+    }    
+    function renderInventory() {
       var selT = document.getElementById('filterTypeInv').value; 
-      var selC = document.getElementById('filterCatInv').value; // Tambahan: Tangkap value filter kategori
+      var selC = document.getElementById('filterCatInv').value; 
       var selS = document.getElementById('filterStatusInv').value; 
       var sq = document.getElementById('searchInv').value.toLowerCase();
       
       var filtered = globalInvData.filter(d => { 
           var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; 
-          
-          // Tambahan: Masukkan logika (selC === 'ALL' || d.kategori === selC) ke dalam filter
           return (selT === 'ALL' || d.tipe === selT) && 
                  (selC === 'ALL' || d.kategori === selC) && 
                  (selS === 'ALL' || stat === selS) && 
@@ -1052,7 +1051,21 @@
       
       filtered.forEach(d => { 
           tAset += d.nilai; tQty += d.stok; if(d.stok<=1) tRst++; 
-          html += `<tr><td><b>${d.sku}</b></td><td>${d.nama}</td><td>${d.stok>1?'<span class="badge-success">Aman</span>':'<span class="badge-danger">Kritis</span>'}</td><td class="text-center font-black ${d.stok<=1?'text-ryux-red':'text-ryux-cyan'}">${d.stok}</td><td class="text-right">${formatRp(d.cogs)}</td><td class="text-right font-black" style="color:white;">${formatRp(d.nilai)}</td><td class="text-center"><button class="btn btn-outline" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})">Aksi</button></td></tr>`; 
+          
+          // Bagian tombol AKSI diubah menjadi tombol Mutasi dengan ikon
+          html += `<tr>
+            <td><b class="text-white">${d.sku}</b></td>
+            <td>${d.nama}</td>
+            <td>${d.stok>1?'<span class="badge-success">Aman</span>':'<span class="badge-danger">Kritis</span>'}</td>
+            <td class="text-center font-black ${d.stok<=1?'text-ryux-red':'text-ryux-cyan'}">${d.stok}</td>
+            <td class="text-right">${formatRp(d.cogs)}</td>
+            <td class="text-right font-black" style="color:white;">${formatRp(d.nilai)}</td>
+            <td class="text-center">
+              <button class="btn btn-outline hover:bg-cyan-500/20" style="border-color: rgba(0, 240, 255, 0.3); color: var(--ryux-cyan);" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})">
+                <i class="fas fa-exchange-alt mr-1"></i> Mutasi
+              </button>
+            </td>
+          </tr>`; 
       });
       
       document.getElementById('invSumAset').innerText = formatRp(tAset); 
@@ -1060,7 +1073,7 @@
       document.getElementById('invSumSku').innerText = filtered.length + " SKU"; 
       document.getElementById('invSumRestock').innerText = tRst + " SKU";
       
-      tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" class="text-center" style="padding:20px;">Data kosong</td></tr>' : html;
+      tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" class="text-center py-10 text-slate-500 italic">Data kosong</td></tr>' : html;
     }
 
     // MODULE: PROCUREMENT
