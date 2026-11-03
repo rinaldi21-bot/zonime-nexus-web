@@ -289,13 +289,13 @@
                  <div class="flex flex-col gap-6">
                     <div class="glass-card flex-1 p-6 border-cyan-400/20">
                         <span class="tiny-label">Family Balance</span>
-                        <div class="text-white text-3xl font-light mt-2 truncate" id="finFamilyBal">Rp 0</div>
+                        <div class="text-white text-3xl font-light mt-2 truncate" id="finBizBal">Rp 0</div>
                         <div class="text-[10px] text-cyan-400 mt-3 font-bold tracking-widest">★ SHARE ACTIVE</div>
                     </div>
                     <div class="glass-card flex-1 p-6 border-purple-500/20">
                         <span class="tiny-label">Biz Balance</span>
                         <div class="text-white text-3xl font-light mt-2 truncate" id="finBizBal">Rp 0</div>
-                        <button class="btn btn-outline w-full mt-4 text-[9px] py-1.5 cursor-pointer pointer-events-auto hover:bg-white/10" onclick="fm_loadWallets()">Request Update</button>
+                        <button class="btn btn-outline w-full mt-4 text-[9px] py-1.5 cursor-pointer pointer-events-auto hover:bg-white/10" onclick="loadFinanceData()">Request Update</button>
                     </div>
                     <div class="glass-card p-6 flex justify-between items-center border-emerald-400/20">
                         <div><span class="tiny-label">Health Score</span><div class="text-[11px] text-slate-400 font-semibold mt-1">Indeks Likuiditas Aman</div></div>
@@ -1591,17 +1591,22 @@
                     </div>`;
                 });
 
-                // Perbarui Tampilan
+                // Perbarui Tampilan (Kode yang sudah ada sebelumnya)
                 if (container) {
                     container.innerHTML = wallets.length > 0 ? html : '<div class="w-full text-center py-4 text-slate-500 text-xs italic">Belum ada pos keuangan.</div>';
                 }
 
-                // Perbarui Saldo Utama
-                var elBiz = document.getElementById('finBizBalance'); // Cek ID ini di HTML Anda
-                var elFam = document.getElementById('finFamilyBalance'); // Cek ID ini di HTML Anda
+                // ==========================================
+                // PASTE DI SINI: Perbarui Saldo Utama
+                // ==========================================
+                var elBiz = document.getElementById('finBizBal'); 
+                var elFam = document.getElementById('finFamilyBal'); 
+                
                 if(elBiz) elBiz.innerText = "Rp " + totalBiz.toLocaleString('id-ID');
                 if(elFam) elFam.innerText = "Rp " + totalFam.toLocaleString('id-ID');
             })
+            .withFailureHandler(function(err) {
+// ... lanjutan kode ke bawah ...
             .withFailureHandler(function(err) {
                 if (container) container.innerHTML = '<div class="w-full text-center py-4 text-rose-500 text-xs italic">Gagal memuat data: ' + err + '</div>';
             })
