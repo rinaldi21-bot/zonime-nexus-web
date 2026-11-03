@@ -265,7 +265,7 @@
 
          <!-- SUB-NAV TABS -->
          <div class="flex gap-4 border-b border-white/10 pb-2 shrink-0 z-20 relative pointer-events-auto">
-             <button id="fm_tab_overview_btn" onclick="fm_switchTab('overview')" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Overview</button>
+             <button id="fm_tab_overview_btn" onclick="fm_switchTab('overview'); loadFinanceData();" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Overview</button>
              <button id="fm_tab_ledger_btn" onclick="fm_switchTab('ledger')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Ledger (Buku Kas)</button>
              <button id="fm_tab_report_btn" onclick="fm_switchTab('report')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto"><i class="fas fa-chart-pie mr-1"></i> Report & Kategori</button>
          </div>
@@ -761,6 +761,7 @@
                 runner.getInventoryData = function() { _call('getInventoryData'); }; 
                 runner.updateMasterSku = function(payload) { _call('updateMasterSku', payload); };
                 runner.addFinanceWallet = function(payload) { _call('addFinanceWallet', payload); };
+                runner.getFinanceData = function() { _call('getFinanceData'); };
                 runner.getProcurementData = function() { _call('getProcurementData'); }; 
                 runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; 
                 runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; 
@@ -1524,10 +1525,9 @@
 
     // 3. Fungsi Submit Data Kas/Bank ke Backend
     function fm_submitWalletForm(event) {
-        event.preventDefault(); // Mencegah halaman refresh
+        event.preventDefault(); 
         var btn = document.getElementById('fm_btn_submit');
         
-        // Ambil nilai dari input form
         var payload = {
             name: document.getElementById('fm_input_name').value,
             type: document.getElementById('fm_input_type').value,
@@ -1535,20 +1535,18 @@
             balance: document.getElementById('fm_input_balance').value
         };
         
-        // Ubah tombol jadi mode loading
         btn.disabled = true;
         btn.innerText = "Menyimpan...";
         
-        // Kirim ke Code.gs
         google.script.run
             .withSuccessHandler(function(res) {
-                alert(res); // Muncul pop-up sukses
+                alert(res); 
                 btn.disabled = false;
                 btn.innerText = "Simpan Akun";
                 fm_closeWalletModal();
                 
-                // Nanti kita tambahkan fungsi loadFinanceData() di sini
-                // agar saldo langsung ter-update otomatis
+                // Memanggil data terbaru agar kartu dompet langsung muncul!
+                loadFinanceData(); 
             })
             .withFailureHandler(function(err) {
                 alert("Error: " + err);
@@ -1556,6 +1554,58 @@
                 btn.innerText = "Simpan Akun";
             })
             .addFinanceWallet(payload);
+    }
+
+    // 4. Fungsi Menarik & Menampilkan Data Finance
+    function loadFinanceData() {
+        var container = document.getElementById('fm_wallet_container');
+        if (container) container.innerHTML = '<div class="w-full text-center py-4 text-slate-500 text-xs italic" id="fm_wallet_loading"><i class="fas fa-circle-notch fa-spin text-cyan-400 mb-2 text-xl block"></i> Memuat data dompet...</div>';
+
+        google.script.run
+            .withSuccessHandler(function(res) {
+                var wallets = res.wallets || [];
+                var totalBiz = 0;
+                var totalFam = 0;
+                var html = '';
+
+                // Buat Kartu untuk setiap Dompet
+                wallets.forEach(function(w) {
+                    var isBiz = (w.kategori === 'Bisnis');
+                    if (isBiz) totalBiz += w.saldoAkhir;
+                    else totalFam += w.saldoAkhir;
+
+                    var icon = w.tipe === 'Bank' ? 'fa-building-columns' : (w.tipe === 'Tunai' ? 'fa-wallet' : 'fa-mobile-screen');
+                    var color = isBiz ? 'text-cyan-400' : 'text-purple-400';
+                    var bg = isBiz ? 'bg-cyan-500/10 border-cyan-500/20' : 'bg-purple-500/10 border-purple-500/20';
+
+                    html += `
+                    <div class="glass-card flex-1 min-w-[200px] p-4 relative ${bg} border border-solid">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="text-white font-bold text-sm tracking-wide">${w.nama}</h4>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-widest">${w.tipe}</span>
+                            </div>
+                            <i class="fas ${icon} ${color} text-xl opacity-80"></i>
+                        </div>
+                        <div class="text-xl font-black text-white mt-4">Rp ${w.saldoAkhir.toLocaleString('id-ID')}</div>
+                    </div>`;
+                });
+
+                // Perbarui Tampilan
+                if (container) {
+                    container.innerHTML = wallets.length > 0 ? html : '<div class="w-full text-center py-4 text-slate-500 text-xs italic">Belum ada pos keuangan.</div>';
+                }
+
+                // Perbarui Saldo Utama
+                var elBiz = document.getElementById('finBizBalance'); // Cek ID ini di HTML Anda
+                var elFam = document.getElementById('finFamilyBalance'); // Cek ID ini di HTML Anda
+                if(elBiz) elBiz.innerText = "Rp " + totalBiz.toLocaleString('id-ID');
+                if(elFam) elFam.innerText = "Rp " + totalFam.toLocaleString('id-ID');
+            })
+            .withFailureHandler(function(err) {
+                if (container) container.innerHTML = '<div class="w-full text-center py-4 text-rose-500 text-xs italic">Gagal memuat data: ' + err + '</div>';
+            })
+            .getFinanceData();
     }
   </script>
 </body>
