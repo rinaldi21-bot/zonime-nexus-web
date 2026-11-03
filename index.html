@@ -220,125 +220,93 @@
                  </div>
              </div>
 
-             <!-- BENTO GRID (3 KOLOM LEGA - DESKTOP FIRST) -->
+             <!-- BENTO GRID (2 KOLOM LEGA - DESKTOP FIRST) -->
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start pointer-events-auto">
                  
-                 <!-- KOLOM 1: Balances & Buku Kas Mini -->
+                 <!-- KOLOM 1 (KIRI): Balances & Health Score -->
                  <div class="flex flex-col gap-6">
-                     <div class="flex gap-4">
-                         <div class="glass-card stat-card flex-1 p-5 border-cyan-400/20">
-                             <span class="tiny-label">Family Balance</span>
-                             <div class="text-white text-2xl font-light mt-1 truncate" id="finFamilyBal">Rp 0</div>
-                             <div class="text-[9px] text-cyan-400 mt-2 font-bold tracking-widest">★ SHARE ACTIVE</div>
-                         </div>
-                         <div class="glass-card stat-card flex-1 p-5 border-purple-500/20">
-                             <span class="tiny-label">Biz Balance</span>
-                             <div class="text-white text-2xl font-light mt-1 truncate" id="finBizBal">Rp 0</div>
-                         </div>
+                    <div class="glass-card flex-1 p-6 border-cyan-400/20">
+                        <span class="tiny-label">Family Balance</span>
+                        <div class="text-white text-3xl font-light mt-2 truncate" id="finFamilyBal">Rp 0</div>
+                        <div class="text-[10px] text-cyan-400 mt-3 font-bold tracking-widest">★ SHARE ACTIVE</div>
+                    </div>
+                    <div class="glass-card flex-1 p-6 border-purple-500/20">
+                        <span class="tiny-label">Biz Balance</span>
+                        <div class="text-white text-3xl font-light mt-2 truncate" id="finBizBal">Rp 0</div>
+                        <button class="btn btn-outline w-full mt-4 text-[9px] py-1.5 cursor-pointer pointer-events-auto hover:bg-white/10" onclick="fm_loadWallets()">Request Update</button>
+                    </div>
+                    <div class="glass-card p-6 flex justify-between items-center border-emerald-400/20">
+                        <div><span class="tiny-label">Health Score</span><div class="text-[11px] text-slate-400 font-semibold mt-1">Indeks Likuiditas Aman</div></div>
+                        <div class="w-14 h-14 rounded-full border-2 border-emerald-400/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,255,102,0.1)]"><span class="text-2xl font-bold text-emerald-400">88</span></div>
+                    </div>
+                 </div>
+
+                 <!-- KOLOM 2 & 3 (KANAN): Chart, Utang & P&L -->
+                 <div class="flex flex-col gap-6 lg:col-span-2 h-full">
+                     <div class="glass-card p-6 w-full relative flex-1 min-h-[300px]">
+                         <div class="tiny-label mb-2">CASH FLOW TREND (IN VS OUT)</div>
+                         <div class="absolute inset-0 top-14 left-6 right-6 bottom-6"><canvas id="financeChart"></canvas></div>
                      </div>
                      
-                     <div class="glass-card flex flex-col p-5 h-[320px] relative z-20 pointer-events-auto">
-                         <div class="flex justify-between items-center mb-4">
-                             <div><div class="tiny-label">Buku Kas</div><div class="text-white font-bold text-sm">Riwayat Transaksi</div></div>
-                         </div>
-                         <div class="flex gap-3 border-b border-white/10 pb-2 mb-3 relative z-30 pointer-events-auto">
-                             <button class="text-[9px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-1 px-1 pointer-events-auto cursor-pointer">Semua</button>
-                             <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors pointer-events-auto cursor-pointer">Masuk</button>
-                             <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors pointer-events-auto cursor-pointer">Keluar</button>
-                         </div>
-                         <div id="fm_transaction_list" class="flex-1 overflow-y-auto custom-scroll pr-1 flex flex-col gap-2 relative z-20 pointer-events-auto">
-                             <div class="text-center text-slate-500 text-xs italic py-4">Memuat transaksi...</div>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- KOLOM 2: Quick Action & Utang/Piutang -->
-                 <div class="flex flex-col gap-6">
-                     <div class="glass-card relative z-20 pointer-events-auto" style="padding:24px;">
-                         <div class="flex justify-between items-center mb-4">
-                             <div style="font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Catat Transaksi Cepat</div>
-                         </div>
-                         <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">Mulai proses entri catatan pengeluaran, pemasukan, atau mutasi antar dompet secara aman melalui pop-up khusus.</p>
-                         <button onclick="fm_openTransaksiModal()" class="btn btn-primary w-full py-4 text-sm font-bold tracking-widest uppercase relative z-30 pointer-events-auto cursor-pointer"><i class="fas fa-plus mr-2"></i> Input Transaksi</button>
-                     </div>
-
-                     <div class="glass-card p-5 flex-1 flex flex-col relative z-20 pointer-events-auto border-t-2 border-t-emerald-400/30">
-                         <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
-                             <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang Berjalan</span>
-                             <button class="btn btn-outline btn-icon relative z-30 pointer-events-auto cursor-pointer" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus text-[10px]"></i></button>
-                         </div>
-                         <div class="flex flex-col gap-3 overflow-y-auto max-h-[180px] custom-scroll relative z-20 pointer-events-auto">
-                             <div class="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-colors cursor-default">
-                                 <div class="flex flex-col"><span class="text-[11px] font-bold text-white">Client Beta (Proyek X)</span><span class="text-[8px] text-slate-500 uppercase mt-0.5">Tempo: 15 Nov</span></div>
-                                 <div class="flex flex-col items-end"><span class="text-[12px] font-black text-emerald-400">Rp 8.500.000</span><span class="text-[8px] text-emerald-500/80 uppercase font-bold mt-0.5">Piutang</span></div>
+                     <div class="flex gap-6">
+                         <!-- Utang Piutang (Kiri Bawah) -->
+                         <div class="glass-card p-6 flex-1 flex flex-col relative z-20 pointer-events-auto h-[220px]">
+                             <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
+                                 <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang</span>
+                                 <button class="btn btn-outline btn-icon relative z-30 pointer-events-auto cursor-pointer hover:bg-white/10" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus text-[10px]"></i></button>
                              </div>
-                             <div class="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-colors cursor-default">
-                                 <div class="flex flex-col"><span class="text-[11px] font-bold text-white">Vendor Pabrik XYZ</span><span class="text-[8px] text-slate-500 uppercase mt-0.5">Invoice #992</span></div>
-                                 <div class="flex flex-col items-end"><span class="text-[12px] font-black text-rose-400">Rp 12.000.000</span><span class="text-[8px] text-rose-500/80 uppercase font-bold mt-0.5">Utang</span></div>
+                             <div class="flex flex-col gap-3 overflow-y-auto custom-scroll relative z-20 pointer-events-auto pr-1">
+                                 <div class="flex justify-between items-center hover:bg-white/5 p-2.5 rounded-lg transition-colors cursor-default">
+                                     <div class="flex flex-col"><span class="text-[11px] font-bold text-white">Client Beta (Proyek X)</span><span class="text-[9px] text-slate-500 uppercase mt-1">Tempo: 15 Nov</span></div>
+                                     <div class="flex flex-col items-end"><span class="text-[13px] font-black text-emerald-400">Rp 8.500.000</span><span class="text-[9px] text-emerald-500/80 uppercase font-bold mt-1">Piutang</span></div>
+                                 </div>
+                                 <div class="flex justify-between items-center hover:bg-white/5 p-2.5 rounded-lg transition-colors cursor-default">
+                                     <div class="flex flex-col"><span class="text-[11px] font-bold text-white">Vendor Pabrik XYZ</span><span class="text-[9px] text-slate-500 uppercase mt-1">Invoice #992</span></div>
+                                     <div class="flex flex-col items-end"><span class="text-[13px] font-black text-rose-400">Rp 12.000.000</span><span class="text-[9px] text-rose-500/80 uppercase font-bold mt-1">Utang</span></div>
+                                 </div>
+                             </div>
+                         </div>
+
+                         <!-- P&L Settlement (Kanan Bawah) -->
+                         <div class="glass-card p-6 flex-1 flex flex-col relative z-20 border-t-2 border-t-purple-500/30 h-[220px]">
+                             <div class="tiny-label mb-3 text-purple-400">P&L & SETTLEMENT (MTH)</div>
+                             <div class="bg-black/30 p-3 rounded-xl border border-white/5 mb-4 hover:bg-white/5 transition-colors cursor-default">
+                                 <div class="flex justify-between items-center mb-1"><span class="text-[10px] text-slate-400 font-semibold">Dana Mengambang (MP)</span><i class="fas fa-wallet text-slate-500 text-[10px]"></i></div>
+                                 <div class="text-white font-black text-[14px]">Rp 18.450.000</div>
+                             </div>
+                             <div class="flex flex-col gap-2.5 text-[10px] font-semibold text-slate-300">
+                                 <div class="flex justify-between"><span class="text-slate-400">Gross Revenue</span><span class="text-cyan-400">+ Rp 45.000.000</span></div>
+                                 <div class="flex justify-between"><span class="text-slate-400">COGS (HPP)</span><span class="text-rose-400">- Rp 15.000.000</span></div>
+                                 <div class="flex justify-between border-b border-white/10 pb-2.5"><span class="text-slate-400">Ad Spend & Ops</span><span class="text-rose-400">- Rp 9.500.000</span></div>
+                                 <div class="flex justify-between pt-1"><span class="text-white font-bold">Net Cash Profit</span><span class="text-emerald-400 font-black text-[12px]">Rp 20.500.000</span></div>
                              </div>
                          </div>
                      </div>
                  </div>
-
-                 <!-- KOLOM 3: Health Score, Cash Flow Chart, P&L Settlement -->
-                 <div class="flex flex-col gap-6">
-                     <div class="glass-card flex justify-between items-center" style="padding:20px; border-color:rgba(0,255,102,0.15);">
-                         <div><span class="tiny-label">Health Score</span><div class="text-[10px] text-slate-400 font-semibold mt-1">Indeks Likuiditas Aman</div></div>
-                         <div class="w-12 h-12 rounded-full border-2 border-emerald-400/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,255,102,0.1)]"><span class="text-xl font-bold text-emerald-400">88</span></div>
-                     </div>
-
-                     <div class="glass-card p-5 h-[160px] relative pointer-events-auto">
-                         <div class="tiny-label mb-2">CASH FLOW TREND (IN VS OUT)</div>
-                         <div class="absolute inset-0 top-12 left-5 right-5 bottom-4"><canvas id="financeChart"></canvas></div>
-                     </div>
-
-                     <div class="glass-card p-5 flex-1 flex flex-col relative z-20 pointer-events-auto border-t-2 border-t-purple-500/30">
-                         <div class="tiny-label mb-3 text-purple-400">P&L & SETTLEMENT (MTH)</div>
-                         
-                         <!-- Pending Settlement -->
-                         <div class="bg-black/30 p-3 rounded-xl border border-white/5 mb-4 hover:bg-white/5 transition-colors cursor-default">
-                             <div class="flex justify-between items-center mb-1">
-                                 <span class="text-[10px] text-slate-400 font-semibold">Dana Mengambang (MP)</span>
-                                 <i class="fas fa-wallet text-slate-500 text-[10px]"></i>
-                             </div>
-                             <div class="text-white font-black text-[14px]">Rp 18.450.000</div>
-                         </div>
-
-                         <!-- Mini P&L Matrix -->
-                         <div class="flex flex-col gap-2.5 text-[10px] font-semibold text-slate-300">
-                             <div class="flex justify-between"><span class="text-slate-400">Gross Revenue</span><span class="text-cyan-400">+ Rp 45.000.000</span></div>
-                             <div class="flex justify-between"><span class="text-slate-400">COGS (HPP)</span><span class="text-rose-400">- Rp 15.000.000</span></div>
-                             <div class="flex justify-between"><span class="text-slate-400">Ad Spend (Ads)</span><span class="text-rose-400">- Rp 4.500.000</span></div>
-                             <div class="flex justify-between border-b border-white/10 pb-2"><span class="text-slate-400">Operasional (Gaji, dll)</span><span class="text-rose-400">- Rp 5.000.000</span></div>
-                             <div class="flex justify-between pt-1"><span class="text-white font-bold">Net Cash Profit</span><span class="text-emerald-400 font-black text-[12px]">Rp 20.500.000</span></div>
-                         </div>
-                     </div>
-                 </div>
-
              </div>
          </div>
 
          <!-- TAB 2: LEDGER / BUKU KAS FULL WIDTH -->
          <div id="fm_tab_ledger" class="hidden flex-col gap-5 overflow-hidden h-full relative z-10 pointer-events-auto">
-             <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap">
+             <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20">
                  <div class="relative flex-1 min-w-[200px]">
                      <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
-                     <input type="text" id="fm_search_tx" onkeyup="fm_filterTransactions()" placeholder="Cari catatan transaksi / dompet..." class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40">
+                     <input type="text" id="fm_search_tx" onkeyup="fm_filterTransactions()" placeholder="Cari catatan transaksi atau dompet..." class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40 pointer-events-auto cursor-text">
                  </div>
-                 <select id="fm_filter_type" onchange="fm_filterTransactions()" class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer">
+                 <select id="fm_filter_type" onchange="fm_filterTransactions()" class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto">
                      <option value="ALL">Semua Tipe</option>
                      <option value="IN">Pemasukan (+)</option>
                      <option value="OUT">Pengeluaran (-)</option>
                  </select>
-                 <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px]">
-                     <input type="date" id="fm_start_date" onchange="fm_filterTransactions()" class="bg-transparent text-white text-[10px] outline-none">
+                 <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] pointer-events-auto">
+                     <input type="date" id="fm_start_date" onchange="fm_filterTransactions()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer">
                      <span class="text-slate-400 mx-2 text-[10px]">-</span>
-                     <input type="date" id="fm_end_date" onchange="fm_filterTransactions()" class="bg-transparent text-white text-[10px] outline-none">
+                     <input type="date" id="fm_end_date" onchange="fm_filterTransactions()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer">
                  </div>
                  <button onclick="fm_resetTxFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border-none hover:bg-white/10" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
              </div>
              
-             <div class="glass-card flex-1 p-0 flex flex-col overflow-hidden border-t-4 border-t-cyan-500/50">
+             <div class="glass-card flex-1 p-0 flex flex-col overflow-hidden border-t-4 border-t-cyan-500/50 relative z-10 pointer-events-auto">
                  <div class="grid grid-cols-12 gap-4 p-4 border-b border-white/10 bg-black/60 text-[9px] font-black text-slate-400 uppercase tracking-widest sticky top-0 z-10">
                      <div class="col-span-2">Tanggal</div>
                      <div class="col-span-5">Deskripsi / Catatan Transaksi</div>
@@ -346,15 +314,15 @@
                      <div class="col-span-3 text-right pr-2">Nominal</div>
                  </div>
                  <div id="fm_ledger_list" class="flex-1 overflow-y-auto custom-scroll p-3 flex flex-col gap-1.5 pointer-events-auto bg-black/20">
-                     <!-- Diisi oleh JS -->
+                     <!-- Data diisi JS -->
                  </div>
                  <div class="p-3 border-t border-white/10 bg-black/60 flex justify-between items-center px-6">
                      <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Total Transaksi: <span id="fm_ledger_count" class="text-cyan-400 text-xs ml-1">0</span></span>
                  </div>
              </div>
          </div>
-
-         <!-- FAB (Floating Action Button) INPUT TRANSAKSI -->
+         
+         <!-- Tombol Quick Action Floating -->
          <div id="fabContainer" class="hidden-section pointer-events-auto">
              <div class="fab-btn pointer-events-auto cursor-pointer" onclick="fm_openTransaksiModal()" title="Catat Transaksi">
                  <i class="fas fa-plus text-black"></i>
@@ -464,7 +432,7 @@
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
   <!-- ============================================================== -->
-  <!-- SEMUA MODALS (Z-INDEX 9999, POINTER EVENTS AUTO)               -->
+  <!-- MODALS -->
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section">
@@ -1153,10 +1121,11 @@
             .withSuccessHandler(res => { 
                 btn.disabled = false; 
                 btn.innerText = "Inject ke Ledger"; 
+                
                 if(res === "SUCCESS") { 
                     fm_closeTransaksiModal(); 
                     document.getElementById('fm_transaksi_form').reset(); 
-                    alert("Transaksi berhasil dicatat!"); 
+                    alert("Transaksi berhasil disimpan!"); 
                     
                     globalTransactions.unshift({ 
                         id: 'tx_' + Date.now(), 
@@ -1167,16 +1136,25 @@
                         note: d.deskripsi 
                     }); 
                     
-                    fm_resetTxFilter(); 
+                    fm_resetTxFilter();
                     
                     if (wObj) {
-                        if (d.kategori === 'IN') { wObj.balance += parseFloat(d.nominal); } 
-                        else { wObj.balance -= parseFloat(d.nominal); }
+                        if (d.kategori === 'IN') {
+                            wObj.balance += parseFloat(d.nominal);
+                        } else {
+                            wObj.balance -= parseFloat(d.nominal);
+                        }
                     }
                     fm_renderWallets();
-                } else { alert(res); } 
+                } else { 
+                    alert(res); 
+                } 
             })
-            .withFailureHandler(err => { btn.disabled = false; btn.innerText = "Inject ke Ledger"; alert(err); })
+            .withFailureHandler(err => { 
+                btn.disabled = false; 
+                btn.innerText = "Inject ke Ledger"; 
+                alert(err); 
+            })
             .simpanTransaksiFinance(d);
     }
 
