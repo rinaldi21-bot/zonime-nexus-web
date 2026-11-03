@@ -719,58 +719,6 @@
     </div>
   </div>
 
-  // ==========================================
-    // MODULE: FINANCE MANAGER
-    // ==========================================
-
-    // 1. Fungsi Buka Modal Tambah Akun
-    function fm_openWalletModal() {
-        document.getElementById('fm_wallet_form').reset();
-        document.getElementById('fm_input_balance').value = 0; // Set default 0
-        document.getElementById('fm_wallet_modal').classList.remove('hidden-section');
-    }
-
-    // 2. Fungsi Tutup Modal Tambah Akun
-    function fm_closeWalletModal() {
-        document.getElementById('fm_wallet_modal').classList.add('hidden-section');
-    }
-
-    // 3. Fungsi Submit Data Kas/Bank ke Backend
-    function fm_submitWalletForm(event) {
-        event.preventDefault(); // Mencegah halaman refresh
-        var btn = document.getElementById('fm_btn_submit');
-        
-        // Ambil nilai dari input form
-        var payload = {
-            name: document.getElementById('fm_input_name').value,
-            type: document.getElementById('fm_input_type').value,
-            category: document.getElementById('fm_input_category').value,
-            balance: document.getElementById('fm_input_balance').value
-        };
-        
-        // Ubah tombol jadi mode loading
-        btn.disabled = true;
-        btn.innerText = "Menyimpan...";
-        
-        // Kirim ke Code.gs
-        google.script.run
-            .withSuccessHandler(function(res) {
-                alert(res); // Muncul pop-up sukses
-                btn.disabled = false;
-                btn.innerText = "Simpan Akun";
-                fm_closeWalletModal();
-                
-                // Nanti kita tambahkan fungsi loadFinanceData() di sini
-                // agar saldo langsung ter-update otomatis
-            })
-            .withFailureHandler(function(err) {
-                alert("Error: " + err);
-                btn.disabled = false;
-                btn.innerText = "Simpan Akun";
-            })
-            .addFinanceWallet(payload);
-    }
-  
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
     
@@ -1556,6 +1504,58 @@
     function submitUtangData() { var btn = document.getElementById('btnSubmitUtang'); var p = { tipe: document.getElementById('utangTipe').value, nama: document.getElementById('utangNama').value, nominal: document.getElementById('utangNominal').value, tempo: document.getElementById('utangTempo').value }; btn.disabled = true; btn.innerText = "MENYIMPAN..."; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Catatan"; if (res === "SUCCESS") { alert("Catatan Utang/Piutang berhasil disimpan!"); document.getElementById('formUtang').reset(); closeUtangModal(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Catatan"; alert("Gagal: " + err); }).simpanUtangPiutang(p); }
 
     window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
+
+    // ==========================================
+    // MODULE: FINANCE MANAGER
+    // ==========================================
+
+    // 1. Fungsi Buka Modal Tambah Akun
+    function fm_openWalletModal() {
+        document.getElementById('fm_wallet_form').reset();
+        document.getElementById('fm_input_balance').value = 0; // Set default 0
+        document.getElementById('fm_wallet_modal').classList.remove('hidden-section');
+    }
+
+    // 2. Fungsi Tutup Modal Tambah Akun
+    function fm_closeWalletModal() {
+        document.getElementById('fm_wallet_modal').classList.add('hidden-section');
+    }
+
+    // 3. Fungsi Submit Data Kas/Bank ke Backend
+    function fm_submitWalletForm(event) {
+        event.preventDefault(); // Mencegah halaman refresh
+        var btn = document.getElementById('fm_btn_submit');
+        
+        // Ambil nilai dari input form
+        var payload = {
+            name: document.getElementById('fm_input_name').value,
+            type: document.getElementById('fm_input_type').value,
+            category: document.getElementById('fm_input_category').value,
+            balance: document.getElementById('fm_input_balance').value
+        };
+        
+        // Ubah tombol jadi mode loading
+        btn.disabled = true;
+        btn.innerText = "Menyimpan...";
+        
+        // Kirim ke Code.gs
+        google.script.run
+            .withSuccessHandler(function(res) {
+                alert(res); // Muncul pop-up sukses
+                btn.disabled = false;
+                btn.innerText = "Simpan Akun";
+                fm_closeWalletModal();
+                
+                // Nanti kita tambahkan fungsi loadFinanceData() di sini
+                // agar saldo langsung ter-update otomatis
+            })
+            .withFailureHandler(function(err) {
+                alert("Error: " + err);
+                btn.disabled = false;
+                btn.innerText = "Simpan Akun";
+            })
+            .addFinanceWallet(payload);
+    }
   </script>
 </body>
 </html>
