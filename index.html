@@ -546,7 +546,43 @@
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:450px;"><div class="modal-header"><span style="color:white;"><i class="fab fa-tiktok"></i> Import Engine</span><button onclick="closeImportModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><div class="form-group"><label class="tiny-label">TARGET ACCOUNT</label><select id="importAccount" class="glass-input"><option value="Zonime Biru">Zonime Biru</option><option value="Zonime Merah">Zonime Merah</option></select></div><div style="display:flex; gap:12px; margin-top:24px;"><button type="button" onclick="closeImportModal()" class="btn btn-outline" style="flex:1;">Cancel</button><button type="button" onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2;">Execute</button></div></div></div></div>
-  <div id="modalInvAction" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:500px;"><div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><div style="display:flex; gap:12px; margin-bottom:20px;"><button class="btn btn-primary" style="flex:1;" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Opname</button><button class="btn btn-outline" style="flex:1;" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi BS</button></div><div id="tabOpname"><form onsubmit="event.preventDefault(); submitOpname();"><input type="hidden" id="invActSku"><input type="hidden" id="invActCogs"><div style="background:rgba(0,240,255,0.05); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid rgba(0,240,255,0.2);"><div class="tiny-label" style="color:var(--ryux-cyan);">TARGET SKU</div><div style="font-size:14px; font-weight:900;" id="invActSkuLabel"></div></div><div style="display:flex; gap:16px; margin-bottom:16px;"><div class="form-group" style="flex:1;"><label class="tiny-label">STOK SISTEM</label><input type="number" id="invActStokSistem" class="glass-input" readonly></div><div class="form-group" style="flex:1;"><label class="tiny-label" style="color:var(--ryux-yellow);">STOK FISIK</label><input type="number" id="invActStokFisik" class="glass-input" required oninput="calcOpnameDiff()"></div></div><div class="form-group"><label class="tiny-label">SELISIH</label><input type="text" id="invActSelisih" class="glass-input text-center" readonly></div><div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetOpname" class="glass-input" required></div><button type="submit" id="btnSubmitOpname" class="btn btn-warning" style="width:100%;">Proses Opname</button></form></div><div id="tabBs" class="hidden-section"><form onsubmit="event.preventDefault(); submitMutasiBs();"><div class="form-group"><label class="tiny-label">ARAH MUTASI</label><select id="invActArahBs" class="glass-input"><option value="BAIK_KE_BS">Stok Baik ke BS</option><option value="BS_KE_BAIK">Stok BS ke Baik</option></select></div><div class="form-group"><label class="tiny-label">QTY</label><input type="number" id="invActQtyBs" class="glass-input" required min="1"></div><div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetBs" class="glass-input" required></div><button type="submit" id="btnSubmitBs" class="btn btn-danger" style="width:100%;">Mutasi Stok BS</button></form></div></div></div></div>
+  <div id="modalInvAction" class="modal-overlay hidden-section pointer-events-auto">
+    <div class="modal-card pointer-events-auto relative z-50" style="max-width:500px;">
+      <div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline pointer-events-auto cursor-pointer" style="border:none; font-size:20px;">&times;</button></div>
+      <div class="modal-body pointer-events-auto relative z-50">
+        <div style="display:flex; gap:12px; margin-bottom:20px; position:relative; z-index:60;">
+          <button class="btn btn-primary pointer-events-auto cursor-pointer" style="flex:1;" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Opname</button>
+          <button class="btn btn-outline pointer-events-auto cursor-pointer" style="flex:1;" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi BS</button>
+        </div>
+        
+        <div id="tabOpname" class="pointer-events-auto relative z-50">
+          <form onsubmit="event.preventDefault(); submitOpname();">
+            <input type="hidden" id="invActSku"><input type="hidden" id="invActCogs">
+            <div style="background:rgba(0,240,255,0.05); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid rgba(0,240,255,0.2);">
+              <div class="tiny-label" style="color:var(--ryux-cyan);">TARGET SKU</div>
+              <div style="font-size:14px; font-weight:900;" id="invActSkuLabel"></div>
+            </div>
+            <div style="display:flex; gap:16px; margin-bottom:16px;">
+              <div class="form-group" style="flex:1;"><label class="tiny-label">STOK SISTEM</label><input type="number" id="invActStokSistem" class="glass-input" readonly></div>
+              <div class="form-group" style="flex:1;"><label class="tiny-label" style="color:var(--ryux-yellow);">STOK FISIK</label><input type="number" id="invActStokFisik" class="glass-input pointer-events-auto" required oninput="calcOpnameDiff()"></div>
+            </div>
+            <div class="form-group"><label class="tiny-label">SELISIH</label><input type="text" id="invActSelisih" class="glass-input text-center" readonly></div>
+            <div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetOpname" class="glass-input pointer-events-auto" required></div>
+            <button type="submit" id="btnSubmitOpname" class="btn btn-warning pointer-events-auto cursor-pointer" style="width:100%;">Proses Opname</button>
+          </form>
+        </div>
+
+        <div id="tabBs" class="hidden-section pointer-events-auto relative z-50">
+          <form onsubmit="event.preventDefault(); submitMutasiBs();">
+            <div class="form-group"><label class="tiny-label">ARAH MUTASI</label><select id="invActArahBs" class="glass-input pointer-events-auto cursor-pointer"><option value="BAIK_KE_BS">Stok Baik ke BS</option><option value="BS_KE_BAIK">Stok BS ke Baik</option></select></div>
+            <div class="form-group"><label class="tiny-label">QTY</label><input type="number" id="invActQtyBs" class="glass-input pointer-events-auto" required min="1"></div>
+            <div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetBs" class="glass-input pointer-events-auto" required></div>
+            <button type="submit" id="btnSubmitBs" class="btn btn-danger pointer-events-auto cursor-pointer" style="width:100%;">Mutasi Stok BS</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="modalGrn" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:900px;"><div class="modal-header"><span style="color:var(--ryux-green);"><i class="fas fa-file-invoice"></i> Input GRN</span><button onclick="closeGrnModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:12px; margin-bottom:20px; display:flex; flex-wrap:wrap; gap:16px;"><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">TANGGAL</label><input type="date" id="grnTgl" class="glass-input" required></div><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div></div><div style="margin-bottom:20px;"><button type="button" class="btn btn-outline" onclick="addGrnRow()">+ Tambah Barang</button></div><div id="grnItemsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;"></div><div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:12px; margin-bottom:20px; display:flex; gap:16px;"><div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-red">VOUCHER (-)</label><input type="number" id="grnVoc" class="glass-input text-ryux-red" value="0" oninput="calcGrn()"></div><div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-cyan">FEE (+)</label><input type="number" id="grnFee" class="glass-input text-ryux-cyan" value="0" oninput="calcGrn()"></div><div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-yellow">ONGKIR (+)</label><input type="number" id="grnOng" class="glass-input text-ryux-yellow" value="0" oninput="calcGrn()"></div></div><div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:900;"><div style="font-size:12px;">Subtotal: <span id="grnSubtotalLabel">Rp 0</span></div><div style="font-size:18px; color:var(--ryux-cyan);">Net Total: <span id="grnTotalBersihLabel">Rp 0</span></div></div><div style="display:flex; gap:16px;"><button type="button" class="btn btn-outline" style="flex:1;" onclick="closeGrnModal()">Batal</button><button type="button" class="btn btn-primary" style="flex:2;" onclick="submitGrnData()" id="btnSubmitGrn">Simpan GRN</button></div></div></div></div>
   <div id="modalFixSales" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:650px;"><div class="modal-header"><span style="color:var(--ryux-yellow);"><i class="fas fa-wrench"></i> Fix Data</span><button onclick="closeFixModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><input type="hidden" id="fixRowIdx"><div id="fixRefBox" style="background:rgba(0,240,255,0.05); padding:16px; border-radius:12px; margin-bottom:16px;"></div><div id="fixItemsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;"></div><button type="button" class="btn btn-outline" style="width:100%; margin-bottom:16px;" onclick="addFixRowUI('', 1)">+ Insert Row</button><button type="button" onclick="saveFixModal()" id="btnSaveFix" class="btn btn-primary" style="width:100%;">Apply</button></div></div></div>
   <div id="modalRetur" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:500px;"><div class="modal-header"><span style="color:var(--ryux-red);"><i class="fas fa-undo"></i> Log Retur</span><button onclick="closeReturModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><form onsubmit="event.preventDefault(); submitRetur();"><input type="hidden" id="returRowIdx"><div style="background:rgba(255,0,85,0.05); padding:16px; border-radius:12px; margin-bottom:16px;"><div class="tiny-label" style="color:var(--ryux-red);">ORDER ID</div><div style="font-size:16px; font-weight:900;" id="returNoOrderLabel"></div></div><div id="returItemsList" style="margin-bottom:16px;"></div><div class="form-group"><label class="tiny-label">KONDISI</label><select id="returKondisi" class="glass-input"><option value="BAIK">Bagus (Ke Stok Baik)</option><option value="BS">Rusak (Ke Stok BS)</option></select></div><div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="returKeterangan" class="glass-input"></div><button type="submit" id="btnSubmitRetur" class="btn btn-danger" style="width:100%;">Proses Retur</button></form></div></div></div>
@@ -885,12 +921,34 @@
     // MODULE: INVENTORY
     function loadInventoryData() { document.getElementById('invTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="7" class="loading-spinner">Loading...</td></tr>'; google.script.run.withSuccessHandler(data => { globalInvData = data; renderInventory(); }).getInventoryData(); }
     function renderInventory() {
-      var selT = document.getElementById('filterTypeInv').value; var selS = document.getElementById('filterStatusInv').value; var sq = document.getElementById('searchInv').value.toLowerCase();
-      var filtered = globalInvData.filter(d => { var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; return (selT === 'ALL' || d.tipe === selT) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); });
+      var selT = document.getElementById('filterTypeInv').value; 
+      var selC = document.getElementById('filterCatInv').value; // Tambahan: Tangkap value filter kategori
+      var selS = document.getElementById('filterStatusInv').value; 
+      var sq = document.getElementById('searchInv').value.toLowerCase();
+      
+      var filtered = globalInvData.filter(d => { 
+          var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; 
+          
+          // Tambahan: Masukkan logika (selC === 'ALL' || d.kategori === selC) ke dalam filter
+          return (selT === 'ALL' || d.tipe === selT) && 
+                 (selC === 'ALL' || d.kategori === selC) && 
+                 (selS === 'ALL' || stat === selS) && 
+                 (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); 
+      });
+      
       var tbody = document.getElementById('invTable').getElementsByTagName('tbody')[0];
       var html = ''; var tAset = 0; var tQty = 0; var tRst = 0;
-      filtered.forEach(d => { tAset += d.nilai; tQty += d.stok; if(d.stok<=1) tRst++; html += `<tr><td><b>${d.sku}</b></td><td>${d.nama}</td><td>${d.stok>1?'<span class="badge-success">Aman</span>':'<span class="badge-danger">Kritis</span>'}</td><td class="text-center font-black ${d.stok<=1?'text-ryux-red':'text-ryux-cyan'}">${d.stok}</td><td class="text-right">${formatRp(d.cogs)}</td><td class="text-right font-black" style="color:white;">${formatRp(d.nilai)}</td><td class="text-center"><button class="btn btn-outline" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})">Aksi</button></td></tr>`; });
-      document.getElementById('invSumAset').innerText = formatRp(tAset); document.getElementById('invSumQty').innerText = tQty + " Pcs"; document.getElementById('invSumSku').innerText = filtered.length + " SKU"; document.getElementById('invSumRestock').innerText = tRst + " SKU";
+      
+      filtered.forEach(d => { 
+          tAset += d.nilai; tQty += d.stok; if(d.stok<=1) tRst++; 
+          html += `<tr><td><b>${d.sku}</b></td><td>${d.nama}</td><td>${d.stok>1?'<span class="badge-success">Aman</span>':'<span class="badge-danger">Kritis</span>'}</td><td class="text-center font-black ${d.stok<=1?'text-ryux-red':'text-ryux-cyan'}">${d.stok}</td><td class="text-right">${formatRp(d.cogs)}</td><td class="text-right font-black" style="color:white;">${formatRp(d.nilai)}</td><td class="text-center"><button class="btn btn-outline" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})">Aksi</button></td></tr>`; 
+      });
+      
+      document.getElementById('invSumAset').innerText = formatRp(tAset); 
+      document.getElementById('invSumQty').innerText = tQty + " Pcs"; 
+      document.getElementById('invSumSku').innerText = filtered.length + " SKU"; 
+      document.getElementById('invSumRestock').innerText = tRst + " SKU";
+      
       tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" class="text-center" style="padding:20px;">Data kosong</td></tr>' : html;
     }
 
@@ -949,7 +1007,24 @@
     function runAutoFillSKU() { alert("Fixing SKU..."); google.script.run.withSuccessHandler(res => { alert(res); loadSalesData(); }).autoFillMissingSKUs(); }
     function openInvActionModal(sku, nama, stok, cogs) { document.getElementById('invActSku').value = sku; document.getElementById('invActCogs').value = cogs; document.getElementById('invActSkuLabel').innerText = sku; document.getElementById('invActStokSistem').value = stok; switchInvTab('OPNAME'); document.getElementById('modalInvAction').classList.remove('hidden-section'); }
     function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden-section'); }
-    function switchInvTab(tab) { document.getElementById('tabOpname').style.display = tab === 'OPNAME' ? 'block' : 'none'; document.getElementById('tabBs').style.display = tab === 'BS' ? 'block' : 'none'; }
+    function switchInvTab(tab) { 
+      const opnameBtn = document.getElementById('tabOpnameBtn');
+      const bsBtn = document.getElementById('tabBsBtn');
+      const tabOpname = document.getElementById('tabOpname');
+      const tabBs = document.getElementById('tabBs');
+
+      if (tab === 'OPNAME') {
+          opnameBtn.className = "btn btn-primary pointer-events-auto cursor-pointer flex-1";
+          bsBtn.className = "btn btn-outline pointer-events-auto cursor-pointer flex-1";
+          tabOpname.classList.remove('hidden-section');
+          tabBs.classList.add('hidden-section');
+      } else {
+          bsBtn.className = "btn btn-primary pointer-events-auto cursor-pointer flex-1";
+          opnameBtn.className = "btn btn-outline pointer-events-auto cursor-pointer flex-1";
+          tabBs.classList.remove('hidden-section');
+          tabOpname.classList.add('hidden-section');
+      }
+    }
     function calcOpnameDiff() { var sys = parseInt(document.getElementById('invActStokSistem').value) || 0; var fis = parseInt(document.getElementById('invActStokFisik').value) || 0; document.getElementById('invActSelisih').value = fis - sys; }
     function submitOpname() { var payload = { sku: document.getElementById('invActSku').value, cogs: document.getElementById('invActCogs').value, tipeMutasi: "OPNAME", stokSistem: document.getElementById('invActStokSistem').value, stokFisik: document.getElementById('invActStokFisik').value, qtySelisih: document.getElementById('invActSelisih').value, keterangan: document.getElementById('invActKetOpname').value }; google.script.run.withSuccessHandler(res => { alert(res); closeInvActionModal(); loadInventoryData(); }).simpanPenyesuaianStok(payload); }
     function submitMutasiBs() { var qty = parseInt(document.getElementById('invActQtyBs').value); var sys = parseInt(document.getElementById('invActStokSistem').value); var arah = document.getElementById('invActArahBs').value; var payload = { sku: document.getElementById('invActSku').value, cogs: document.getElementById('invActCogs').value, tipeMutasi: arah, stokSistem: sys, stokFisik: arah === "BAIK_KE_BS" ? sys - qty : sys + qty, qtySelisih: qty, keterangan: document.getElementById('invActKetBs').value }; google.script.run.withSuccessHandler(res => { alert(res); closeInvActionModal(); loadInventoryData(); }).simpanPenyesuaianStok(payload); }
