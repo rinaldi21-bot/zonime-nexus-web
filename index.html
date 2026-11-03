@@ -405,10 +405,11 @@
       </div>
 
       <!-- 3. LIVE SALES -->
-      <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full">
-        <!-- FILTER BAR (Berjajar Horizontal Rapi) -->
-        <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20 mb-6">
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterDateRangeSales" onchange="renderSalesTable();">
+      <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full relative z-10 pointer-events-auto">
+        <!-- FILTER BAR (Berjajar Horizontal Rapi & Interaktif) -->
+        <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-30 mb-6">
+          
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto flex-1 min-w-[120px]" id="filterDateRangeSales" onchange="renderSalesTable();">
             <option value="ALL">Semua Waktu</option>
             <option value="TODAY">Hari Ini</option>
             <option value="YESTERDAY">Kemarin</option>
@@ -416,35 +417,35 @@
             <option value="THIS_MONTH">Bulan Ini</option>
           </select>
           
-          <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] border border-white/10 flex-1 min-w-[200px]">
-            <input type="date" id="salesStartDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full" onchange="renderSalesTable()">
-            <span class="text-slate-400 mx-2 text-[10px]">-</span>
-            <input type="date" id="salesEndDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full" onchange="renderSalesTable()">
+          <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] border border-white/10 flex-1 min-w-[200px] pointer-events-auto z-40 relative">
+            <input type="date" id="salesStartDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full pointer-events-auto relative z-50" onchange="renderSalesTable()">
+            <span class="text-slate-400 mx-2 text-[10px] pointer-events-none">-</span>
+            <input type="date" id="salesEndDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full pointer-events-auto relative z-50" onchange="renderSalesTable()">
           </div>
 
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterStatusSales" onchange="renderSalesTable()">
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto flex-1 min-w-[120px]" id="filterStatusSales" onchange="renderSalesTable()">
             <option value="ALL">Semua Status</option><option value="Selesai">Selesai</option><option value="Menunggu Pengambilan">Menunggu</option><option value="Sedang Transit">Transit</option><option value="Batal">Batal</option><option value="Return">Return</option><option value="Refund & Return">Refund</option>
           </select>
 
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterKelengkapanSales" onchange="renderSalesTable()">
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto flex-1 min-w-[120px]" id="filterKelengkapanSales" onchange="renderSalesTable()">
             <option value="ALL">Semua Data</option><option value="AMAN">Data Valid</option><option value="ERROR">Butuh Koreksi</option>
           </select>
 
-          <div class="relative flex-2 min-w-[180px]">
+          <div class="relative flex-2 min-w-[180px] pointer-events-auto z-30">
              <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
-             <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchSales" placeholder="Cari Order / LC..." onkeyup="renderSalesTable()">
+             <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40 pointer-events-auto cursor-text" id="searchSales" placeholder="Cari Order / LC..." onkeyup="renderSalesTable()">
           </div>
           
-          <button onclick="resetSalesFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border border-white/10 hover:bg-white/10 rounded-xl shrink-0" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
+          <button onclick="resetSalesFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border border-white/10 hover:bg-white/10 rounded-xl shrink-0 z-30 relative" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
         </div>
         
-        <div class="summary-box glass-card shrink-0">
+        <div class="summary-box glass-card shrink-0 pointer-events-auto relative z-20">
           <div style="width:45%;"><div class="tiny-label">TOTAL OMSET</div><div class="stat-value" style="color:var(--ryux-cyan);" id="sumOmset">Rp 0</div></div>
           <div style="width:45%;"><div class="tiny-label">NET PROFIT</div><div class="stat-value" style="color:var(--ryux-green);" id="sumProfit">Rp 0</div></div>
           <div style="width:45%;"><div class="tiny-label">TOTAL PESANAN</div><div class="stat-value" id="sumOrder">0</div></div>
           <div style="width:45%;"><div class="tiny-label">ITEM TERJUAL</div><div class="stat-value" id="sumQty">0 Pcs</div></div>
         </div>
-        <div id="salesContainer" class="flex-1 overflow-y-auto custom-scroll pr-1 pb-10"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div></div>
+        <div id="salesContainer" class="flex-1 overflow-y-auto custom-scroll pr-1 pb-10 pointer-events-auto relative z-10"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div></div>
       </div>
       <!-- 4. SMART INVENTORY -->
       <div id="pageInventory" class="page-section hidden-section flex flex-col h-full">
@@ -754,10 +755,48 @@
     var globalSalesData = []; var globalInvData = []; var globalProcData = []; var masterProductFullList = []; var todoItems = [];
 
     function preloadDatalists() {
-      google.script.run.withSuccessHandler(list => { var dl = document.getElementById('skuSuggestions'); dl.innerHTML = ''; list.forEach(item => { var opt = document.createElement('option'); opt.value = item; dl.appendChild(opt); }); }).getSmartSkuList();
-      google.script.run.withSuccessHandler(res => { var dlType = document.getElementById('listTypes'); dlType.innerHTML = ''; res.types.forEach(t => { var o = document.createElement('option'); o.value=t; dlType.appendChild(o); }); var dlCat = document.getElementById('listCats'); dlCat.innerHTML = ''; res.categories.forEach(c => { var o = document.createElement('option'); o.value=c; dlCat.appendChild(o); }); }).getCategoryTypeSuggestions();
-      google.script.run.withSuccessHandler(list => { var dlSupp = document.getElementById('listSuppliers'); dlSupp.innerHTML = ''; list.forEach(s => { var o = document.createElement('option'); o.value=s; dlSupp.appendChild(o); }); }).getSupplierSuggestions();
-      google.script.run.withSuccessHandler(data => { masterProductFullList = data; var dlProd = document.getElementById('listProdNames'); dlProd.innerHTML = ''; var prodSet = new Set(); data.forEach(d => { if(d.nama) prodSet.add(d.nama); }); Array.from(prodSet).sort().forEach(p => { var o = document.createElement('option'); o.value = p; dlProd.appendChild(o); }); }).getInventoryDataFull();
+      // 1. Datalist untuk Form Create SKU & GRN
+      google.script.run.withSuccessHandler(list => { 
+          var dl = document.getElementById('skuSuggestions'); dl.innerHTML = ''; 
+          list.forEach(item => { var opt = document.createElement('option'); opt.value = item; dl.appendChild(opt); }); 
+      }).getSmartSkuList();
+      
+      // 2. Kategori dan Tipe untuk Form DAN Filter Inventory
+      google.script.run.withSuccessHandler(res => { 
+          // Untuk form Create SKU
+          var dlType = document.getElementById('listTypes'); dlType.innerHTML = ''; 
+          var dlCat = document.getElementById('listCats'); dlCat.innerHTML = ''; 
+          
+          // Untuk Filter di Menu Inventory
+          var filterTypeInv = document.getElementById('filterTypeInv');
+          if(filterTypeInv) filterTypeInv.innerHTML = '<option value="ALL">Semua Tipe</option>';
+          var filterCatInv = document.getElementById('filterCatInv');
+          if(filterCatInv) filterCatInv.innerHTML = '<option value="ALL">Semua Kategori</option>';
+
+          res.types.forEach(t => { 
+              var o = document.createElement('option'); o.value=t; dlType.appendChild(o); 
+              if(filterTypeInv) { var optInv = document.createElement('option'); optInv.value = t; optInv.text = t; filterTypeInv.appendChild(optInv); }
+          }); 
+          
+          res.categories.forEach(c => { 
+              var o = document.createElement('option'); o.value=c; dlCat.appendChild(o); 
+              if(filterCatInv) { var optInv = document.createElement('option'); optInv.value = c; optInv.text = c; filterCatInv.appendChild(optInv); }
+          }); 
+      }).getCategoryTypeSuggestions();
+      
+      // 3. Datalist Supplier untuk Form GRN
+      google.script.run.withSuccessHandler(list => { 
+          var dlSupp = document.getElementById('listSuppliers'); dlSupp.innerHTML = ''; 
+          list.forEach(s => { var o = document.createElement('option'); o.value=s; dlSupp.appendChild(o); }); 
+      }).getSupplierSuggestions();
+      
+      // 4. Data Master Produk untuk auto-fill
+      google.script.run.withSuccessHandler(data => { 
+          masterProductFullList = data; 
+          var dlProd = document.getElementById('listProdNames'); dlProd.innerHTML = ''; 
+          var prodSet = new Set(); data.forEach(d => { if(d.nama) prodSet.add(d.nama); }); 
+          Array.from(prodSet).sort().forEach(p => { var o = document.createElement('option'); o.value = p; dlProd.appendChild(o); }); 
+      }).getInventoryDataFull();
     }
     function onProductSelect(val) { var match = masterProductFullList.find(d => d.nama.toLowerCase() === val.toLowerCase() || d.nama.toLowerCase().includes(val.toLowerCase())); if(match) { document.getElementById('newSku').value = match.sku || ''; document.getElementById('newType').value = match.tipe !== '-' ? match.tipe : ''; document.getElementById('newCat').value = match.kategori !== '-' ? match.kategori : ''; document.getElementById('newVar').value = match.varian !== '-' ? match.varian : ''; document.getElementById('newLc').value = match.listingCode !== '-' ? match.listingCode : ''; document.getElementById('newCogs').value = match.cogs || 0; } }
 
