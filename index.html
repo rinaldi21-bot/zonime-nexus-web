@@ -5,28 +5,60 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ZONIME NEXUS - Cyber OS v4</title>
+  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <style>
-    :root { --ryux-cyan: #00F0FF; --ryux-green: #00FF66; --ryux-yellow: #FFD700; --ryux-purple: #B026FF; --ryux-red: #FF0055; --ryux-muted: #94A3B8; --glass-bg: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.08); --text-main: #f8fafc; }
+    :root {
+      --ryux-cyan: #00F0FF; --ryux-green: #00FF66; --ryux-yellow: #FFD700;
+      --ryux-purple: #B026FF; --ryux-red: #FF0055; --ryux-muted: #94A3B8;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+    }
+
     * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     ::-webkit-scrollbar { width: 6px; height: 6px; display: none; }
     @media (min-width: 768px) { ::-webkit-scrollbar { display: block; } }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,0.5); }
-    body { margin: 0; padding: 0; background-color: #05030a; background-image: radial-gradient(circle at 15% 30%, rgba(99, 39, 237, 0.25) 0%, transparent 40%), radial-gradient(circle at 85% 20%, rgba(0, 240, 255, 0.15) 0%, transparent 45%), radial-gradient(circle at 50% 80%, rgba(176, 38, 255, 0.15) 0%, transparent 50%); background-attachment: fixed; color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
+
+    body {
+      margin: 0; padding: 0; background-color: #05030a;
+      background-image: 
+        radial-gradient(circle at 15% 30%, rgba(99, 39, 237, 0.25) 0%, transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(0, 240, 255, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(176, 38, 255, 0.15) 0%, transparent 50%);
+      background-attachment: fixed; color: var(--text-main);
+      display: flex; height: 100vh; overflow: hidden; position: relative;
+    }
+    
     @keyframes pulse-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
     #cyberRainCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.3; filter: blur(1px); }
-    .glass-card, .mini-widget, .filter-bar, .summary-box { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); position: relative; z-index: 10; }
-    .glass-input, .filter-select { width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px 16px; font-size: 12px; font-weight: 700; color: white; outline: none; transition: 0.3s; }
+
+    .glass-card, .mini-widget, .filter-bar, .summary-box {
+      background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border); border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); position: relative; z-index: 10;
+    }
+    
+    .glass-input, .filter-select {
+      width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--glass-border); border-radius: 12px;
+      padding: 12px 16px; font-size: 12px; font-weight: 700; color: white; outline: none; transition: 0.3s;
+    }
     .glass-input:focus { border-color: var(--ryux-cyan); background: rgba(0, 0, 0, 0.4); }
+    
     .filter-bar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; padding: 16px; align-items: center; }
     @media (min-width: 768px) { .filter-bar { flex-direction: row; } }
+
     .tiny-label { display: block; font-size: 10px; font-weight: 800; color: var(--ryux-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
     .form-group { margin-bottom: 16px; }
+
     .sidebar { width: 270px; background: rgba(10, 13, 20, 0.8); backdrop-filter: blur(24px); border-right: 1px solid var(--glass-border); display: none; flex-direction: column; z-index: 100; }
     @media (min-width: 768px) { .sidebar { display: flex; } }
     .logo { padding: 28px; display: flex; flex-direction: column; gap: 8px; }
@@ -36,23 +68,27 @@
     .nav-item { padding: 14px 20px; margin: 4px 16px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 12px; border-radius: 12px; color: var(--ryux-muted); font-weight: 700; transition: 0.3s; }
     .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: white; }
     .nav-item.active { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--ryux-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.1); }
+
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; z-index: 10; }
     .header { padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
     .header h2 { margin: 0; font-size: 20px; display: flex; align-items: center; gap: 12px; font-weight: 900; color: white; }
     .pip-indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--ryux-cyan); animation: pulse-glow 2s infinite; }
     .header-actions { display: flex; gap: 12px; align-items: center; }
     .content-scroll { flex: 1; overflow-y: auto; padding: 15px 32px 40px; position: relative; z-index: 10; }
+
     .btn { padding: 12px 20px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid transparent; }
     .btn-primary { background: rgba(0, 240, 255, 0.1); color: var(--ryux-cyan); border-color: rgba(0, 240, 255, 0.3); }
     .btn-warning { background: rgba(255, 215, 0, 0.1); color: var(--ryux-yellow); border-color: rgba(255, 215, 0, 0.3); }
     .btn-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3); }
     .btn-outline { background: rgba(255, 255, 255, 0.05); border-color: var(--glass-border); color: #cbd5e1; }
     .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; justify-content: center; }
+
     .dashboard-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
     @media (min-width: 768px) { .dashboard-cards { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
     .stat-card { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
     .stat-title { font-size: 9px; font-weight: 900; color: var(--ryux-muted); text-transform: uppercase; letter-spacing: 2px; }
     .stat-value { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
+
     .dg-header { padding: 16px 24px; border-bottom: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; gap: 16px; font-size: 11px; font-weight: 900; }
     @media (min-width: 768px) { .dg-header { flex-direction: row; justify-content: space-between; align-items: center; } }
     .dg-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
@@ -60,24 +96,29 @@
     @media (min-width: 768px) { .dg-row { flex-direction: row; justify-content: space-between; align-items: center; } }
     .money-stat span { display: block; font-size: 9px; color: var(--ryux-muted); font-weight: 900; margin-bottom: 4px; }
     .money-stat div { font-size: 15px; font-weight: 800; color: white; }
+
     .summary-box { padding: 24px; margin-bottom: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; background: linear-gradient(to right, rgba(255,255,255,0.02), rgba(0,0,0,0.2)); }
+    
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
     th { background: rgba(0, 0, 0, 0.4); padding: 16px; font-weight: 900; color: var(--ryux-muted); text-transform: uppercase; font-size: 9px; text-align: left; }
     td { padding: 16px; border-bottom: 1px solid var(--glass-border); font-weight: 500; }
-    
-    /* MODALS */
+
+    /* CORE FIX: Pointer events */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 16px; pointer-events: auto; }
     .hidden-section { display: none !important; pointer-events: none !important; }
+
     .modal-card { width: 100%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #0b0f19; border: 1px solid var(--ryux-cyan); }
     .modal-header { padding: 20px 24px; background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-weight: 900; }
     .modal-body { padding: 24px; overflow-y: auto; }
-    
+
     .badge-info { background: rgba(0, 240, 255, 0.1); color: var(--ryux-cyan); border: 1px solid rgba(0, 240, 255, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
     .badge-success { background: rgba(0, 255, 102, 0.1); color: var(--ryux-green); border: 1px solid rgba(0, 255, 102, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
     .badge-warning { background: rgba(255, 215, 0, 0.1); color: var(--ryux-yellow); border: 1px solid rgba(255, 215, 0, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
     .badge-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border: 1px solid rgba(255, 0, 85, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
     .badge-purple { background: rgba(176, 38, 255, 0.1); color: #d8b4fe; border: 1px solid rgba(176, 38, 255, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+
     .loading-spinner { text-align: center; padding: 40px; color: var(--ryux-cyan); font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;}
+    
     .todo-list { list-style: none; padding: 0; margin: 0; }
     .todo-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px dashed var(--glass-border); font-size: 12px; color: white; }
     .todo-item.completed span { text-decoration: line-through; color: var(--ryux-muted); }
@@ -86,7 +127,7 @@
     .cyber-dropdown-item:hover { background: rgba(0, 240, 255, 0.2); color: var(--ryux-cyan); }
     
     /* Tombol Aksi Cepat Mengambang */
-    .fab-btn { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 50%; background: var(--ryux-cyan); color: #000; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4); z-index: 50; transition: transform 0.2s; pointer-events: auto; }
+    .fab-btn { position: absolute; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 50%; background: var(--ryux-cyan); color: #000; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4); z-index: 50; transition: transform 0.2s; pointer-events: auto; }
     .fab-btn:hover { transform: scale(1.1); }
   </style>
 </head>
@@ -94,6 +135,7 @@
 
   <canvas id="cyberRainCanvas"></canvas>
 
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="logo"><h1>ZONIME NEXUS</h1><span>Cyber OS v4.0</span></div>
     <div style="flex:1; overflow-y:auto; padding-bottom:24px;">
@@ -178,10 +220,10 @@
                  </div>
              </div>
 
-             <!-- BENTO GRID (3 KOLOM LEGA) -->
+             <!-- BENTO GRID (3 KOLOM LEGA - DESKTOP FIRST) -->
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start pointer-events-auto">
                  
-                 <!-- KOLOM 1: Balances & Health -->
+                 <!-- KOLOM 1: Balances & Buku Kas Mini -->
                  <div class="flex flex-col gap-6">
                      <div class="flex gap-4">
                          <div class="glass-card stat-card flex-1 p-5 border-cyan-400/20">
@@ -194,52 +236,85 @@
                              <div class="text-white text-2xl font-light mt-1 truncate" id="finBizBal">Rp 0</div>
                          </div>
                      </div>
-                     <div class="glass-card p-5 flex justify-between items-center border-emerald-400/20">
-                         <div><span class="tiny-label">Health Score</span><div class="text-[10px] text-slate-400 font-semibold mt-1">Indeks Likuiditas Aman</div></div>
-                         <div class="w-12 h-12 rounded-full border-2 border-emerald-400/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,255,102,0.1)]"><span class="text-xl font-bold text-emerald-400">88</span></div>
-                     </div>
-                     <div class="glass-card p-6 flex-1">
-                         <div class="font-black text-[11px] text-slate-400 tracking-wider uppercase mb-5">Alokasi Kantong Biz</div>
-                         <div class="flex flex-col gap-4">
-                             <div>
-                                 <div class="flex justify-between mb-1.5"><span class="text-[10px] text-white font-semibold">Operasional Biz</span><span class="text-[9px] text-cyan-400 font-bold">60%</span></div>
-                                 <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="w-[60%] h-full bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(0,240,255,0.5)]"></div></div>
-                             </div>
-                             <div>
-                                 <div class="flex justify-between mb-1.5"><span class="text-[10px] text-white font-semibold">Pajak & Legal</span><span class="text-[9px] text-yellow-400 font-bold">11%</span></div>
-                                 <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="w-[11%] h-full bg-yellow-400 rounded-full shadow-[0_0_10px_rgba(255,215,0,0.5)]"></div></div>
-                             </div>
-                             <div>
-                                 <div class="flex justify-between mb-1.5"><span class="text-[10px] text-white font-semibold">Tabungan Darurat</span><span class="text-[9px] text-purple-500 font-bold">29%</span></div>
-                                 <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="w-[29%] h-full bg-purple-500 rounded-full shadow-[0_0_10px_rgba(176,38,255,0.5)]"></div></div>
-                             </div>
+                     
+                     <div class="glass-card flex flex-col p-5 h-[320px] relative z-20 pointer-events-auto">
+                         <div class="flex justify-between items-center mb-4">
+                             <div><div class="tiny-label">Buku Kas</div><div class="text-white font-bold text-sm">Riwayat Transaksi</div></div>
+                         </div>
+                         <div class="flex gap-3 border-b border-white/10 pb-2 mb-3 relative z-30 pointer-events-auto">
+                             <button class="text-[9px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-1 px-1 pointer-events-auto cursor-pointer">Semua</button>
+                             <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors pointer-events-auto cursor-pointer">Masuk</button>
+                             <button class="text-[9px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-1 px-1 transition-colors pointer-events-auto cursor-pointer">Keluar</button>
+                         </div>
+                         <div id="fm_transaction_list" class="flex-1 overflow-y-auto custom-scroll pr-1 flex flex-col gap-2 relative z-20 pointer-events-auto">
+                             <div class="text-center text-slate-500 text-xs italic py-4">Memuat transaksi...</div>
                          </div>
                      </div>
                  </div>
 
-                 <!-- KOLOM 2 & 3: CHART CASHFLOW (Diperlebar) & Utang/Piutang -->
-                 <div class="flex flex-col gap-6 lg:col-span-2 h-full">
-                     <div class="glass-card p-6 w-full relative flex-1 min-h-[300px]">
-                         <div class="tiny-label mb-2">CASH FLOW TREND (IN VS OUT)</div>
-                         <div class="absolute inset-0 top-14 left-6 right-6 bottom-6"><canvas id="financeChart"></canvas></div>
+                 <!-- KOLOM 2: Quick Action & Utang/Piutang -->
+                 <div class="flex flex-col gap-6">
+                     <div class="glass-card relative z-20 pointer-events-auto" style="padding:24px;">
+                         <div class="flex justify-between items-center mb-4">
+                             <div style="font-weight:900; text-transform:uppercase; font-size:11px; color:var(--ryux-muted); letter-spacing:1px;">Catat Transaksi Cepat</div>
+                         </div>
+                         <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">Mulai proses entri catatan pengeluaran, pemasukan, atau mutasi antar dompet secara aman melalui pop-up khusus.</p>
+                         <button onclick="fm_openTransaksiModal()" class="btn btn-primary w-full py-4 text-sm font-bold tracking-widest uppercase relative z-30 pointer-events-auto cursor-pointer"><i class="fas fa-plus mr-2"></i> Input Transaksi</button>
                      </div>
-                     <div class="glass-card p-5 flex flex-col relative z-30 shrink-0">
+
+                     <div class="glass-card p-5 flex-1 flex flex-col relative z-20 pointer-events-auto border-t-2 border-t-emerald-400/30">
                          <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
                              <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang Berjalan</span>
-                             <button class="btn btn-outline btn-icon relative z-40 pointer-events-auto cursor-pointer" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus text-[10px]"></i></button>
+                             <button class="btn btn-outline btn-icon relative z-30 pointer-events-auto cursor-pointer" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus text-[10px]"></i></button>
                          </div>
-                         <div class="flex flex-col gap-3 overflow-y-auto max-h-[120px] custom-scroll relative z-20 pointer-events-auto">
-                             <div class="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-colors">
+                         <div class="flex flex-col gap-3 overflow-y-auto max-h-[180px] custom-scroll relative z-20 pointer-events-auto">
+                             <div class="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-colors cursor-default">
                                  <div class="flex flex-col"><span class="text-[11px] font-bold text-white">Client Beta (Proyek X)</span><span class="text-[8px] text-slate-500 uppercase mt-0.5">Tempo: 15 Nov</span></div>
                                  <div class="flex flex-col items-end"><span class="text-[12px] font-black text-emerald-400">Rp 8.500.000</span><span class="text-[8px] text-emerald-500/80 uppercase font-bold mt-0.5">Piutang</span></div>
                              </div>
-                             <div class="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-colors">
+                             <div class="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-colors cursor-default">
                                  <div class="flex flex-col"><span class="text-[11px] font-bold text-white">Vendor Pabrik XYZ</span><span class="text-[8px] text-slate-500 uppercase mt-0.5">Invoice #992</span></div>
                                  <div class="flex flex-col items-end"><span class="text-[12px] font-black text-rose-400">Rp 12.000.000</span><span class="text-[8px] text-rose-500/80 uppercase font-bold mt-0.5">Utang</span></div>
                              </div>
                          </div>
                      </div>
                  </div>
+
+                 <!-- KOLOM 3: Health Score, Cash Flow Chart, P&L Settlement -->
+                 <div class="flex flex-col gap-6">
+                     <div class="glass-card flex justify-between items-center" style="padding:20px; border-color:rgba(0,255,102,0.15);">
+                         <div><span class="tiny-label">Health Score</span><div class="text-[10px] text-slate-400 font-semibold mt-1">Indeks Likuiditas Aman</div></div>
+                         <div class="w-12 h-12 rounded-full border-2 border-emerald-400/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,255,102,0.1)]"><span class="text-xl font-bold text-emerald-400">88</span></div>
+                     </div>
+
+                     <div class="glass-card p-5 h-[160px] relative pointer-events-auto">
+                         <div class="tiny-label mb-2">CASH FLOW TREND (IN VS OUT)</div>
+                         <div class="absolute inset-0 top-12 left-5 right-5 bottom-4"><canvas id="financeChart"></canvas></div>
+                     </div>
+
+                     <div class="glass-card p-5 flex-1 flex flex-col relative z-20 pointer-events-auto border-t-2 border-t-purple-500/30">
+                         <div class="tiny-label mb-3 text-purple-400">P&L & SETTLEMENT (MTH)</div>
+                         
+                         <!-- Pending Settlement -->
+                         <div class="bg-black/30 p-3 rounded-xl border border-white/5 mb-4 hover:bg-white/5 transition-colors cursor-default">
+                             <div class="flex justify-between items-center mb-1">
+                                 <span class="text-[10px] text-slate-400 font-semibold">Dana Mengambang (MP)</span>
+                                 <i class="fas fa-wallet text-slate-500 text-[10px]"></i>
+                             </div>
+                             <div class="text-white font-black text-[14px]">Rp 18.450.000</div>
+                         </div>
+
+                         <!-- Mini P&L Matrix -->
+                         <div class="flex flex-col gap-2.5 text-[10px] font-semibold text-slate-300">
+                             <div class="flex justify-between"><span class="text-slate-400">Gross Revenue</span><span class="text-cyan-400">+ Rp 45.000.000</span></div>
+                             <div class="flex justify-between"><span class="text-slate-400">COGS (HPP)</span><span class="text-rose-400">- Rp 15.000.000</span></div>
+                             <div class="flex justify-between"><span class="text-slate-400">Ad Spend (Ads)</span><span class="text-rose-400">- Rp 4.500.000</span></div>
+                             <div class="flex justify-between border-b border-white/10 pb-2"><span class="text-slate-400">Operasional (Gaji, dll)</span><span class="text-rose-400">- Rp 5.000.000</span></div>
+                             <div class="flex justify-between pt-1"><span class="text-white font-bold">Net Cash Profit</span><span class="text-emerald-400 font-black text-[12px]">Rp 20.500.000</span></div>
+                         </div>
+                     </div>
+                 </div>
+
              </div>
          </div>
 
@@ -278,13 +353,13 @@
                  </div>
              </div>
          </div>
-      </div>
-      
-      <!-- Tombol FAB mengambang -->
-      <div id="fabContainer" class="hidden-section pointer-events-auto">
-        <div class="fab-btn pointer-events-auto cursor-pointer" onclick="fm_openTransaksiModal()" title="Catat Transaksi">
-            <i class="fas fa-plus text-black"></i>
-        </div>
+
+         <!-- FAB (Floating Action Button) INPUT TRANSAKSI -->
+         <div id="fabContainer" class="hidden-section pointer-events-auto">
+             <div class="fab-btn pointer-events-auto cursor-pointer" onclick="fm_openTransaksiModal()" title="Catat Transaksi">
+                 <i class="fas fa-plus text-black"></i>
+             </div>
+         </div>
       </div>
 
       <!-- 3. LIVE SALES -->
@@ -389,7 +464,7 @@
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
 
   <!-- ============================================================== -->
-  <!-- MODALS -->
+  <!-- SEMUA MODALS (Z-INDEX 9999, POINTER EVENTS AUTO)               -->
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section">
@@ -943,7 +1018,6 @@
     // FINANCE MANAGER LOGIC (TAB, WALLETS, LEDGER, CHARTS)
     // =======================================================
     
-    // TAB SYSTEM
     function fm_switchTab(tab) {
         const overviewBtn = document.getElementById('fm_tab_overview_btn');
         const ledgerBtn = document.getElementById('fm_tab_ledger_btn');
@@ -960,8 +1034,40 @@
             overviewBtn.className = "text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
             ledgerContent.classList.remove('hidden'); ledgerContent.classList.add('flex');
             overviewContent.classList.add('hidden'); overviewContent.classList.remove('flex');
-            fm_renderTransactions(); // Refresh tabel ledger
+            fm_renderTransactions(); 
         }
+    }
+
+    function initFinanceChart() {
+      const ctx = document.getElementById('financeChart');
+      if(!ctx) return;
+      if(finChart) finChart.destroy();
+      const ctx2d = ctx.getContext('2d');
+      const gradCyan = ctx2d.createLinearGradient(0, 0, 0, 200); gradCyan.addColorStop(0, 'rgba(0, 240, 255, 0.4)'); gradCyan.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
+      const gradPurple = ctx2d.createLinearGradient(0, 0, 0, 200); gradPurple.addColorStop(0, 'rgba(176, 38, 255, 0.4)'); gradPurple.addColorStop(1, 'rgba(176, 38, 255, 0.0)');
+      
+      finChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['1 Nov', '5 Nov', '10 Nov', '15 Nov', '20 Nov', '25 Nov', '30 Nov'],
+          datasets: [
+            { label: 'Pemasukan (+)', data: [1200, 1900, 1500, 2500, 2200, 3000, 2800], borderColor: '#00F0FF', backgroundColor: gradCyan, borderWidth: 3, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#06080c', pointBorderColor: '#00F0FF', pointBorderWidth: 2 },
+            { label: 'Pengeluaran (-)', data: [800, 1200, 1000, 1800, 1500, 2000, 1800], borderColor: '#B026FF', backgroundColor: gradPurple, borderWidth: 3, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#06080c', pointBorderColor: '#B026FF', pointBorderWidth: 2 }
+          ]
+        },
+        options: { 
+          responsive: true, maintainAspectRatio: false, 
+          plugins: { 
+            legend: { display: true, position: 'top', align: 'end', labels: { color: '#94a3b8', boxWidth: 10, font: { size: 10, family: '"Plus Jakarta Sans"', weight: 'bold' } } },
+            tooltip: { mode: 'index', intersect: false, backgroundColor: 'rgba(5,3,10,0.9)', titleColor: '#00F0FF', bodyColor: '#fff', borderColor: 'rgba(0, 240, 255, 0.3)', borderWidth: 1, padding: 12, bodyFont: {size: 11, weight: 'bold'} }
+          }, 
+          interaction: { mode: 'nearest', axis: 'x', intersect: false },
+          scales: { 
+            y: { display: true, grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, ticks: { color: '#94a3b8', font: { size: 9, weight:'bold' }, callback: function(value){ return (value/1000)+'k'; } } }, 
+            x: { display: true, grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9, weight:'bold' } } } 
+          } 
+        }
+      });
     }
 
     let globalWallets = []; let globalTransactions = [];
@@ -1008,6 +1114,7 @@
         e.preventDefault(); const btn = document.getElementById('fm_btn_submit'); const act = document.getElementById('fm_input_action').value;
         const d = { payload: { id: document.getElementById('fm_input_id').value || ('w_'+Date.now()), name: document.getElementById('fm_input_name').value, type: document.getElementById('fm_input_type').value, category: document.getElementById('fm_input_category').value, balance: parseFloat(document.getElementById('fm_input_balance').value) }, action: act };
         btn.innerText = "Menyimpan..."; btn.disabled = true;
+        
         if(act==='add') { globalWallets.push(d.payload); } else { const idx = globalWallets.findIndex(x=>x.id===d.payload.id); if(idx!==-1) globalWallets[idx] = d.payload; }
         google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; fm_renderWallets(); }).withFailureHandler(err => { alert("Gagal: "+err); btn.innerText="Simpan Akun"; btn.disabled=false; }).fm_saveWalletData(d);
     }
@@ -1046,13 +1153,11 @@
             .withSuccessHandler(res => { 
                 btn.disabled = false; 
                 btn.innerText = "Inject ke Ledger"; 
-                
                 if(res === "SUCCESS") { 
                     fm_closeTransaksiModal(); 
                     document.getElementById('fm_transaksi_form').reset(); 
-                    alert("Transaksi berhasil disimpan!"); 
+                    alert("Transaksi berhasil dicatat!"); 
                     
-                    // Simpan ke memori lokal untuk render instan
                     globalTransactions.unshift({ 
                         id: 'tx_' + Date.now(), 
                         type: d.kategori, 
@@ -1062,34 +1167,23 @@
                         note: d.deskripsi 
                     }); 
                     
-                    // KUNCI PERBAIKAN: Reset filter sebelum me-render tabel
-                    fm_resetTxFilter();
+                    fm_resetTxFilter(); 
                     
-                    // Perbarui saldo dompet di memori lokal secara instan
                     if (wObj) {
-                        if (d.kategori === 'IN') {
-                            wObj.balance += parseFloat(d.nominal);
-                        } else {
-                            wObj.balance -= parseFloat(d.nominal);
-                        }
+                        if (d.kategori === 'IN') { wObj.balance += parseFloat(d.nominal); } 
+                        else { wObj.balance -= parseFloat(d.nominal); }
                     }
                     fm_renderWallets();
-                } else { 
-                    alert(res); 
-                } 
+                } else { alert(res); } 
             })
-            .withFailureHandler(err => { 
-                btn.disabled = false; 
-                btn.innerText = "Inject ke Ledger"; 
-                alert(err); 
-            })
+            .withFailureHandler(err => { btn.disabled = false; btn.innerText = "Inject ke Ledger"; alert(err); })
             .simpanTransaksiFinance(d);
     }
 
     function fm_renderTransactions() {
-        const c = document.getElementById('fm_ledger_list'); 
-        if(!c) return;
-
+        const listMini = document.getElementById('fm_transaction_list');
+        const listFull = document.getElementById('fm_ledger_list'); 
+        
         var kw = (document.getElementById('fm_search_tx') ? document.getElementById('fm_search_tx').value.toLowerCase() : '');
         var typeFilter = (document.getElementById('fm_filter_type') ? document.getElementById('fm_filter_type').value : 'ALL');
         var startDt = (document.getElementById('fm_start_date') ? document.getElementById('fm_start_date').value : '');
@@ -1109,45 +1203,63 @@
             return matchKw && matchType && matchDate;
         });
 
-        if(globalTransactions.length === 0) { 
-            c.innerHTML = '<div class="text-slate-500 py-10 text-center text-xs italic">Belum ada transaksi terekam di ledger.</div>'; 
-        } else if(filtered.length === 0) {
-            c.innerHTML = '<div class="text-slate-500 py-10 text-center text-xs italic">Pencarian tidak menemukan hasil.</div>';
-        } else {
-            let html = '';
-            filtered.forEach(tx => {
-                const isInc = tx.type === 'IN'; 
-                const color = isInc ? 'text-emerald-400' : 'text-rose-400'; 
-                const bg = isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'; 
-                const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up'; 
-                const sign = isInc ? '+' : '-';
-                
-                html += `
-                <div class="grid grid-cols-12 gap-4 p-3.5 rounded-xl border border-white/5 hover:bg-white/5 transition-colors items-center bg-black/20">
-                    <div class="col-span-2 text-[10px] text-slate-400 font-semibold">${tx.date}</div>
-                    <div class="col-span-5 flex items-center gap-3 overflow-hidden">
-                        <div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}">
-                            <i class="fas ${icon} text-[10px]"></i>
+        if(listFull) {
+            if(globalTransactions.length === 0) { 
+                listFull.innerHTML = '<div class="text-slate-500 py-10 text-center text-xs italic">Belum ada transaksi terekam di ledger.</div>'; 
+            } else if(filtered.length === 0) {
+                listFull.innerHTML = '<div class="text-slate-500 py-10 text-center text-xs italic">Pencarian tidak menemukan hasil.</div>';
+            } else {
+                let htmlFull = '';
+                filtered.forEach(tx => {
+                    const isInc = tx.type === 'IN'; 
+                    const color = isInc ? 'text-emerald-400' : 'text-rose-400'; 
+                    const bg = isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'; 
+                    const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up'; 
+                    const sign = isInc ? '+' : '-';
+                    
+                    htmlFull += `
+                    <div class="grid grid-cols-12 gap-4 p-3.5 rounded-xl border border-white/5 hover:bg-white/5 transition-colors items-center bg-black/20">
+                        <div class="col-span-2 text-[10px] text-slate-400 font-semibold">${tx.date}</div>
+                        <div class="col-span-5 flex items-center gap-3 overflow-hidden">
+                            <div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}">
+                                <i class="fas ${icon} text-[10px]"></i>
+                            </div>
+                            <div class="text-white text-[12px] font-bold truncate">${tx.note}</div>
                         </div>
-                        <div class="text-white text-[12px] font-bold truncate">${tx.note}</div>
-                    </div>
-                    <div class="col-span-2 text-center text-[10px] text-slate-300 font-semibold truncate"><span class="bg-black/60 px-3 py-1.5 rounded-lg border border-white/5">${tx.walletName}</span></div>
-                    <div class="col-span-3 text-right font-black text-[13px] ${color} pr-2 truncate">${sign} ${formatRp(tx.amount)}</div>
-                </div>`;
-            });
-            c.innerHTML = html;
+                        <div class="col-span-2 text-center text-[10px] text-slate-300 font-semibold truncate"><span class="bg-black/60 px-3 py-1.5 rounded-lg border border-white/5">${tx.walletName}</span></div>
+                        <div class="col-span-3 text-right font-black text-[13px] ${color} pr-2 truncate">${sign} ${formatRp(tx.amount)}</div>
+                    </div>`;
+                });
+                listFull.innerHTML = htmlFull;
+            }
         }
+
+        if(listMini) {
+            if(globalTransactions.length === 0) { 
+                listMini.innerHTML = '<div class="text-slate-500 py-4 text-center text-xs italic">Belum ada transaksi.</div>'; 
+            } else {
+                let htmlMini = '';
+                filtered.slice(0, 10).forEach(tx => {
+                    const isInc = tx.type === 'IN'; const color = isInc ? 'text-emerald-400' : 'text-rose-400'; 
+                    const bg = isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'; 
+                    const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up'; const sign = isInc ? '+' : '-';
+                    
+                    htmlMini += `<div class="flex justify-between items-center p-3 bg-black/20 rounded-xl border border-white/10 hover:bg-black/40 cursor-default"><div class="flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div class="truncate"><div class="text-white text-[11px] font-bold truncate">${tx.note}</div><div class="text-[9px] text-slate-500 mt-0.5">${tx.date} • ${tx.walletName}</div></div></div><div class="${color} font-black text-xs shrink-0">${sign} ${formatRp(tx.amount)}</div></div>`;
+                });
+                listMini.innerHTML = htmlMini;
+            }
+        }
+
         if(document.getElementById('fm_ledger_count')) { document.getElementById('fm_ledger_count').innerText = filtered.length; }
     }
 
     function fm_filterTransactions() { fm_renderTransactions(); }
+    
     function fm_resetTxFilter() {
         if(document.getElementById('fm_search_tx')) document.getElementById('fm_search_tx').value = '';
         if(document.getElementById('fm_filter_type')) document.getElementById('fm_filter_type').value = 'ALL';
-        // KOSONGKAN tanggal agar tampilkan SEMUA data secara default
         if(document.getElementById('fm_start_date')) document.getElementById('fm_start_date').value = '';
         if(document.getElementById('fm_end_date')) document.getElementById('fm_end_date').value = '';
-        
         fm_renderTransactions();
     }
 
