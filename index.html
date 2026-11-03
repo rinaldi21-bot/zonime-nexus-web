@@ -76,7 +76,7 @@
     .header-actions { display: flex; gap: 12px; align-items: center; }
     .content-scroll { flex: 1; overflow-y: auto; padding: 15px 32px 40px; position: relative; z-index: 10; }
 
-    .btn { padding: 12px 20px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid transparent; }
+    .btn { padding: 12px 20px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid transparent; justify-content: center; }
     .btn-primary { background: rgba(0, 240, 255, 0.1); color: var(--ryux-cyan); border-color: rgba(0, 240, 255, 0.3); }
     .btn-warning { background: rgba(255, 215, 0, 0.1); color: var(--ryux-yellow); border-color: rgba(255, 215, 0, 0.3); }
     .btn-danger { background: rgba(255, 0, 85, 0.1); color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3); }
@@ -201,6 +201,7 @@
          <div class="flex gap-4 border-b border-white/10 pb-2 shrink-0 z-20 relative pointer-events-auto">
              <button id="fm_tab_overview_btn" onclick="fm_switchTab('overview')" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Overview</button>
              <button id="fm_tab_ledger_btn" onclick="fm_switchTab('ledger')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Ledger (Buku Kas)</button>
+             <button id="fm_tab_report_btn" onclick="fm_switchTab('report')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto"><i class="fas fa-chart-pie mr-1"></i> Report & Kategori</button>
          </div>
 
          <!-- TAB 1: OVERVIEW -->
@@ -211,7 +212,7 @@
                  <div class="flex justify-between items-center mb-6">
                      <div>
                          <h2 class="text-xl font-bold text-white tracking-wide">Pos Keuangan (Wallets)</h2>
-                         <p class="text-[10px] text-slate-400 mt-1">Pantau likuiditas dan kelola saldo dari seluruh akun Bisnis dan Pribadi Anda.</p>
+                         <p class="text-[10px] text-slate-400 mt-1">Kelola saldo dari berbagai sumber akun Bisnis dan Pribadi Anda.</p>
                      </div>
                      <button onclick="fm_openWalletModal('add')" class="btn btn-outline relative z-30 pointer-events-auto cursor-pointer"><i class="fa-solid fa-plus mr-1"></i> Tambah Akun</button>
                  </div>
@@ -220,10 +221,10 @@
                  </div>
              </div>
 
-             <!-- BENTO GRID (2 KOLOM LEGA - DESKTOP FIRST) -->
+             <!-- BENTO GRID -->
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start pointer-events-auto">
                  
-                 <!-- KOLOM 1 (KIRI): Balances & Health Score -->
+                 <!-- KOLOM 1 (KIRI) -->
                  <div class="flex flex-col gap-6">
                     <div class="glass-card flex-1 p-6 border-cyan-400/20">
                         <span class="tiny-label">Family Balance</span>
@@ -241,7 +242,7 @@
                     </div>
                  </div>
 
-                 <!-- KOLOM 2 & 3 (KANAN): Chart, Utang & P&L -->
+                 <!-- KOLOM 2 & 3 (KANAN) -->
                  <div class="flex flex-col gap-6 lg:col-span-2 h-full">
                      <div class="glass-card p-6 w-full relative flex-1 min-h-[300px]">
                          <div class="tiny-label mb-2">CASH FLOW TREND (IN VS OUT)</div>
@@ -249,7 +250,7 @@
                      </div>
                      
                      <div class="flex gap-6">
-                         <!-- Utang Piutang (Kiri Bawah) -->
+                         <!-- Utang Piutang -->
                          <div class="glass-card p-6 flex-1 flex flex-col relative z-20 pointer-events-auto h-[220px]">
                              <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
                                  <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang</span>
@@ -267,7 +268,7 @@
                              </div>
                          </div>
 
-                         <!-- P&L Settlement (Kanan Bawah) -->
+                         <!-- P&L Settlement -->
                          <div class="glass-card p-6 flex-1 flex flex-col relative z-20 border-t-2 border-t-purple-500/30 h-[220px]">
                              <div class="tiny-label mb-3 text-purple-400">P&L & SETTLEMENT (MTH)</div>
                              <div class="bg-black/30 p-3 rounded-xl border border-white/5 mb-4 hover:bg-white/5 transition-colors cursor-default">
@@ -291,12 +292,21 @@
              <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20">
                  <div class="relative flex-1 min-w-[200px]">
                      <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
-                     <input type="text" id="fm_search_tx" onkeyup="fm_filterTransactions()" placeholder="Cari catatan transaksi atau dompet..." class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40 pointer-events-auto cursor-text">
+                     <input type="text" id="fm_search_tx" onkeyup="fm_filterTransactions()" placeholder="Cari deskripsi, kategori, atau dompet..." class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40 pointer-events-auto cursor-text">
                  </div>
                  <select id="fm_filter_type" onchange="fm_filterTransactions()" class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto">
                      <option value="ALL">Semua Tipe</option>
                      <option value="IN">Pemasukan (+)</option>
                      <option value="OUT">Pengeluaran (-)</option>
+                     <option value="MUTASI">Mutasi (Transfer)</option>
+                 </select>
+                 <select id="fm_filter_cat" onchange="fm_filterTransactions()" class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto text-cyan-400">
+                     <option value="ALL">Semua Kategori</option>
+                     <option value="Operasional">Operasional</option>
+                     <option value="Marketing & Ads">Marketing & Ads</option>
+                     <option value="Restock HPP">Restock HPP</option>
+                     <option value="Gaji & Fee">Gaji & Fee</option>
+                     <option value="Pribadi">Pribadi / Lainnya</option>
                  </select>
                  <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] pointer-events-auto">
                      <input type="date" id="fm_start_date" onchange="fm_filterTransactions()" class="bg-transparent text-white text-[10px] outline-none cursor-pointer">
@@ -309,22 +319,47 @@
              <div class="glass-card flex-1 p-0 flex flex-col overflow-hidden border-t-4 border-t-cyan-500/50 relative z-10 pointer-events-auto">
                  <div class="grid grid-cols-12 gap-4 p-4 border-b border-white/10 bg-black/60 text-[9px] font-black text-slate-400 uppercase tracking-widest sticky top-0 z-10">
                      <div class="col-span-2">Tanggal</div>
-                     <div class="col-span-5">Deskripsi / Catatan Transaksi</div>
+                     <div class="col-span-4">Deskripsi Transaksi</div>
+                     <div class="col-span-2 text-center">Kategori</div>
                      <div class="col-span-2 text-center">Dompet</div>
-                     <div class="col-span-3 text-right pr-2">Nominal</div>
+                     <div class="col-span-2 text-right pr-2">Nominal</div>
                  </div>
                  <div id="fm_ledger_list" class="flex-1 overflow-y-auto custom-scroll p-3 flex flex-col gap-1.5 pointer-events-auto bg-black/20">
                      <!-- Data diisi JS -->
                  </div>
                  <div class="p-3 border-t border-white/10 bg-black/60 flex justify-between items-center px-6">
-                     <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Total Transaksi: <span id="fm_ledger_count" class="text-cyan-400 text-xs ml-1">0</span></span>
+                     <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Total Baris: <span id="fm_ledger_count" class="text-cyan-400 text-xs ml-1">0</span></span>
+                 </div>
+             </div>
+         </div>
+
+         <!-- TAB 3: REPORT & KATEGORI -->
+         <div id="fm_tab_report" class="hidden flex-col gap-5 overflow-y-auto h-full relative z-10 pointer-events-auto pb-20 custom-scroll">
+             <div class="glass-card p-6">
+                 <div class="flex justify-between items-center mb-6">
+                     <h2 class="text-lg font-bold text-white tracking-wide">Analisis Pengeluaran Berdasarkan Kategori</h2>
+                     <select id="fm_report_month" onchange="fm_renderReport()" class="glass-input w-auto text-xs py-1.5 cursor-pointer pointer-events-auto bg-black/40 border-white/10">
+                         <option value="ALL">Semua Waktu</option>
+                         <option value="THIS_MONTH" selected>Bulan Ini</option>
+                     </select>
+                 </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <!-- Donut Chart -->
+                     <div class="relative h-[250px] flex items-center justify-center">
+                         <canvas id="categoryChart"></canvas>
+                     </div>
+                     <!-- Progress Bar List -->
+                     <div class="flex flex-col gap-4 justify-center" id="fm_category_breakdown">
+                         <!-- Diisi JS -->
+                         <div class="text-slate-500 text-xs italic text-center">Menghitung data kategori...</div>
+                     </div>
                  </div>
              </div>
          </div>
          
          <!-- Tombol Quick Action Floating -->
          <div id="fabContainer" class="hidden-section pointer-events-auto">
-             <div class="fab-btn pointer-events-auto cursor-pointer" onclick="fm_openTransaksiModal()" title="Catat Transaksi">
+             <div class="fab-btn pointer-events-auto cursor-pointer" onclick="fm_openTransaksiModal()" title="Catat Transaksi / Mutasi">
                  <i class="fas fa-plus text-black"></i>
              </div>
          </div>
@@ -588,25 +623,58 @@
     <div class="modal-card" style="max-width:500px; box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);">
       <div class="modal-header text-cyan-400 border-b border-cyan-500/20 bg-cyan-900/10">
           <h3 class="text-sm font-black tracking-wider"><i class="fas fa-bolt mr-2"></i> INPUT TRANSAKSI CEPAT</h3>
-          <button onclick="fm_closeTransaksiModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+          <button type="button" onclick="fm_closeTransaksiModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
       <div class="modal-body bg-black/40">
         <form id="fm_transaksi_form" onsubmit="fm_submitTransaksi(event)">
-          <div style="display:flex; gap:16px; margin-bottom:20px;">
+          <div style="display:flex; gap:12px; margin-bottom:20px;">
             <label style="flex:1; cursor:pointer;">
-                <input type="radio" name="fm_tx_type" value="IN" class="peer sr-only" required>
-                <div class="text-center py-3 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all text-[11px] font-black uppercase tracking-widest"><i class="fas fa-arrow-down mr-1"></i> Pemasukan</div>
+                <input type="radio" name="fm_tx_type" value="IN" class="peer sr-only" required onchange="fm_toggleMutasi(this.value)">
+                <div class="text-center py-2 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all text-[10px] font-black uppercase tracking-widest"><i class="fas fa-arrow-down mr-1"></i> Masuk</div>
             </label>
             <label style="flex:1; cursor:pointer;">
-                <input type="radio" name="fm_tx_type" value="OUT" class="peer sr-only">
-                <div class="text-center py-3 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-rose-500/20 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all text-[11px] font-black uppercase tracking-widest"><i class="fas fa-arrow-up mr-1"></i> Pengeluaran</div>
+                <input type="radio" name="fm_tx_type" value="OUT" class="peer sr-only" onchange="fm_toggleMutasi(this.value)">
+                <div class="text-center py-2 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-rose-500/20 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all text-[10px] font-black uppercase tracking-widest"><i class="fas fa-arrow-up mr-1"></i> Keluar</div>
+            </label>
+            <label style="flex:1; cursor:pointer;">
+                <input type="radio" name="fm_tx_type" value="MUTASI" class="peer sr-only" onchange="fm_toggleMutasi(this.value)">
+                <div class="text-center py-2 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-cyan-500/20 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all text-[10px] font-black uppercase tracking-widest"><i class="fas fa-exchange-alt mr-1"></i> Mutasi</div>
             </label>
           </div>
+          
           <div style="display:flex; gap:16px; margin-bottom:16px;">
             <div class="form-group" style="flex:1;"><label class="tiny-label text-cyan-400">Nominal (Rp)</label><input type="number" id="fm_tx_amount" required min="1" class="glass-input text-lg font-black text-white bg-black/60 border-cyan-500/30 focus:border-cyan-400"></div>
             <div class="form-group" style="flex:1;"><label class="tiny-label">Tanggal</label><input type="date" id="fm_tx_date" required class="glass-input text-[13px]"></div>
           </div>
-          <div class="form-group mb-4"><label class="tiny-label">Pilih Dompet (Sumber/Tujuan)</label><select id="fm_tx_wallet" required class="glass-input text-[13px] cursor-pointer"><option value="">-- Memuat Dompet... --</option></select></div>
+          
+          <div class="form-group mb-4" id="fm_wrapper_wallet_from">
+              <label class="tiny-label" id="fm_lbl_wallet_from">Pilih Dompet Utama</label>
+              <select id="fm_tx_wallet" required class="glass-input text-[13px] cursor-pointer"><option value="">-- Memuat Dompet... --</option></select>
+          </div>
+          
+          <!-- KHUSUS MUTASI -->
+          <div class="form-group mb-4 hidden" id="fm_wrapper_wallet_to">
+              <label class="tiny-label text-cyan-400">Pilih Dompet Tujuan Mutasi</label>
+              <select id="fm_tx_wallet_to" class="glass-input text-[13px] cursor-pointer border-cyan-500/30"><option value="">-- Pilih Dompet Tujuan --</option></select>
+          </div>
+
+          <div class="form-group mb-4" id="fm_wrapper_category">
+              <label class="tiny-label text-purple-400">Kategori Laporan (Report)</label>
+              <select id="fm_tx_subkategori" class="glass-input text-[13px] cursor-pointer">
+                  <option value="-">Tanpa Kategori</option>
+                  <optgroup label="Pengeluaran Bisnis">
+                      <option value="Operasional">Operasional (Gaji, Sewa, Listrik)</option>
+                      <option value="Marketing & Ads">Marketing & Iklan (Ads)</option>
+                      <option value="Restock HPP">Belanja Stok (HPP)</option>
+                      <option value="Pajak & Legal">Pajak & Legal</option>
+                  </optgroup>
+                  <optgroup label="Lainnya">
+                      <option value="Pribadi">Kebutuhan Pribadi</option>
+                      <option value="Lain-lain">Lain-lain</option>
+                  </optgroup>
+              </select>
+          </div>
+
           <div class="form-group mb-6"><label class="tiny-label">Deskripsi Transaksi</label><input type="text" id="fm_tx_note" required placeholder="Cth: Pembayaran Invoice #001 / Beli Bensin" class="glass-input text-[13px]"></div>
           <button type="submit" id="fm_btn_submit_tx" class="btn btn-primary" style="width:100%; padding:18px; font-size:12px; letter-spacing:2px; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2);">Inject ke Ledger</button>
         </form>
@@ -683,329 +751,26 @@
         })() } };
     }
 
-    var globalSalesData = []; var globalInvData = []; var globalProcData = []; var masterProductFullList = []; var todoItems = [];
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     function formatRp(num) { return fmtAkuntan.format(num); }
 
     function showPage(pageId, navEl) {
       document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden-section'));
       document.getElementById(pageId).classList.remove('hidden-section');
-      
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       if(navEl) navEl.classList.add('active');
-
-      document.getElementById('headerActions').innerHTML = '';
+      
       document.getElementById('fabContainer').classList.add('hidden-section');
 
-      if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
-      else if(pageId === 'pageFinance') { 
-          fm_loadWallets(); fm_renderTransactions(); setTimeout(() => initFinanceChart(), 100); 
-          document.getElementById('fabContainer').classList.remove('hidden-section');
+      if(pageId === 'pageFinance') { 
+          fm_loadWallets(); fm_renderTransactions(); setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
+          if(document.getElementById('fm_tab_overview').classList.contains('flex') || document.getElementById('fm_tab_ledger').classList.contains('flex')) {
+              document.getElementById('fabContainer').classList.remove('hidden-section');
+          }
       }
-      else if(pageId === 'pageSalesLog') { 
-        loadSalesData();
-        document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`;
-      }
-      else if(pageId === 'pageInventory') { loadInventoryData(); }
-      else if(pageId === 'pageProcurement') { loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()">+ GRN</button>`; }
     }
 
-    let dashChartTrend = null; 
-    function initCharts() {
-      const trendEl = document.getElementById('trendChart');
-      if (!trendEl) return;
-      if (dashChartTrend) { dashChartTrend.destroy(); }
-      
-      Chart.defaults.color = '#94a3b8'; Chart.defaults.font.family = '"Plus Jakarta Sans"';
-      const ctxTrend = trendEl.getContext('2d');
-      let gradientFill = ctxTrend.createLinearGradient(0, 0, 0, 300);
-      gradientFill.addColorStop(0, 'rgba(0, 240, 255, 0.3)'); gradientFill.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
-      
-      dashChartTrend = new Chart(ctxTrend, { 
-        type: 'line', 
-        data: { 
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 
-          datasets: [ 
-            { type: 'line', label: 'Gross Revenue', data: [120, 190, 150, 250, 220, 300, 280], borderColor: '#00F0FF', backgroundColor: gradientFill, fill: true, tension: 0.4, borderWidth: 2, pointBackgroundColor: '#06080c', pointRadius: 4 }, 
-            { type: 'bar', label: 'Net Profit', data: [40, 60, 50, 90, 80, 110, 100], backgroundColor: 'rgba(0, 255, 102, 0.15)', borderColor: '#00FF66', borderWidth: 1, borderRadius: 4 } 
-          ]
-        }, 
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { y: { display: false }, x: { grid: { display: false } } } } 
-      });
-    }
-
-    const customDropdown = document.createElement('div'); customDropdown.className = 'cyber-dropdown hidden-section'; document.body.appendChild(customDropdown);
-    function renderDropdown(inputEl) { 
-      const listId = inputEl.getAttribute('data-custom-list'); const datalist = document.getElementById(listId); if(!datalist) return; 
-      const filterVal = inputEl.value.toLowerCase(); const options = Array.from(datalist.options); 
-      let matches = options.filter(opt => opt.value.toLowerCase().includes(filterVal)).slice(0, 50); 
-      if(matches.length === 0) { customDropdown.classList.add('hidden-section'); return; } 
-      customDropdown.innerHTML = ''; 
-      matches.forEach(opt => { 
-        const div = document.createElement('div'); div.className = 'cyber-dropdown-item'; div.innerText = opt.value; 
-        div.onmousedown = function(e) { e.preventDefault(); inputEl.value = opt.value; customDropdown.classList.add('hidden-section'); }; 
-        customDropdown.appendChild(div); 
-      }); 
-      const rect = inputEl.getBoundingClientRect(); customDropdown.style.top = (rect.bottom + 5) + 'px'; customDropdown.style.left = rect.left + 'px'; customDropdown.style.width = rect.width + 'px'; customDropdown.classList.remove('hidden-section'); customDropdown.style.display = 'flex';
-    }
-    document.addEventListener('input', function(e) { if(e.target.hasAttribute('data-custom-list')) renderDropdown(e.target); }); 
-    document.addEventListener('focusin', function(e) { if(e.target.hasAttribute('data-custom-list')) renderDropdown(e.target); }); 
-    document.addEventListener('focusout', function(e) { setTimeout(() => customDropdown.classList.add('hidden-section'), 200); }); 
-    
-    function preloadDatalists() {
-      google.script.run.withSuccessHandler(list => { var dl = document.getElementById('skuSuggestions'); dl.innerHTML = ''; list.forEach(item => { var opt = document.createElement('option'); opt.value = item; dl.appendChild(opt); }); }).getSmartSkuList();
-      google.script.run.withSuccessHandler(res => { var dlType = document.getElementById('listTypes'); dlType.innerHTML = ''; res.types.forEach(t => { var o = document.createElement('option'); o.value=t; dlType.appendChild(o); }); var dlCat = document.getElementById('listCats'); dlCat.innerHTML = ''; res.categories.forEach(c => { var o = document.createElement('option'); o.value=c; dlCat.appendChild(o); }); }).getCategoryTypeSuggestions();
-      google.script.run.withSuccessHandler(list => { var dlSupp = document.getElementById('listSuppliers'); dlSupp.innerHTML = ''; list.forEach(s => { var o = document.createElement('option'); o.value=s; dlSupp.appendChild(o); }); }).getSupplierSuggestions();
-      google.script.run.withSuccessHandler(data => { masterProductFullList = data; var dlProd = document.getElementById('listProdNames'); dlProd.innerHTML = ''; var prodSet = new Set(); data.forEach(d => { if(d.nama) prodSet.add(d.nama); }); Array.from(prodSet).sort().forEach(p => { var o = document.createElement('option'); o.value = p; dlProd.appendChild(o); }); }).getInventoryDataFull();
-    }
-    function onProductSelect(val) { var match = masterProductFullList.find(d => d.nama.toLowerCase() === val.toLowerCase() || d.nama.toLowerCase().includes(val.toLowerCase())); if(match) { document.getElementById('newSku').value = match.sku || ''; document.getElementById('newType').value = match.tipe !== '-' ? match.tipe : ''; document.getElementById('newCat').value = match.kategori !== '-' ? match.kategori : ''; document.getElementById('newVar').value = match.varian !== '-' ? match.varian : ''; document.getElementById('newLc').value = match.listingCode !== '-' ? match.listingCode : ''; document.getElementById('newCogs').value = match.cogs || 0; } }
-
-    function loadDashboard() {
-      google.script.run.withSuccessHandler(data => {
-        document.getElementById('dashCards').innerHTML = `
-          <div class="stat-card glass-card" style="border-color:rgba(0,240,255,0.2);"><div class="stat-title">Omset</div><div class="stat-value text-ryux-cyan">${data.omset}</div></div>
-          <div class="stat-card glass-card" style="border-color:rgba(0,255,102,0.2);"><div class="stat-title">Profit</div><div class="stat-value text-ryux-green">${data.profit}</div></div>
-          <div class="stat-card glass-card" style="border-color:rgba(255,215,0,0.2);"><div class="stat-title">Terjual</div><div class="stat-value text-ryux-yellow">${data.terjual}</div></div>
-          <div class="stat-card glass-card" style="border-color:rgba(176,38,255,0.2);"><div class="stat-title">Stok Aktif</div><div class="stat-value text-ryux-purple">${data.stokQty}</div><div style="font-size:10px; color:var(--ryux-muted); margin-top:8px;">Aset: ${data.stokNilai}</div></div>
-        `;
-      }).getDashboardData();
-    }
-    
-    function loadDashboardNotes() { google.script.run.withSuccessHandler(data => { todoItems = data.todoList || []; renderTodoList(); }).getDashboardNotes(); }
-    function renderTodoList() { var listUI = document.getElementById('todoListUI'); if (!todoItems || todoItems.length === 0) { listUI.innerHTML = '<li style="text-align:center; opacity:0.5;">Kosong</li>'; return; } var html = ''; todoItems.forEach((item, index) => { var checked = item.done ? 'checked' : ''; var compClass = item.done ? 'completed' : ''; html += `<li class="todo-item ${compClass}"><input type="checkbox" class="todo-checkbox" ${checked} onchange="toggleTodo(${index})"><span style="flex:1;">${item.text}</span><button class="btn-icon" style="background:transparent; border:none; color:var(--ryux-muted);" onclick="deleteTodo(${index})"><i class="fas fa-times"></i></button></li>`; }); listUI.innerHTML = html; }
-    function addTodo() { var input = document.getElementById('todoInput'); if (!input.value.trim()) return; todoItems.push({ text: input.value.trim(), done: false }); input.value = ''; renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
-    function toggleTodo(index) { todoItems[index].done = !todoItems[index].done; renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
-    function deleteTodo(index) { todoItems.splice(index, 1); renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
-
-    function populateMonthFilter(data, elId) { var s = new Set(); data.forEach(d => s.add(d.valBulan + "|" + d.labelBulan)); var sel = document.getElementById(elId); sel.innerHTML = '<option value="ALL">Semua Waktu</option>'; Array.from(s).sort().reverse().forEach(v => { var p = v.split("|"); sel.innerHTML += `<option value="${p[0]}">${p[1]}</option>`; }); }
-
-    function loadSalesData() {
-      document.getElementById('salesContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div>';
-      google.script.run.withSuccessHandler(data => { globalSalesData = data; populateMonthFilter(data, 'filterDateRangeSales'); renderSalesTable(); }).getSalesData();
-    }
-    
-    function toggleCustomDateSales() {
-      var val = document.getElementById('filterDateRangeSales').value;
-      document.getElementById('customDateSalesContainer').style.display = (val === 'CUSTOM') ? 'flex' : 'none';
-    }
-
-    function renderSalesTable() {
-      var container = document.getElementById('salesContainer');
-      if(!container || globalSalesData.length === 0) { container.innerHTML = '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong.</div>'; return; }
-      
-      var selDate = document.getElementById('filterDateRangeSales').value;
-      var selStart = document.getElementById('salesStartDate').value;
-      var selEnd = document.getElementById('salesEndDate').value;
-      var selStatus = document.getElementById('filterStatusSales').value;
-      var selKelengkapan = document.getElementById('filterKelengkapanSales').value;
-      var sq = document.getElementById('searchSales').value.toLowerCase();
-      
-      var now = new Date(); now.setHours(0,0,0,0);
-      var targetStart = null, targetEnd = null;
-
-      if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
-      else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
-      else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
-      else if(selDate === 'THIS_MONTH') { targetStart = new Date(now.getFullYear(), now.getMonth(), 1); targetEnd = new Date(now); }
-      else if (selDate === 'CUSTOM' && selStart && selEnd) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
-
-      var filtered = globalSalesData.filter(d => {
-        var dTime = new Date(d.tanggal); dTime.setHours(0,0,0,0);
-        var dateMatch = true;
-        if (selDate !== 'ALL' && !selDate.includes('-') && targetStart && targetEnd) { dateMatch = (dTime >= targetStart && dTime <= targetEnd); } 
-        else if (selDate.includes('-')) { dateMatch = (d.valBulan === selDate); }
-        
-        var statMatch = (selStatus === 'ALL' || d.status.toLowerCase().includes(selStatus.toLowerCase()));
-        var isErr = d.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
-        var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isErr) || (selKelengkapan === 'ERROR' && isErr); 
-        var textMatch = !sq || d.noOrder.toLowerCase().includes(sq) || d.listingCode.toLowerCase().includes(sq) || d.items.some(k => k.sku.toLowerCase().includes(sq));
-        return dateMatch && statMatch && kMatch && textMatch;
-      });
-
-      var html = ''; var sOmset = 0; var sProfit = 0; var sQty = 0;
-      if(filtered.length === 0) { html = '<div class="glass-card" style="padding:40px; text-align:center;">Tidak ada data.</div>'; }
-      else {
-        filtered.forEach(d => {
-          if(d.status.includes("Selesai") || d.status.includes("Refund")) { sOmset += d.totalPendapatan; sProfit += d.profit; }
-          var badgeClass = 'badge-info'; 
-          if(d.status.includes("Selesai")) badgeClass = 'badge-success';
-          else if(d.status.includes("Return") || d.status.includes("Batal")) badgeClass = 'badge-danger';
-          else if(d.status.includes("Transit") || d.status.includes("Menunggu")) badgeClass = 'badge-warning';
-
-          var isErr = false; var itemsHtml = '';
-          d.items.forEach(itm => { 
-            if(itm.qty>0) { 
-              sQty+=itm.qty; if(itm.sku==='-') isErr = true;
-              itemsHtml += `<div class="dg-row"><div style="flex:1; font-weight:700;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>COGS</span><div style="color:var(--ryux-muted);">${formatRp(itm.cogs*itm.qty)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div></div>`; 
-            }
-          });
-          
-          var actBtn = `<button class="btn btn-outline" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Fix</button>`;
-          if(d.status.includes("Return")) actBtn = `<button class="btn btn-danger" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Retur</button>`;
-
-          html += `<div class="data-group-card glass-card"><div class="dg-header"><div style="display:flex; gap:12px; align-items:center;"><span class="${badgeClass}">${d.status}</span><span style="font-size:14px; color:white;">${d.noOrder}</span><span class="badge-purple">LC: ${d.listingCode}</span></div><div style="display:flex; gap:16px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green);">${formatRp(d.profit)}</div></div>${actBtn}</div></div><div class="dg-body"><div style="font-size:10px; color:var(--ryux-muted); margin-bottom:8px;">REF: ${d.mpProductName} (VAR: ${d.mpVariant})</div>${itemsHtml}</div></div>`;
-        });
-      }
-      document.getElementById('sumOmset').innerText = formatRp(sOmset); document.getElementById('sumProfit').innerText = formatRp(sProfit);
-      document.getElementById('sumOrder').innerText = filtered.length; document.getElementById('sumQty').innerText = sQty + " Pcs";
-      container.innerHTML = html;
-    }
-
-    function loadInventoryData() {
-      document.getElementById('invTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="7" class="loading-spinner">Loading...</td></tr>';
-      google.script.run.withSuccessHandler(data => { globalInvData = data; renderInventory(); }).getInventoryData();
-    }
-
-    function renderInventory() {
-      var selT = document.getElementById('filterTypeInv').value; var selS = document.getElementById('filterStatusInv').value;
-      var sq = document.getElementById('searchInv').value.toLowerCase();
-      var filtered = globalInvData.filter(d => {
-        var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE";
-        return (selT === 'ALL' || d.tipe === selT) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq));
-      });
-      var tbody = document.getElementById('invTable').getElementsByTagName('tbody')[0];
-      var html = ''; var tAset = 0; var tQty = 0; var tRst = 0;
-      filtered.forEach(d => {
-        tAset += d.nilai; tQty += d.stok; if(d.stok<=1) tRst++;
-        html += `<tr><td><b>${d.sku}</b></td><td>${d.nama}</td><td>${d.stok>1?'<span class="badge-success">Aman</span>':'<span class="badge-danger">Kritis</span>'}</td><td class="text-center font-black ${d.stok<=1?'text-ryux-red':'text-ryux-cyan'}">${d.stok}</td><td class="text-right">${formatRp(d.cogs)}</td><td class="text-right font-black" style="color:white;">${formatRp(d.nilai)}</td><td class="text-center"><button class="btn btn-outline" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})">Aksi</button></td></tr>`;
-      });
-      document.getElementById('invSumAset').innerText = formatRp(tAset); document.getElementById('invSumQty').innerText = tQty + " Pcs";
-      document.getElementById('invSumSku').innerText = filtered.length + " SKU"; document.getElementById('invSumRestock').innerText = tRst + " SKU";
-      tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" class="text-center" style="padding:20px;">Data kosong</td></tr>' : html;
-    }
-
-    function loadProcurementData() {
-      document.getElementById('procurementContainer').innerHTML = '<div class="loading-spinner">Loading Ledger...</div>';
-      google.script.run.withSuccessHandler(data => { globalProcData = data; populateMonthFilter(data, 'filterMonthProc'); renderProcurement(); }).getProcurementData();
-    }
-    function renderProcurement() {
-      var m = document.getElementById('filterMonthProc').value;
-      var sq = document.getElementById('searchProc').value.toLowerCase();
-      var filtered = globalProcData.filter(d => (m === 'ALL' || d.valBulan === m) && (!sq || d.noOrder.toLowerCase().includes(sq) || d.supplier.toLowerCase().includes(sq)));
-      var groups = {}; var orderList = [];
-      filtered.forEach(d => { if(!groups[d.noOrder]) { groups[d.noOrder]={ noOrder:d.noOrder, sup:d.supplier, tgl:d.tanggal, mp:d.marketplace, tot:0, items:[] }; orderList.push(d.noOrder); } groups[d.noOrder].items.push(d); groups[d.noOrder].tot+=d.total; });
-      var html = ''; var tBelanja = 0; var tQty = 0;
-      orderList.forEach(k => {
-        var g = groups[k]; tBelanja += g.tot;
-        var iHtml = ''; g.items.forEach(itm => { tQty += itm.qty; iHtml += `<div class="dg-row"><div style="flex:1;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(itm.hargaCogs)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div><div class="money-stat" style="width:100px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><button class="btn btn-outline btn-icon" onclick="openReviseProcModal('${g.noOrder}','${itm.sku}',${itm.qty},${itm.hargaAsli})"><i class="fas fa-pen"></i></button></div>`; });
-        html += `<div class="data-group-card glass-card"><div class="dg-header"><div style="display:flex; gap:12px; align-items:center;"><span class="badge-info">${g.noOrder}</span><span style="color:white; font-size:14px;">${g.sup}</span><span class="badge-warning">${g.mp}</span></div><div class="money-stat"><span>INV TOTAL</span><div style="color:var(--ryux-cyan); font-size:18px;">${formatRp(g.tot)}</div></div></div><div class="dg-body">${iHtml}</div></div>`;
-      });
-      document.getElementById('procSumBelanja').innerText = formatRp(tBelanja); document.getElementById('procSumQty').innerText = tQty + " Pcs"; document.getElementById('procSumInvoice').innerText = orderList.length;
-      document.getElementById('procurementContainer').innerHTML = html || '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong</div>';
-    }
-
-    function openImportModal() { document.getElementById('modalImport').classList.remove('hidden-section'); }
-    function closeImportModal() { document.getElementById('modalImport').classList.add('hidden-section'); }
-    function executeImport() { 
-      var acc = document.getElementById('importAccount').value;
-      document.getElementById('btnExecImport').innerText = "Syncing...";
-      google.script.run.withSuccessHandler(res => { alert(res); closeImportModal(); document.getElementById('btnExecImport').innerText = "Execute"; }).importTikTokFromTemp(acc);
-    }
-    function runSyncSales() { alert("Sync Dimulai di Background"); google.script.run.withSuccessHandler(res => { alert(res); loadSalesData(); }).syncTikTokAutoWorkflow(); }
-    function runAutoFillSKU() { alert("Fixing SKU..."); google.script.run.withSuccessHandler(res => { alert(res); loadSalesData(); }).autoFillMissingSKUs(); }
-
-    function openInvActionModal(sku, nama, stok, cogs) {
-      document.getElementById('invActSku').value = sku; document.getElementById('invActCogs').value = cogs;
-      document.getElementById('invActSkuLabel').innerText = sku; document.getElementById('invActStokSistem').value = stok;
-      switchInvTab('OPNAME'); document.getElementById('modalInvAction').classList.remove('hidden-section'); 
-    }
-    function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden-section'); }
-    function switchInvTab(tab) {
-      document.getElementById('tabOpname').style.display = tab === 'OPNAME' ? 'block' : 'none';
-      document.getElementById('tabBs').style.display = tab === 'BS' ? 'block' : 'none';
-    }
-    function calcOpnameDiff() {
-      var sys = parseInt(document.getElementById('invActStokSistem').value) || 0;
-      var fis = parseInt(document.getElementById('invActStokFisik').value) || 0;
-      document.getElementById('invActSelisih').value = fis - sys;
-    }
-    function submitOpname() {
-      var payload = { sku: document.getElementById('invActSku').value, cogs: document.getElementById('invActCogs').value, tipeMutasi: "OPNAME", stokSistem: document.getElementById('invActStokSistem').value, stokFisik: document.getElementById('invActStokFisik').value, qtySelisih: document.getElementById('invActSelisih').value, keterangan: document.getElementById('invActKetOpname').value };
-      google.script.run.withSuccessHandler(res => { alert(res); closeInvActionModal(); loadInventoryData(); }).simpanPenyesuaianStok(payload);
-    }
-    function submitMutasiBs() {
-      var qty = parseInt(document.getElementById('invActQtyBs').value); var sys = parseInt(document.getElementById('invActStokSistem').value);
-      var arah = document.getElementById('invActArahBs').value;
-      var payload = { sku: document.getElementById('invActSku').value, cogs: document.getElementById('invActCogs').value, tipeMutasi: arah, stokSistem: sys, stokFisik: arah === "BAIK_KE_BS" ? sys - qty : sys + qty, qtySelisih: qty, keterangan: document.getElementById('invActKetBs').value };
-      google.script.run.withSuccessHandler(res => { alert(res); closeInvActionModal(); loadInventoryData(); }).simpanPenyesuaianStok(payload);
-    }
-
-    function openFixModal(idx) { 
-      var item = globalSalesData.find(s => s.rowIdx === idx); if(!item) return;
-      document.getElementById('fixRowIdx').value = idx; 
-      document.getElementById('fixRefBox').innerHTML = `<div class="tiny-label">MP REF</div><div style="font-weight:900; color:white;">${item.mpProductName}</div><div style="font-size:10px; color:var(--ryux-yellow); margin-top:4px;">LC: ${item.listingCode}</div>`;
-      document.getElementById('fixItemsContainer').innerHTML = "";
-      item.items.forEach((itm, i) => { if(itm.qty>0 || itm.sku==="-") { addFixRowUI(itm.sku==='-'?'':itm.sku, itm.qty); } });
-      document.getElementById('modalFixSales').classList.remove('hidden-section'); 
-    }
-    function closeFixModal() { document.getElementById('modalFixSales').classList.add('hidden-section'); }
-    function addFixRowUI(sku='', qty=1) { document.getElementById('fixItemsContainer').innerHTML += `<div style="display:flex; gap:12px;"><input type="text" class="glass-input fix-sku-input" data-custom-list="skuSuggestions" placeholder="SKU" value="${sku}"><input type="number" class="glass-input fix-qty-input" placeholder="QTY" style="width:80px;" value="${qty}"></div>`; }
-    function saveFixModal() {
-      var rowIdx = parseInt(document.getElementById('fixRowIdx').value);
-      var arr = []; document.querySelectorAll('#fixItemsContainer > div').forEach(div => { arr.push({ sku: div.querySelector('.fix-sku-input').value, qty: div.querySelector('.fix-qty-input').value }); });
-      document.getElementById('btnSaveFix').innerText = "Processing...";
-      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('btnSaveFix').innerText="Apply"; closeFixModal(); loadSalesData(); }).simpanKoreksiSales(rowIdx, arr);
-    }
-
-    function openReturModal(idx, no) {
-      document.getElementById('returRowIdx').value = idx; document.getElementById('returNoOrderLabel').innerText = no;
-      var item = globalSalesData.find(s => s.rowIdx === idx); var html = '';
-      item.items.forEach(itm => { if(itm.qty>0 && itm.sku!=='-') html += `<div style="display:flex; justify-content:space-between; color:white; font-size:12px; margin-bottom:8px;"><span>${itm.sku}</span><span style="color:var(--ryux-cyan);">+${itm.qty}</span></div>`; });
-      document.getElementById('returItemsList').innerHTML = html;
-      document.getElementById('modalRetur').classList.remove('hidden-section'); 
-    }
-    function closeReturModal() { document.getElementById('modalRetur').classList.add('hidden-section'); }
-    function submitRetur() {
-      var idx = parseInt(document.getElementById('returRowIdx').value); var item = globalSalesData.find(s => s.rowIdx === idx);
-      var p = { rowIdx: idx, noOrder: document.getElementById('returNoOrderLabel').innerText, kondisi: document.getElementById('returKondisi').value, keterangan: document.getElementById('returKeterangan').value, items: item.items };
-      google.script.run.withSuccessHandler(res => { alert(res); closeReturModal(); loadSalesData(); }).simpanTerimaRetur(p);
-    }
-
-    function openReviseProcModal(no, sku, qty, harga) { document.getElementById('revProcNota').value = no; document.getElementById('revProcOldSku').value = sku; document.getElementById('revProcSku').value = sku; document.getElementById('revProcQty').value = qty; document.getElementById('revProcHarga').value = harga; document.getElementById('modalReviseProc').classList.remove('hidden-section'); }
-    function closeReviseProcModal() { document.getElementById('modalReviseProc').classList.add('hidden-section'); }
-    function submitReviseProc() { google.script.run.withSuccessHandler(res => { alert(res); closeReviseProcModal(); loadProcurementData(); }).simpanRevisiProcurement(document.getElementById('revProcNota').value, document.getElementById('revProcOldSku').value, document.getElementById('revProcSku').value, document.getElementById('revProcQty').value, document.getElementById('revProcHarga').value); }
-
-    function openGrnModal() { document.getElementById('modalGrn').classList.remove('hidden-section'); }
-    function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); }
-    function addGrnRow() { document.getElementById('grnItemsContainer').innerHTML += `<div class="grn-item-row" style="display:flex; gap:12px; margin-bottom:12px;"><input type="text" class="glass-input grn-sku" data-custom-list="skuSuggestions" placeholder="SKU"><input type="number" class="glass-input grn-qty" placeholder="Qty" style="width:80px;" value="1" oninput="calcGrn()"><input type="number" class="glass-input grn-hrg" placeholder="Harga" oninput="calcGrn()"></div>`; }
-    function calcGrn() { var sub = 0; document.querySelectorAll('.grn-item-row').forEach(r => { sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); }); var v = parseFloat(document.getElementById('grnVoc').value)||0; var f = parseFloat(document.getElementById('grnFee').value)||0; var o = parseFloat(document.getElementById('grnOng').value)||0; document.getElementById('grnSubtotalLabel').innerText = formatRp(sub); document.getElementById('grnTotalBersihLabel').innerText = formatRp(sub - v + f + o); }
-    function submitGrnData() {
-      var nota = { noOrder: document.getElementById('grnNota').value, tglOrder: document.getElementById('grnTgl').value, marketplace: document.getElementById('grnMp').value, supplier: document.getElementById('grnSupp').value, voucher: document.getElementById('grnVoc').value, ongkir: document.getElementById('grnOng').value, fee: document.getElementById('grnFee').value };
-      var items = []; document.querySelectorAll('.grn-item-row').forEach(row => { var s = row.querySelector('.grn-sku').value; if(s) items.push({ skuLengkap: s, qty: row.querySelector('.grn-qty').value, harga: row.querySelector('.grn-hrg').value }); });
-      if(items.length===0) return alert("Pilih item!");
-      document.getElementById('btnSubmitGrn').innerText = "Processing...";
-      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('btnSubmitGrn').innerText="Simpan GRN"; closeGrnModal(); loadProcurementData(); }).simpanDataGRNBaru(nota, items);
-    }
-    
-    function submitSkuBaru() {
-      var p = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value };
-      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p);
-    }
-
-    // =======================================================
-    // FINANCE MANAGER LOGIC (TAB, WALLETS, LEDGER, CHARTS)
-    // =======================================================
-    
-    function fm_switchTab(tab) {
-        const overviewBtn = document.getElementById('fm_tab_overview_btn');
-        const ledgerBtn = document.getElementById('fm_tab_ledger_btn');
-        const overviewContent = document.getElementById('fm_tab_overview');
-        const ledgerContent = document.getElementById('fm_tab_ledger');
-
-        if(tab === 'overview') {
-            overviewBtn.className = "text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
-            ledgerBtn.className = "text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
-            overviewContent.classList.remove('hidden'); overviewContent.classList.add('flex');
-            ledgerContent.classList.add('hidden'); ledgerContent.classList.remove('flex');
-        } else {
-            ledgerBtn.className = "text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
-            overviewBtn.className = "text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
-            ledgerContent.classList.remove('hidden'); ledgerContent.classList.add('flex');
-            overviewContent.classList.add('hidden'); overviewContent.classList.remove('flex');
-            fm_renderTransactions(); 
-        }
-    }
-
+    let finChart = null;
     function initFinanceChart() {
       const ctx = document.getElementById('financeChart');
       if(!ctx) return;
@@ -1038,7 +803,42 @@
       });
     }
 
-    let globalWallets = []; let globalTransactions = [];
+    let globalWallets = []; let globalTransactions = []; let reportChartObj = null;
+
+    function fm_switchTab(tab) {
+        const overviewBtn = document.getElementById('fm_tab_overview_btn');
+        const ledgerBtn = document.getElementById('fm_tab_ledger_btn');
+        const reportBtn = document.getElementById('fm_tab_report_btn');
+        
+        const overviewContent = document.getElementById('fm_tab_overview');
+        const ledgerContent = document.getElementById('fm_tab_ledger');
+        const reportContent = document.getElementById('fm_tab_report');
+        const fab = document.getElementById('fabContainer');
+
+        const activeClass = "text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
+        const inactiveClass = "text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
+
+        overviewBtn.className = inactiveClass; ledgerBtn.className = inactiveClass; reportBtn.className = inactiveClass;
+        overviewContent.classList.add('hidden'); overviewContent.classList.remove('flex');
+        ledgerContent.classList.add('hidden'); ledgerContent.classList.remove('flex');
+        reportContent.classList.add('hidden'); reportContent.classList.remove('flex');
+
+        if(tab === 'overview') {
+            overviewBtn.className = activeClass;
+            overviewContent.classList.remove('hidden'); overviewContent.classList.add('flex');
+            fab.classList.remove('hidden-section');
+        } else if(tab === 'ledger') {
+            ledgerBtn.className = activeClass;
+            ledgerContent.classList.remove('hidden'); ledgerContent.classList.add('flex');
+            fab.classList.remove('hidden-section');
+            fm_renderTransactions(); 
+        } else if(tab === 'report') {
+            reportBtn.className = activeClass;
+            reportContent.classList.remove('hidden'); reportContent.classList.add('flex');
+            fab.classList.add('hidden-section');
+            fm_renderReport();
+        }
+    }
 
     function fm_loadWallets() {
         const c = document.getElementById('fm_wallet_container'); 
@@ -1087,13 +887,45 @@
         google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; fm_renderWallets(); }).withFailureHandler(err => { alert("Gagal: "+err); btn.innerText="Simpan Akun"; btn.disabled=false; }).fm_saveWalletData(d);
     }
 
+    function fm_toggleMutasi(typeVal) {
+        const wrapTo = document.getElementById('fm_wrapper_wallet_to');
+        const wrapCat = document.getElementById('fm_wrapper_category');
+        const lblFrom = document.getElementById('fm_lbl_wallet_from');
+        
+        if(typeVal === 'MUTASI') {
+            wrapTo.classList.remove('hidden'); 
+            document.getElementById('fm_tx_wallet_to').required = true;
+            lblFrom.innerText = "Pilih Dompet Asal (Uang Keluar)";
+            lblFrom.classList.add('text-rose-400');
+            wrapCat.classList.add('hidden'); // Sembunyikan kategori laporan
+            document.getElementById('fm_tx_subkategori').value = "-";
+        } else {
+            wrapTo.classList.add('hidden');
+            document.getElementById('fm_tx_wallet_to').required = false;
+            lblFrom.innerText = "Pilih Dompet (Sumber/Tujuan)";
+            lblFrom.classList.remove('text-rose-400');
+            wrapCat.classList.remove('hidden');
+        }
+    }
+
     function fm_openTransaksiModal() {
         const sel = document.getElementById('fm_tx_wallet'); 
+        const selTo = document.getElementById('fm_tx_wallet_to');
         sel.innerHTML = '<option value="">-- Pilih Pos (Sumber/Tujuan) --</option>';
-        globalWallets.forEach(w => { sel.innerHTML += `<option value="${w.id}">${w.name} (${w.category}) - ${formatRp(w.balance)}</option>`; });
+        selTo.innerHTML = '<option value="">-- Pilih Pos Tujuan --</option>';
+        
+        globalWallets.forEach(w => { 
+            let opt = `<option value="${w.id}">${w.name} (${w.category}) - ${formatRp(w.balance)}</option>`;
+            sel.innerHTML += opt;
+            selTo.innerHTML += opt;
+        });
+        
         document.getElementById('fm_tx_date').valueAsDate = new Date(); 
         document.getElementById('fm_tx_amount').value=''; 
         document.getElementById('fm_tx_note').value='';
+        fm_toggleMutasi('IN'); // Set default UI to IN
+        document.querySelector('input[name="fm_tx_type"][value="IN"]').checked = true;
+        
         document.getElementById('fm_transaksi_modal').classList.remove('hidden-section'); 
     }
     
@@ -1104,57 +936,55 @@
         const btn = document.getElementById('fm_btn_submit_tx');
         const wId = document.getElementById('fm_tx_wallet').value; 
         const wObj = globalWallets.find(x => x.id === wId);
+        const typeSelected = document.querySelector('input[name="fm_tx_type"]:checked').value;
+        const subKategori = document.getElementById('fm_tx_subkategori').value;
         
         const d = { 
             nominal: document.getElementById('fm_tx_amount').value, 
-            kategori: document.querySelector('input[name="fm_tx_type"]:checked').value, 
+            kategori: typeSelected, 
+            subKategori: subKategori,
             deskripsi: document.getElementById('fm_tx_note').value, 
             date: document.getElementById('fm_tx_date').value, 
             walletId: wId, 
             walletName: wObj ? wObj.name : '' 
         };
         
-        btn.innerText = "Menyimpan..."; 
-        btn.disabled = true;
+        let toWObj = null;
+        if (typeSelected === 'MUTASI') {
+            d.toWalletId = document.getElementById('fm_tx_wallet_to').value;
+            if (d.toWalletId === d.walletId) { alert("Dompet asal dan tujuan tidak boleh sama!"); return; }
+            toWObj = globalWallets.find(x => x.id === d.toWalletId);
+            d.toWalletName = toWObj ? toWObj.name : '';
+            d.subKategori = "Mutasi Antar Bank";
+        }
+        
+        btn.innerText = "Menyimpan..."; btn.disabled = true;
 
         google.script.run
             .withSuccessHandler(res => { 
-                btn.disabled = false; 
-                btn.innerText = "Inject ke Ledger"; 
+                btn.disabled = false; btn.innerText = "Inject ke Ledger"; 
                 
                 if(res === "SUCCESS") { 
                     fm_closeTransaksiModal(); 
                     document.getElementById('fm_transaksi_form').reset(); 
-                    alert("Transaksi berhasil disimpan!"); 
+                    alert("Catatan berhasil disimpan!"); 
                     
-                    globalTransactions.unshift({ 
-                        id: 'tx_' + Date.now(), 
-                        type: d.kategori, 
-                        amount: parseFloat(d.nominal), 
-                        date: d.date, 
-                        walletName: d.walletName, 
-                        note: d.deskripsi 
-                    }); 
+                    if(typeSelected === 'MUTASI') {
+                        globalTransactions.unshift({ id: 'tx_' + Date.now() + 'a', type: 'OUT', amount: parseFloat(d.nominal), date: d.date, walletName: d.walletName, subKategori: d.subKategori, note: "MUTASI KELUAR ke " + d.toWalletName + " (" + d.deskripsi + ")" }); 
+                        globalTransactions.unshift({ id: 'tx_' + Date.now() + 'b', type: 'IN', amount: parseFloat(d.nominal), date: d.date, walletName: d.toWalletName, subKategori: d.subKategori, note: "MUTASI MASUK dari " + d.walletName + " (" + d.deskripsi + ")" }); 
+                        if (wObj) wObj.balance -= parseFloat(d.nominal);
+                        if (toWObj) toWObj.balance += parseFloat(d.nominal);
+                    } else {
+                        globalTransactions.unshift({ id: 'tx_' + Date.now(), type: d.kategori, amount: parseFloat(d.nominal), date: d.date, walletName: d.walletName, subKategori: d.subKategori, note: d.deskripsi }); 
+                        if (wObj) { if (d.kategori === 'IN') { wObj.balance += parseFloat(d.nominal); } else { wObj.balance -= parseFloat(d.nominal); } }
+                    }
                     
                     fm_resetTxFilter();
-                    
-                    if (wObj) {
-                        if (d.kategori === 'IN') {
-                            wObj.balance += parseFloat(d.nominal);
-                        } else {
-                            wObj.balance -= parseFloat(d.nominal);
-                        }
-                    }
                     fm_renderWallets();
-                } else { 
-                    alert(res); 
-                } 
+                    fm_renderReport();
+                } else { alert(res); } 
             })
-            .withFailureHandler(err => { 
-                btn.disabled = false; 
-                btn.innerText = "Inject ke Ledger"; 
-                alert(err); 
-            })
+            .withFailureHandler(err => { btn.disabled = false; btn.innerText = "Inject ke Ledger"; alert(err); })
             .simpanTransaksiFinance(d);
     }
 
@@ -1164,21 +994,30 @@
         
         var kw = (document.getElementById('fm_search_tx') ? document.getElementById('fm_search_tx').value.toLowerCase() : '');
         var typeFilter = (document.getElementById('fm_filter_type') ? document.getElementById('fm_filter_type').value : 'ALL');
+        var catFilter = (document.getElementById('fm_filter_cat') ? document.getElementById('fm_filter_cat').value : 'ALL');
         var startDt = (document.getElementById('fm_start_date') ? document.getElementById('fm_start_date').value : '');
         var endDt = (document.getElementById('fm_end_date') ? document.getElementById('fm_end_date').value : '');
         var startObj = startDt ? new Date(startDt).setHours(0,0,0,0) : null;
         var endObj = endDt ? new Date(endDt).setHours(23,59,59,999) : null;
 
         var filtered = globalTransactions.filter(tx => {
-            var matchKw = kw === '' || tx.note.toLowerCase().includes(kw) || tx.walletName.toLowerCase().includes(kw);
-            var matchType = typeFilter === 'ALL' || tx.type === typeFilter;
+            var cat = tx.subKategori || '-';
+            var matchKw = kw === '' || tx.note.toLowerCase().includes(kw) || tx.walletName.toLowerCase().includes(kw) || cat.toLowerCase().includes(kw);
+            
+            // Logika filter MUTASI di ledger (cari kata MUTASI di note)
+            var matchType = true;
+            if(typeFilter === 'MUTASI') { matchType = tx.note.includes("MUTASI"); }
+            else if(typeFilter !== 'ALL') { matchType = tx.type === typeFilter && !tx.note.includes("MUTASI"); }
+            
+            var matchCat = catFilter === 'ALL' || cat === catFilter;
+            
             var matchDate = true;
             if(tx.date && (startObj || endObj)) {
                 var d = new Date(tx.date).getTime();
                 if(startObj && d < startObj) matchDate = false;
                 if(endObj && d > endObj) matchDate = false;
             }
-            return matchKw && matchType && matchDate;
+            return matchKw && matchType && matchCat && matchDate;
         });
 
         if(listFull) {
@@ -1189,23 +1028,26 @@
             } else {
                 let htmlFull = '';
                 filtered.forEach(tx => {
+                    const isMutasi = tx.note.includes("MUTASI");
                     const isInc = tx.type === 'IN'; 
-                    const color = isInc ? 'text-emerald-400' : 'text-rose-400'; 
-                    const bg = isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'; 
-                    const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up'; 
-                    const sign = isInc ? '+' : '-';
+                    const color = isMutasi ? 'text-cyan-400' : (isInc ? 'text-emerald-400' : 'text-rose-400'); 
+                    const bg = isMutasi ? 'bg-cyan-500/10 border-cyan-500/20' : (isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'); 
+                    const icon = isMutasi ? 'fa-exchange-alt' : (isInc ? 'fa-arrow-down' : 'fa-arrow-up'); 
+                    const sign = isMutasi ? '' : (isInc ? '+' : '-');
+                    const catBadge = tx.subKategori && tx.subKategori !== '-' ? `<span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded text-[8px] uppercase tracking-wider">${tx.subKategori}</span>` : '<span class="text-slate-600">-</span>';
                     
                     htmlFull += `
                     <div class="grid grid-cols-12 gap-4 p-3.5 rounded-xl border border-white/5 hover:bg-white/5 transition-colors items-center bg-black/20">
                         <div class="col-span-2 text-[10px] text-slate-400 font-semibold">${tx.date}</div>
-                        <div class="col-span-5 flex items-center gap-3 overflow-hidden">
+                        <div class="col-span-4 flex items-center gap-3 overflow-hidden">
                             <div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}">
                                 <i class="fas ${icon} text-[10px]"></i>
                             </div>
-                            <div class="text-white text-[12px] font-bold truncate">${tx.note}</div>
+                            <div class="text-white text-[12px] font-bold truncate" title="${tx.note}">${tx.note}</div>
                         </div>
+                        <div class="col-span-2 text-center truncate">${catBadge}</div>
                         <div class="col-span-2 text-center text-[10px] text-slate-300 font-semibold truncate"><span class="bg-black/60 px-3 py-1.5 rounded-lg border border-white/5">${tx.walletName}</span></div>
-                        <div class="col-span-3 text-right font-black text-[13px] ${color} pr-2 truncate">${sign} ${formatRp(tx.amount)}</div>
+                        <div class="col-span-2 text-right font-black text-[13px] ${color} pr-2 truncate">${sign} ${formatRp(tx.amount)}</div>
                     </div>`;
                 });
                 listFull.innerHTML = htmlFull;
@@ -1218,9 +1060,12 @@
             } else {
                 let htmlMini = '';
                 filtered.slice(0, 10).forEach(tx => {
-                    const isInc = tx.type === 'IN'; const color = isInc ? 'text-emerald-400' : 'text-rose-400'; 
-                    const bg = isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'; 
-                    const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up'; const sign = isInc ? '+' : '-';
+                    const isMutasi = tx.note.includes("MUTASI");
+                    const isInc = tx.type === 'IN'; 
+                    const color = isMutasi ? 'text-cyan-400' : (isInc ? 'text-emerald-400' : 'text-rose-400'); 
+                    const bg = isMutasi ? 'bg-cyan-500/10 border-cyan-500/20' : (isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'); 
+                    const icon = isMutasi ? 'fa-exchange-alt' : (isInc ? 'fa-arrow-down' : 'fa-arrow-up'); 
+                    const sign = isMutasi ? '' : (isInc ? '+' : '-');
                     
                     htmlMini += `<div class="flex justify-between items-center p-3 bg-black/20 rounded-xl border border-white/10 hover:bg-black/40 cursor-default"><div class="flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div class="truncate"><div class="text-white text-[11px] font-bold truncate">${tx.note}</div><div class="text-[9px] text-slate-500 mt-0.5">${tx.date} • ${tx.walletName}</div></div></div><div class="${color} font-black text-xs shrink-0">${sign} ${formatRp(tx.amount)}</div></div>`;
                 });
@@ -1236,9 +1081,77 @@
     function fm_resetTxFilter() {
         if(document.getElementById('fm_search_tx')) document.getElementById('fm_search_tx').value = '';
         if(document.getElementById('fm_filter_type')) document.getElementById('fm_filter_type').value = 'ALL';
+        if(document.getElementById('fm_filter_cat')) document.getElementById('fm_filter_cat').value = 'ALL';
         if(document.getElementById('fm_start_date')) document.getElementById('fm_start_date').value = '';
         if(document.getElementById('fm_end_date')) document.getElementById('fm_end_date').value = '';
         fm_renderTransactions();
+    }
+    
+    function fm_renderReport() {
+        const filter = document.getElementById('fm_report_month').value;
+        const now = new Date();
+        const curMonth = now.getMonth();
+        const curYear = now.getFullYear();
+
+        let catTotals = {}; let totalOut = 0;
+        
+        globalTransactions.forEach(tx => {
+            // Hanya ambil pengeluaran murni, abaikan mutasi/pemasukan
+            if (tx.type === 'OUT' && !tx.note.includes("MUTASI")) {
+                let match = true;
+                if(filter === 'THIS_MONTH' && tx.date) {
+                    let d = new Date(tx.date);
+                    if(d.getMonth() !== curMonth || d.getFullYear() !== curYear) match = false;
+                }
+                if(match) {
+                    let c = (tx.subKategori && tx.subKategori !== '-') ? tx.subKategori : 'Tanpa Kategori';
+                    if(!catTotals[c]) catTotals[c] = 0;
+                    catTotals[c] += tx.amount;
+                    totalOut += tx.amount;
+                }
+            }
+        });
+
+        // Urutkan dari yg terbesar
+        let sortedCats = Object.keys(catTotals).map(k => ({ name: k, amount: catTotals[k] })).sort((a,b) => b.amount - a.amount);
+        
+        let labels = []; let dataPts = []; let colors = ['#00F0FF', '#00FF66', '#FFD700', '#B026FF', '#FF0055', '#94A3B8'];
+        let htmlBars = '';
+
+        if(sortedCats.length === 0) {
+            document.getElementById('fm_category_breakdown').innerHTML = '<div class="text-slate-500 text-xs italic">Tidak ada data pengeluaran.</div>';
+            if(reportChartObj) reportChartObj.destroy();
+            return;
+        }
+
+        sortedCats.forEach((item, idx) => {
+            labels.push(item.name); dataPts.push(item.amount);
+            let cColor = colors[idx % colors.length];
+            let pct = totalOut > 0 ? Math.round((item.amount / totalOut) * 100) : 0;
+            
+            htmlBars += `
+            <div>
+                <div class="flex justify-between mb-1.5"><span class="text-[11px] text-white font-semibold">${item.name}</span><span class="text-[10px] font-bold" style="color:${cColor}">${formatRp(item.amount)} (${pct}%)</span></div>
+                <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:${pct}%; background-color:${cColor};"></div></div>
+            </div>`;
+        });
+
+        document.getElementById('fm_category_breakdown').innerHTML = htmlBars;
+
+        // Render Donut Chart
+        const ctx = document.getElementById('categoryChart');
+        if(reportChartObj) reportChartObj.destroy();
+        reportChartObj = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: labels, datasets: [{ data: dataPts, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: 'rgba(5,3,10,0.9)', titleColor: '#fff', bodyColor: '#fff', padding: 12, bodyFont: {size: 11, weight: 'bold'}, callbacks: { label: function(context){ return ' ' + formatRp(context.raw); } } }
+                }
+            }
+        });
     }
 
     function openUtangModal() { document.getElementById('modalUtangPiutang').classList.remove('hidden-section'); }
