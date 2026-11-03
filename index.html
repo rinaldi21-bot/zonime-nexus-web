@@ -20,6 +20,16 @@
       --text-main: #f8fafc;
       --sidebar-width: 270px;
     }
+    
+    @media print {
+      body * { visibility: hidden; }
+      #printOpnameArea, #printOpnameArea * { visibility: visible; }
+      #printOpnameArea { position: absolute; left: 0; top: 0; width: 100%; color: black !important; background: white !important; font-family: sans-serif; padding: 20px; }
+      .print-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      .print-table th, .print-table td { border: 1px solid #000; padding: 10px; text-align: left; font-size: 12px; }
+      .print-table th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; text-align: center; }
+      .print-header { text-align: center; margin-bottom: 20px; }
+    }
 
     * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     ::-webkit-scrollbar { width: 6px; height: 6px; display: none; }
@@ -458,6 +468,7 @@
          </div>
 
          <!-- TAB 1: STOK AKTIF -->
+         <!-- TAB 1: STOK AKTIF -->
          <div id="inv_tab_active" class="flex flex-col gap-5 overflow-hidden h-full relative z-10 pointer-events-auto">
             <div class="dashboard-cards shrink-0">
               <div class="glass-card stat-card"><div class="stat-title">Nilai Aset</div><div class="stat-value" style="color:var(--ryux-cyan);" id="invSumAset">Rp 0</div></div>
@@ -480,11 +491,17 @@
                  <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
                  <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
               </div>
+              
+              <!-- TOMBOL CETAK FORM OPNAME -->
+              <button onclick="printOpnameForm()" class="btn btn-outline py-2 px-4 hover:bg-white/10 shrink-0" title="Cetak Form Opname Fisik (PDF)">
+                  <i class="fas fa-print mr-2 text-cyan-400"></i> Cetak Form Opname
+              </button>
             </div>
 
             <div class="glass-card flex-1 overflow-y-auto custom-scroll p-0 border-t-4 border-t-cyan-500/50">
               <table id="invTable" class="w-full">
-                <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>Kode SKU</th><th>Detail Produk</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
+                <!-- HEADER TABEL DIUPDATE (Tambah Varian & Listing Code) -->
+                <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>Kode SKU</th><th>Detail Produk</th><th>Varian</th><th>Listing Code</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -678,6 +695,31 @@
     </div>
   </div>
 
+  <div id="modalEditSku" class="modal-overlay hidden-section pointer-events-auto">
+    <div class="modal-card pointer-events-auto relative z-50" style="max-width:500px;">
+      <div class="modal-header">
+          <span style="color:var(--ryux-yellow);"><i class="fas fa-edit"></i> Edit Master SKU</span>
+          <button onclick="closeEditSkuModal()" class="btn-outline pointer-events-auto cursor-pointer" style="border:none; font-size:20px;">&times;</button>
+      </div>
+      <div class="modal-body pointer-events-auto relative z-50">
+        <form onsubmit="event.preventDefault(); submitEditSku();">
+          <input type="hidden" id="editOldSku">
+          <div class="form-group"><label class="tiny-label">KODE SKU</label><input type="text" id="editSku" class="glass-input pointer-events-auto" style="text-transform:uppercase;" required></div>
+          <div class="form-group"><label class="tiny-label">NAMA PRODUK</label><input type="text" id="editNama" class="glass-input pointer-events-auto" required></div>
+          <div style="display:flex; gap:16px; margin-bottom:16px;">
+            <div class="form-group" style="flex:1;"><label class="tiny-label">VARIAN</label><input type="text" id="editVarian" class="glass-input pointer-events-auto"></div>
+            <div class="form-group" style="flex:1;"><label class="tiny-label">LISTING CODE</label><input type="text" id="editLc" class="glass-input pointer-events-auto"></div>
+          </div>
+          <div style="display:flex; gap:16px; margin-bottom:16px;">
+            <div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-green">INITIAL STOCK</label><input type="number" id="editInitStock" class="glass-input pointer-events-auto" required></div>
+            <div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-yellow">INITIAL COGS</label><input type="number" id="editInitCogs" class="glass-input pointer-events-auto" required></div>
+          </div>
+          <button type="submit" id="btnSubmitEditSku" class="btn btn-warning pointer-events-auto cursor-pointer" style="width:100%; padding:16px;">Update Data SKU</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyX_aGfgbY2k6-J1xAgfquWLaouSFHDdu4DKwrG8qBvjuX0NR3Rt0NTce7mps5Xiqjx0w/exec";
     
@@ -718,6 +760,7 @@
                 runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); };
                 runner.getSalesData = function() { _call('getSalesData'); }; 
                 runner.getInventoryData = function() { _call('getInventoryData'); }; 
+                runner.updateMasterSku = function(payload) { _call('updateMasterSku', payload); };
                 runner.getProcurementData = function() { _call('getProcurementData'); }; 
                 runner.getSmartSkuList = function() { _call('getSmartSkuList'); }; 
                 runner.getCategoryTypeSuggestions = function() { _call('getCategoryTypeSuggestions'); }; 
@@ -1033,47 +1076,79 @@
         tbody.innerHTML = html;
     }    
     function renderInventory() {
-      var selT = document.getElementById('filterTypeInv').value; 
-      var selC = document.getElementById('filterCatInv').value; 
-      var selS = document.getElementById('filterStatusInv').value; 
-      var sq = document.getElementById('searchInv').value.toLowerCase();
-      
+      var selT = document.getElementById('filterTypeInv').value; var selC = document.getElementById('filterCatInv').value; var selS = document.getElementById('filterStatusInv').value; var sq = document.getElementById('searchInv').value.toLowerCase();
       var filtered = globalInvData.filter(d => { 
           var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; 
-          return (selT === 'ALL' || d.tipe === selT) && 
-                 (selC === 'ALL' || d.kategori === selC) && 
-                 (selS === 'ALL' || stat === selS) && 
-                 (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); 
+          return (selT === 'ALL' || d.tipe === selT) && (selC === 'ALL' || d.kategori === selC) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); 
       });
-      
       var tbody = document.getElementById('invTable').getElementsByTagName('tbody')[0];
       var html = ''; var tAset = 0; var tQty = 0; var tRst = 0;
       
       filtered.forEach(d => { 
           tAset += d.nilai; tQty += d.stok; if(d.stok<=1) tRst++; 
           
-          // Bagian tombol AKSI diubah menjadi tombol Mutasi dengan ikon
+          let editData = JSON.stringify({ sku: d.sku, nama: d.nama, varian: d.varian, listingCode: d.listingCode, initStock: d.initStock, initCogs: d.initCogs }).replace(/"/g, '&quot;');
+
           html += `<tr>
             <td><b class="text-white">${d.sku}</b></td>
             <td>${d.nama}</td>
+            <td class="text-xs text-slate-300">${d.varian || '-'}</td>
+            <td class="text-xs text-cyan-400 font-mono">${d.listingCode || '-'}</td>
             <td>${d.stok>1?'<span class="badge-success">Aman</span>':'<span class="badge-danger">Kritis</span>'}</td>
             <td class="text-center font-black ${d.stok<=1?'text-ryux-red':'text-ryux-cyan'}">${d.stok}</td>
             <td class="text-right">${formatRp(d.cogs)}</td>
             <td class="text-right font-black" style="color:white;">${formatRp(d.nilai)}</td>
-            <td class="text-center">
-              <button class="btn btn-outline hover:bg-cyan-500/20" style="border-color: rgba(0, 240, 255, 0.3); color: var(--ryux-cyan);" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})">
-                <i class="fas fa-exchange-alt mr-1"></i> Mutasi
-              </button>
+            <td class="text-center flex justify-center gap-2">
+              <button class="btn btn-outline hover:bg-yellow-500/20 px-2 py-1" style="border-color: rgba(255, 215, 0, 0.3); color: var(--ryux-yellow);" onclick="openEditSkuModal('${editData}')" title="Edit Master SKU"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-outline hover:bg-cyan-500/20 px-2 py-1" style="border-color: rgba(0, 240, 255, 0.3); color: var(--ryux-cyan);" onclick="openInvActionModal('${d.sku}', '${d.nama}', ${d.stok}, ${d.cogs})" title="Mutasi / Opname"><i class="fas fa-exchange-alt"></i></button>
             </td>
           </tr>`; 
       });
-      
-      document.getElementById('invSumAset').innerText = formatRp(tAset); 
-      document.getElementById('invSumQty').innerText = tQty + " Pcs"; 
-      document.getElementById('invSumSku').innerText = filtered.length + " SKU"; 
-      document.getElementById('invSumRestock').innerText = tRst + " SKU";
-      
-      tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="7" class="text-center py-10 text-slate-500 italic">Data kosong</td></tr>' : html;
+      document.getElementById('invSumAset').innerText = formatRp(tAset); document.getElementById('invSumQty').innerText = tQty + " Pcs"; document.getElementById('invSumSku').innerText = filtered.length + " SKU"; document.getElementById('invSumRestock').innerText = tRst + " SKU";
+      tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="9" class="text-center py-10 text-slate-500 italic">Data kosong</td></tr>' : html;
+    }
+
+    // FUNGSI EDIT SKU MODAL
+    function openEditSkuModal(dataString) {
+        let data = JSON.parse(dataString.replace(/&quot;/g, '"'));
+        document.getElementById('editOldSku').value = data.sku; document.getElementById('editSku').value = data.sku; document.getElementById('editNama').value = data.nama;
+        document.getElementById('editVarian').value = data.varian; document.getElementById('editLc').value = data.listingCode;
+        document.getElementById('editInitStock').value = data.initStock; document.getElementById('editInitCogs').value = data.initCogs;
+        document.getElementById('modalEditSku').classList.remove('hidden-section');
+    }
+    function closeEditSkuModal() { document.getElementById('modalEditSku').classList.add('hidden-section'); }
+    function submitEditSku() {
+        var btn = document.getElementById('btnSubmitEditSku');
+        var payload = { oldSku: document.getElementById('editOldSku').value, newSku: document.getElementById('editSku').value, nama: document.getElementById('editNama').value, varian: document.getElementById('editVarian').value, listingCode: document.getElementById('editLc').value, initStock: document.getElementById('editInitStock').value, initCogs: document.getElementById('editInitCogs').value };
+        btn.disabled = true; btn.innerText = "Processing...";
+        google.script.run.withSuccessHandler(res => { alert(res); btn.disabled = false; btn.innerText = "Update Data SKU"; closeEditSkuModal(); loadInventoryData(); }).updateMasterSku(payload);
+    }
+
+    // FUNGSI CETAK FORM OPNAME
+    function printOpnameForm() {
+        var printDiv = document.getElementById('printOpnameArea');
+        var dNow = new Date(); var dateStr = dNow.toLocaleDateString('id-ID') + ' ' + dNow.toLocaleTimeString('id-ID');
+        
+        var html = `<div class="print-header"><h2>FORM OPNAME FISIK INVENTORY</h2><p>Dicetak pada: ${dateStr}</p></div>`;
+        html += `<table class="print-table"><thead><tr><th style="width:5%;">No</th><th style="width:15%;">SKU</th><th style="width:30%;">Nama Produk</th><th style="width:15%;">Varian</th><th style="width:10%;">Stok Sistem</th><th style="width:15%;">Stok Fisik Real</th><th style="width:10%;">Selisih (+/-)</th></tr></thead><tbody>`;
+        
+        // Loop data yang SEDANG TAMPIL di filter saat ini
+        var selT = document.getElementById('filterTypeInv').value; var selC = document.getElementById('filterCatInv').value; var selS = document.getElementById('filterStatusInv').value; var sq = document.getElementById('searchInv').value.toLowerCase();
+        var filteredData = globalInvData.filter(d => { var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; return (selT === 'ALL' || d.tipe === selT) && (selC === 'ALL' || d.kategori === selC) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); });
+        
+        let counter = 1;
+        filteredData.forEach(d => {
+            html += `<tr><td style="text-align:center;">${counter++}</td><td>${d.sku}</td><td>${d.nama}</td><td>${d.varian || '-'}</td><td style="text-align:center; font-weight:bold;">${d.stok}</td><td></td><td></td></tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        printDiv.innerHTML = html;
+        
+        // Panggil dialog print browser (bisa Save as PDF)
+        window.print();
+        
+        // Sembunyikan lagi setelah print dialog tertutup (delay tipis)
+        setTimeout(() => { printDiv.innerHTML = ''; }, 1000);
     }
 
     // MODULE: PROCUREMENT
