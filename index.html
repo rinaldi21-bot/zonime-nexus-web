@@ -1126,28 +1126,79 @@
     // FUNGSI CETAK FORM OPNAME
     function printOpnameForm() {
         var printDiv = document.getElementById('printOpnameArea');
-        var dNow = new Date(); var dateStr = dNow.toLocaleDateString('id-ID') + ' ' + dNow.toLocaleTimeString('id-ID');
+        if (!printDiv) return alert("Error: Area print tidak ditemukan!");
         
-        var html = `<div class="print-header"><h2>FORM OPNAME FISIK INVENTORY</h2><p>Dicetak pada: ${dateStr}</p></div>`;
-        html += `<table class="print-table"><thead><tr><th style="width:5%;">No</th><th style="width:15%;">SKU</th><th style="width:30%;">Nama Produk</th><th style="width:15%;">Varian</th><th style="width:10%;">Stok Sistem</th><th style="width:15%;">Stok Fisik Real</th><th style="width:10%;">Selisih (+/-)</th></tr></thead><tbody>`;
+        var dNow = new Date(); 
+        var dateStr = dNow.toLocaleDateString('id-ID') + ' ' + dNow.toLocaleTimeString('id-ID');
         
-        // Loop data yang SEDANG TAMPIL di filter saat ini
-        var selT = document.getElementById('filterTypeInv').value; var selC = document.getElementById('filterCatInv').value; var selS = document.getElementById('filterStatusInv').value; var sq = document.getElementById('searchInv').value.toLowerCase();
-        var filteredData = globalInvData.filter(d => { var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; return (selT === 'ALL' || d.tipe === selT) && (selC === 'ALL' || d.kategori === selC) && (selS === 'ALL' || stat === selS) && (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); });
+        // Menggunakan Inline Style murni agar kebal dari Dark Mode Tailwind
+        var html = `<div style="color:black; font-family:sans-serif; padding:20px; background:white;">`;
+        html += `<div style="text-align:center; margin-bottom:20px;"><h2>FORM OPNAME FISIK INVENTORY</h2><p>Dicetak pada: ${dateStr}</p></div>`;
+        html += `<table style="width:100%; border-collapse:collapse; color:black; font-size:12px;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid black; padding:8px; background:#f0f0f0; text-align:center;">No</th>
+                            <th style="border:1px solid black; padding:8px; background:#f0f0f0; text-align:left;">SKU</th>
+                            <th style="border:1px solid black; padding:8px; background:#f0f0f0; text-align:left;">Nama Produk</th>
+                            <th style="border:1px solid black; padding:8px; background:#f0f0f0; text-align:left;">Varian</th>
+                            <th style="border:1px solid black; padding:8px; background:#f0f0f0; text-align:center;">Stok Sistem</th>
+                            <th style="border:1px solid black; padding:8px; background:#f0f0f0; text-align:left;">Stok Fisik Real</th>
+                            <th style="border:1px solid black; padding:8px; background:#f0f0f0; text-align:left;">Selisih (+/-)</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+        
+        // Ambil data sesuai filter yang aktif saat ini
+        var selT = document.getElementById('filterTypeInv').value; 
+        var selC = document.getElementById('filterCatInv').value; 
+        var selS = document.getElementById('filterStatusInv').value; 
+        var sq = document.getElementById('searchInv').value.toLowerCase();
+        
+        var filteredData = globalInvData.filter(d => { 
+            var stat = d.stok <= 1 ? "RESTOCK NOW" : "SAFE"; 
+            return (selT === 'ALL' || d.tipe === selT) && 
+                   (selC === 'ALL' || d.kategori === selC) && 
+                   (selS === 'ALL' || stat === selS) && 
+                   (!sq || d.sku.toLowerCase().includes(sq) || d.nama.toLowerCase().includes(sq)); 
+        });
         
         let counter = 1;
         filteredData.forEach(d => {
-            html += `<tr><td style="text-align:center;">${counter++}</td><td>${d.sku}</td><td>${d.nama}</td><td>${d.varian || '-'}</td><td style="text-align:center; font-weight:bold;">${d.stok}</td><td></td><td></td></tr>`;
+            html += `<tr>
+                <td style="border:1px solid black; padding:8px; text-align:center;">${counter++}</td>
+                <td style="border:1px solid black; padding:8px;">${d.sku}</td>
+                <td style="border:1px solid black; padding:8px;">${d.nama}</td>
+                <td style="border:1px solid black; padding:8px;">${d.varian || '-'}</td>
+                <td style="border:1px solid black; padding:8px; text-align:center; font-weight:bold;">${d.stok}</td>
+                <td style="border:1px solid black; padding:8px;"></td>
+                <td style="border:1px solid black; padding:8px;"></td>
+            </tr>`;
         });
         
-        html += `</tbody></table>`;
+        html += `</tbody></table></div>`;
         printDiv.innerHTML = html;
         
-        // Panggil dialog print browser (bisa Save as PDF)
+        // Tampilkan elemen secara paksa (Abaikan CSS hidden-section)
+        printDiv.classList.remove('hidden-section');
+        printDiv.style.display = 'block';
+        
+        // Panggil dialog print browser
         window.print();
         
-        // Sembunyikan lagi setelah print dialog tertutup (delay tipis)
-        setTimeout(() => { printDiv.innerHTML = ''; }, 1000);
+        // Kembalikan ke mode sembunyi hanya SETELAH dialog cetak tertutup
+        window.onafterprint = function() {
+            printDiv.classList.add('hidden-section');
+            printDiv.style.display = 'none';
+            printDiv.innerHTML = '';
+            window.onafterprint = null; 
+        };
+        
+        // Fallback darurat (jika browser gagal memicu onafterprint)
+        setTimeout(() => { 
+            printDiv.classList.add('hidden-section');
+            printDiv.style.display = 'none';
+            printDiv.innerHTML = ''; 
+        }, 5000);
     }
 
     // MODULE: PROCUREMENT
