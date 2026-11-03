@@ -447,43 +447,69 @@
         </div>
         <div id="salesContainer" class="flex-1 overflow-y-auto custom-scroll pr-1 pb-10 pointer-events-auto relative z-10"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div></div>
       </div>
-      <!-- 4. SMART INVENTORY -->
-      <div id="pageInventory" class="page-section hidden-section flex flex-col h-full">
-        <div class="dashboard-cards shrink-0">
-          <div class="glass-card stat-card"><div class="stat-title">Nilai Aset</div><div class="stat-value" style="color:var(--ryux-cyan);" id="invSumAset">Rp 0</div></div>
-          <div class="glass-card stat-card"><div class="stat-title">Total Varian</div><div class="stat-value" id="invSumSku">0 SKU</div></div>
-          <div class="glass-card stat-card"><div class="stat-title">Stok Fisik</div><div class="stat-value" style="color:var(--ryux-green);" id="invSumQty">0 Pcs</div></div>
-          <div class="glass-card stat-card"><div class="stat-title">Butuh Restock</div><div class="stat-value" style="color:var(--ryux-red);" id="invSumRestock">0 SKU</div></div>
-        </div>
-        
-        <!-- FILTER BAR (Diperbaiki: Berjajar Horizontal Rapi) -->
-        <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20 mb-6">
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterTypeInv" onchange="renderInventory()">
-              <option value="ALL">Semua Tipe</option>
-          </select>
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterCatInv" onchange="renderInventory()">
-              <option value="ALL">Semua Kategori</option>
-          </select>
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterStatusInv" onchange="renderInventory()">
-              <option value="ALL">Semua Status</option>
-              <option value="SAFE">Aman</option>
-              <option value="RESTOCK NOW">Kritis</option>
-          </select>
-          
-          <div class="relative flex-2 min-w-[180px]">
-             <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
-             <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
-          </div>
-        </div>
+      <!-- 4. SMART INVENTORY (SUPERCHARGED WITH TABS) -->
+      <div id="pageInventory" class="page-section hidden-section flex flex-col gap-5 relative h-full pointer-events-auto">
+         
+         <!-- SUB-NAV TABS INVENTORY -->
+         <div class="flex gap-4 border-b border-white/10 pb-2 shrink-0 z-20 relative pointer-events-auto">
+             <button id="inv_tab_active_btn" onclick="inv_switchTab('active')" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Stok Aktif</button>
+             <button id="inv_tab_bs_btn" onclick="inv_switchTab('bs')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Barang BS</button>
+             <button id="inv_tab_log_btn" onclick="inv_switchTab('log')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto"><i class="fas fa-history mr-1"></i> Rekap Mutasi</button>
+         </div>
 
-        <div class="glass-card flex-1 overflow-y-auto custom-scroll">
-          <table id="invTable">
-            <thead class="sticky top-0 z-10 bg-black"><tr><th>Kode SKU</th><th>Detail Produk</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
+         <!-- TAB 1: STOK AKTIF -->
+         <div id="inv_tab_active" class="flex flex-col gap-5 overflow-hidden h-full relative z-10 pointer-events-auto">
+            <div class="dashboard-cards shrink-0">
+              <div class="glass-card stat-card"><div class="stat-title">Nilai Aset</div><div class="stat-value" style="color:var(--ryux-cyan);" id="invSumAset">Rp 0</div></div>
+              <div class="glass-card stat-card"><div class="stat-title">Total Varian</div><div class="stat-value" id="invSumSku">0 SKU</div></div>
+              <div class="glass-card stat-card"><div class="stat-title">Stok Fisik</div><div class="stat-value" style="color:var(--ryux-green);" id="invSumQty">0 Pcs</div></div>
+              <div class="glass-card stat-card"><div class="stat-title">Butuh Restock</div><div class="stat-value" style="color:var(--ryux-red);" id="invSumRestock">0 SKU</div></div>
+            </div>
+            
+            <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20">
+              <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterTypeInv" onchange="renderInventory()">
+                  <option value="ALL">Semua Tipe</option>
+              </select>
+              <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterCatInv" onchange="renderInventory()">
+                  <option value="ALL">Semua Kategori</option>
+              </select>
+              <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterStatusInv" onchange="renderInventory()">
+                  <option value="ALL">Semua Status</option><option value="SAFE">Aman</option><option value="RESTOCK NOW">Kritis</option>
+              </select>
+              <div class="relative flex-2 min-w-[180px]">
+                 <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
+                 <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
+              </div>
+            </div>
+
+            <div class="glass-card flex-1 overflow-y-auto custom-scroll p-0 border-t-4 border-t-cyan-500/50">
+              <table id="invTable" class="w-full">
+                <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>Kode SKU</th><th>Detail Produk</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+         </div>
+
+         <!-- TAB 2: BARANG BS -->
+         <div id="inv_tab_bs" class="hidden flex-col gap-5 overflow-hidden h-full relative z-10 pointer-events-auto">
+            <div class="glass-card flex-1 overflow-y-auto custom-scroll p-0 border-t-4 border-t-rose-500/50">
+              <table id="invTableBs" class="w-full">
+                <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>Kode SKU</th><th>Detail Produk</th><th style="text-align:center;">Stok BS</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Nilai Kerugian</th><th style="text-align:center;">Aksi</th></tr></thead>
+                <tbody id="invBodyBs"><tr><td colspan="6" class="text-center py-10 text-slate-500 italic">Menunggu data Barang BS dari server...</td></tr></tbody>
+              </table>
+            </div>
+         </div>
+
+         <!-- TAB 3: REKAP MUTASI -->
+         <div id="inv_tab_log" class="hidden flex-col gap-5 overflow-hidden h-full relative z-10 pointer-events-auto">
+            <div class="glass-card flex-1 overflow-y-auto custom-scroll p-0 border-t-4 border-t-purple-500/50">
+              <table id="invTableLog" class="w-full">
+                <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>Waktu Mutasi</th><th>Tipe Mutasi</th><th>Kode SKU</th><th style="text-align:center;">Qty / Selisih</th><th>Keterangan</th></tr></thead>
+                <tbody id="invBodyLog"><tr><td colspan="5" class="text-center py-10 text-slate-500 italic">Menunggu log mutasi dari server...</td></tr></tbody>
+              </table>
+            </div>
+         </div>
       </div>
-
       <!-- 5. PROCUREMENT -->
       <div id="pageProcurement" class="page-section hidden-section flex flex-col h-full">
         <div class="dashboard-cards shrink-0" style="grid-template-columns: repeat(3, 1fr);">
@@ -547,6 +573,47 @@
   
   <div id="modalImport" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:450px;"><div class="modal-header"><span style="color:white;"><i class="fab fa-tiktok"></i> Import Engine</span><button onclick="closeImportModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><div class="form-group"><label class="tiny-label">TARGET ACCOUNT</label><select id="importAccount" class="glass-input"><option value="Zonime Biru">Zonime Biru</option><option value="Zonime Merah">Zonime Merah</option></select></div><div style="display:flex; gap:12px; margin-top:24px;"><button type="button" onclick="closeImportModal()" class="btn btn-outline" style="flex:1;">Cancel</button><button type="button" onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2;">Execute</button></div></div></div></div>
   <div id="modalInvAction" class="modal-overlay hidden-section pointer-events-auto">
+        <div class="modal-card pointer-events-auto relative z-50" style="max-width:500px;">
+          <div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline pointer-events-auto cursor-pointer" style="border:none; font-size:20px;">&times;</button></div>
+          <div class="modal-body pointer-events-auto relative z-50">
+            <div style="display:flex; gap:12px; margin-bottom:20px; position:relative; z-index:60;">
+              <button class="btn btn-primary pointer-events-auto cursor-pointer flex-1" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Opname Fisik</button>
+              <button class="btn btn-outline pointer-events-auto cursor-pointer flex-1" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi Barang</button>
+            </div>
+            
+            <div id="tabOpname" class="pointer-events-auto relative z-50">
+              <form onsubmit="event.preventDefault(); submitOpname();">
+                <input type="hidden" id="invActSku"><input type="hidden" id="invActCogs">
+                <div style="background:rgba(0,240,255,0.05); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid rgba(0,240,255,0.2);">
+                  <div class="tiny-label" style="color:var(--ryux-cyan);">TARGET SKU</div>
+                  <div style="font-size:14px; font-weight:900;" id="invActSkuLabel"></div>
+                </div>
+                <div style="display:flex; gap:16px; margin-bottom:16px;">
+                  <div class="form-group" style="flex:1;"><label class="tiny-label">STOK SISTEM</label><input type="number" id="invActStokSistem" class="glass-input" readonly></div>
+                  <div class="form-group" style="flex:1;"><label class="tiny-label" style="color:var(--ryux-yellow);">STOK FISIK REAL</label><input type="number" id="invActStokFisik" class="glass-input pointer-events-auto" required oninput="calcOpnameDiff()"></div>
+                </div>
+                <div class="form-group"><label class="tiny-label">SELISIH</label><input type="text" id="invActSelisih" class="glass-input text-center font-bold" readonly></div>
+                <div class="form-group"><label class="tiny-label">KETERANGAN / ALASAN OPNAME</label><input type="text" id="invActKetOpname" class="glass-input pointer-events-auto" required></div>
+                <button type="submit" id="btnSubmitOpname" class="btn btn-warning pointer-events-auto cursor-pointer" style="width:100%; padding:16px;">Proses Opname</button>
+              </form>
+            </div>
+
+            <div id="tabBs" class="hidden-section pointer-events-auto relative z-50">
+              <form onsubmit="event.preventDefault(); submitMutasiBs();">
+                <div class="form-group"><label class="tiny-label">ARAH MUTASI (2-WAY)</label>
+                    <select id="invActArahBs" class="glass-input pointer-events-auto cursor-pointer">
+                        <option value="BAIK_KE_BS">Pindahkan Stok BAIK ke Stok BS (Rusak)</option>
+                        <option value="BS_KE_BAIK">Kembalikan Stok BS ke Stok BAIK (Fix)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label class="tiny-label">JUMLAH BARANG (QTY)</label><input type="number" id="invActQtyBs" class="glass-input pointer-events-auto" required min="1"></div>
+                <div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetBs" class="glass-input pointer-events-auto" placeholder="Cth: Barang cacat pabrik / Selesai direparasi" required></div>
+                <button type="submit" id="btnSubmitBs" class="btn btn-danger pointer-events-auto cursor-pointer" style="width:100%; padding:16px;">Eksekusi Mutasi Barang</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="modal-card pointer-events-auto relative z-50" style="max-width:500px;">
       <div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline pointer-events-auto cursor-pointer" style="border:none; font-size:20px;">&times;</button></div>
       <div class="modal-body pointer-events-auto relative z-50">
@@ -919,8 +986,87 @@
     }
 
     // MODULE: INVENTORY
-    function loadInventoryData() { document.getElementById('invTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="7" class="loading-spinner">Loading...</td></tr>'; google.script.run.withSuccessHandler(data => { globalInvData = data; renderInventory(); }).getInventoryData(); }
-    function renderInventory() {
+    let globalInvDataBs = [];
+    let globalInvLog = [];
+
+    // Fungsi Pindah Tab Inventory
+    function inv_switchTab(tab) {
+        const activeBtn = document.getElementById('inv_tab_active_btn');
+        const bsBtn = document.getElementById('inv_tab_bs_btn');
+        const logBtn = document.getElementById('inv_tab_log_btn');
+        
+        const activeContent = document.getElementById('inv_tab_active');
+        const bsContent = document.getElementById('inv_tab_bs');
+        const logContent = document.getElementById('inv_tab_log');
+
+        const classActive = "text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
+        const classInactive = "text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto";
+
+        activeBtn.className = classInactive; bsBtn.className = classInactive; logBtn.className = classInactive;
+        activeContent.classList.add('hidden'); activeContent.classList.remove('flex');
+        bsContent.classList.add('hidden'); bsContent.classList.remove('flex');
+        logContent.classList.add('hidden'); logContent.classList.remove('flex');
+
+        if(tab === 'active') {
+            activeBtn.className = classActive; activeContent.classList.remove('hidden'); activeContent.classList.add('flex');
+        } else if(tab === 'bs') {
+            bsBtn.className = classActive; bsContent.classList.remove('hidden'); bsContent.classList.add('flex'); renderInventoryBs();
+        } else if(tab === 'log') {
+            logBtn.className = classActive; logContent.classList.remove('hidden'); logContent.classList.add('flex'); renderInventoryLog();
+        }
+    }
+
+    // Adaptasi Fungsi Load Data agar mendukung object mutasi & BS (Jika backend sudah diupdate)
+    function loadInventoryData() { 
+        document.getElementById('invTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="7" class="loading-spinner">Loading...</td></tr>'; 
+        google.script.run.withSuccessHandler(data => { 
+            // Fallback: Jika data masih berupa array tunggal (format lama)
+            if(Array.isArray(data)) {
+                globalInvData = data;
+                globalInvDataBs = [];
+                globalInvLog = [];
+            } else {
+                // Jika backend sudah mengirim multi-data (format baru)
+                globalInvData = data.aktif || [];
+                globalInvDataBs = data.bs || [];
+                globalInvLog = data.mutasi || [];
+            }
+            renderInventory(); 
+            renderInventoryBs();
+            renderInventoryLog();
+        }).getInventoryData(); 
+    }
+
+    function renderInventoryBs() {
+        let tbody = document.getElementById('invBodyBs');
+        if(!tbody) return;
+        if(globalInvDataBs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-10 text-slate-500 italic">Belum ada catatan barang BS / Rusak.</td></tr>';
+            return;
+        }
+        let html = '';
+        globalInvDataBs.forEach(d => {
+            html += `<tr><td><b class="text-rose-400">${d.sku}</b></td><td>${d.nama}</td><td class="text-center font-black text-rose-400">${d.stok}</td><td class="text-right">${formatRp(d.cogs)}</td><td class="text-right font-black text-white">${formatRp(d.nilai)}</td><td class="text-center"><button class="btn btn-outline" onclick="openInvActionModal('${d.sku}', '${d.nama}', 0, ${d.cogs})">Mutasi Kembali</button></td></tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function renderInventoryLog() {
+        let tbody = document.getElementById('invBodyLog');
+        if(!tbody) return;
+        if(globalInvLog.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500 italic">Belum ada riwayat opname atau mutasi barang.</td></tr>';
+            return;
+        }
+        let html = '';
+        globalInvLog.forEach(d => {
+            // Asumsi struktur d = { tanggal, tipe, sku, qty, ket }
+            let color = d.tipe === 'OPNAME' ? 'text-cyan-400' : 'text-purple-400';
+            let sign = (d.qty > 0) ? '+' : '';
+            html += `<tr><td class="text-[10px] text-slate-400 font-semibold">${d.tanggal || '-'}</td><td><span class="border border-white/10 px-2 py-1 rounded text-[9px] uppercase font-bold ${color}">${d.tipe || '-'}</span></td><td><b class="text-white">${d.sku || '-'}</b></td><td class="text-center font-black ${d.qty < 0 ? 'text-rose-400' : 'text-emerald-400'}">${sign}${d.qty || 0}</td><td class="text-[11px]">${d.ket || '-'}</td></tr>`;
+        });
+        tbody.innerHTML = html;
+    }    function renderInventory() {
       var selT = document.getElementById('filterTypeInv').value; 
       var selC = document.getElementById('filterCatInv').value; // Tambahan: Tangkap value filter kategori
       var selS = document.getElementById('filterStatusInv').value; 
