@@ -406,13 +406,17 @@
 
       <!-- 3. LIVE SALES -->
       <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full">
-        <!-- FILTER BAR (Diperbaiki: Berjajar Horizontal Rapi) -->
+        <!-- FILTER BAR (Berjajar Horizontal Rapi) -->
         <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20 mb-6">
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterDateRangeSales" onchange="toggleCustomDateSales(); renderSalesTable();">
-            <option value="ALL">Semua Waktu</option><option value="TODAY">Hari Ini</option><option value="YESTERDAY">Kemarin</option><option value="THIS_WEEK">Pekan Ini</option><option value="THIS_MONTH">Bulan Ini</option><option value="CUSTOM">Rentang Tanggal...</option>
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterDateRangeSales" onchange="renderSalesTable();">
+            <option value="ALL">Semua Waktu</option>
+            <option value="TODAY">Hari Ini</option>
+            <option value="YESTERDAY">Kemarin</option>
+            <option value="THIS_WEEK">Pekan Ini</option>
+            <option value="THIS_MONTH">Bulan Ini</option>
           </select>
           
-          <div id="customDateSalesContainer" style="display:none;" class="date-range-container bg-black/40 px-3 rounded-xl items-center h-[35px] border border-white/10 flex-1 min-w-[200px]">
+          <div class="date-range-container bg-black/40 px-3 rounded-xl flex items-center h-[35px] border border-white/10 flex-1 min-w-[200px]">
             <input type="date" id="salesStartDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full" onchange="renderSalesTable()">
             <span class="text-slate-400 mx-2 text-[10px]">-</span>
             <input type="date" id="salesEndDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full" onchange="renderSalesTable()">
@@ -430,6 +434,8 @@
              <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
              <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchSales" placeholder="Cari Order / LC..." onkeyup="renderSalesTable()">
           </div>
+          
+          <button onclick="resetSalesFilter()" class="btn-outline py-2 px-3 text-[11px] cursor-pointer pointer-events-auto bg-black/40 border border-white/10 hover:bg-white/10 rounded-xl shrink-0" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
         </div>
         
         <div class="summary-box glass-card shrink-0">
@@ -440,7 +446,6 @@
         </div>
         <div id="salesContainer" class="flex-1 overflow-y-auto custom-scroll pr-1 pb-10"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div></div>
       </div>
-
       <!-- 4. SMART INVENTORY -->
       <div id="pageInventory" class="page-section hidden-section flex flex-col h-full">
         <div class="dashboard-cards shrink-0">
@@ -449,12 +454,27 @@
           <div class="glass-card stat-card"><div class="stat-title">Stok Fisik</div><div class="stat-value" style="color:var(--ryux-green);" id="invSumQty">0 Pcs</div></div>
           <div class="glass-card stat-card"><div class="stat-title">Butuh Restock</div><div class="stat-value" style="color:var(--ryux-red);" id="invSumRestock">0 SKU</div></div>
         </div>
-        <div class="filter-bar glass-card shrink-0">
-          <select class="glass-input filter-select" id="filterTypeInv" onchange="renderInventory()"><option value="ALL">Semua Tipe</option></select>
-          <select class="glass-input filter-select" id="filterCatInv" onchange="renderInventory()"><option value="ALL">Semua Kategori</option></select>
-          <select class="glass-input filter-select" id="filterStatusInv" onchange="renderInventory()"><option value="ALL">Semua Status</option><option value="SAFE">Aman</option><option value="RESTOCK NOW">Kritis</option></select>
-          <input type="text" class="glass-input filter-input" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
+        
+        <!-- FILTER BAR (Diperbaiki: Berjajar Horizontal Rapi) -->
+        <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20 mb-6">
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterTypeInv" onchange="renderInventory()">
+              <option value="ALL">Semua Tipe</option>
+          </select>
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterCatInv" onchange="renderInventory()">
+              <option value="ALL">Semua Kategori</option>
+          </select>
+          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterStatusInv" onchange="renderInventory()">
+              <option value="ALL">Semua Status</option>
+              <option value="SAFE">Aman</option>
+              <option value="RESTOCK NOW">Kritis</option>
+          </select>
+          
+          <div class="relative flex-2 min-w-[180px]">
+             <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
+             <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
+          </div>
         </div>
+
         <div class="glass-card flex-1 overflow-y-auto custom-scroll">
           <table id="invTable">
             <thead class="sticky top-0 z-10 bg-black"><tr><th>Kode SKU</th><th>Detail Produk</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
@@ -752,26 +772,60 @@
     // MODULE: SALES
     function loadSalesData() { document.getElementById('salesContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div>'; google.script.run.withSuccessHandler(data => { globalSalesData = data; populateMonthFilter(data, 'filterDateRangeSales'); renderSalesTable(); }).getSalesData(); }
     function toggleCustomDateSales() { var val = document.getElementById('filterDateRangeSales').value; document.getElementById('customDateSalesContainer').style.display = (val === 'CUSTOM') ? 'flex' : 'none'; }
+    function resetSalesFilter() {
+        if(document.getElementById('filterDateRangeSales')) document.getElementById('filterDateRangeSales').value = 'ALL';
+        if(document.getElementById('filterStatusSales')) document.getElementById('filterStatusSales').value = 'ALL';
+        if(document.getElementById('filterKelengkapanSales')) document.getElementById('filterKelengkapanSales').value = 'ALL';
+        if(document.getElementById('salesStartDate')) document.getElementById('salesStartDate').value = '';
+        if(document.getElementById('salesEndDate')) document.getElementById('salesEndDate').value = '';
+        if(document.getElementById('searchSales')) document.getElementById('searchSales').value = '';
+        renderSalesTable();
+    }
+
     function renderSalesTable() {
       var container = document.getElementById('salesContainer');
       if(!container || globalSalesData.length === 0) { container.innerHTML = '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong.</div>'; return; }
-      var selDate = document.getElementById('filterDateRangeSales').value; var selStart = document.getElementById('salesStartDate').value; var selEnd = document.getElementById('salesEndDate').value; var selStatus = document.getElementById('filterStatusSales').value; var selKelengkapan = document.getElementById('filterKelengkapanSales').value; var sq = document.getElementById('searchSales').value.toLowerCase();
-      var now = new Date(); now.setHours(0,0,0,0); var targetStart = null, targetEnd = null;
-      if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
-      else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
-      else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
-      else if(selDate === 'THIS_MONTH') { targetStart = new Date(now.getFullYear(), now.getMonth(), 1); targetEnd = new Date(now); }
-      else if (selDate === 'CUSTOM' && selStart && selEnd) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
+      
+      var selDate = document.getElementById('filterDateRangeSales').value; 
+      var selStart = document.getElementById('salesStartDate').value; 
+      var selEnd = document.getElementById('salesEndDate').value; 
+      var selStatus = document.getElementById('filterStatusSales').value; 
+      var selKelengkapan = document.getElementById('filterKelengkapanSales').value; 
+      var sq = document.getElementById('searchSales').value.toLowerCase();
+      
+      var now = new Date(); now.setHours(0,0,0,0); 
+      var targetStart = null, targetEnd = null;
+      
+      // Prioritaskan input kalender manual jika diisi
+      if (selStart || selEnd) {
+          if (selStart) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); }
+          if (selEnd) { targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
+      } else {
+          // Jika kosong, gunakan dropdown waktu
+          if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
+          else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
+          else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
+          else if(selDate === 'THIS_MONTH') { targetStart = new Date(now.getFullYear(), now.getMonth(), 1); targetEnd = new Date(now); }
+      }
+
       var filtered = globalSalesData.filter(d => {
-        var dTime = new Date(d.tanggal); dTime.setHours(0,0,0,0);
+        var dTime = new Date(d.tanggal).getTime();
         var dateMatch = true;
-        if (selDate !== 'ALL' && !selDate.includes('-') && targetStart && targetEnd) { dateMatch = (dTime >= targetStart && dTime <= targetEnd); } else if (selDate.includes('-')) { dateMatch = (d.valBulan === selDate); }
+        
+        if (targetStart || targetEnd) { 
+            if (targetStart && dTime < targetStart.getTime()) dateMatch = false; 
+            if (targetEnd && dTime > targetEnd.getTime()) dateMatch = false; 
+        } else if (selDate !== 'ALL' && selDate.includes('-')) { 
+            dateMatch = (d.valBulan === selDate); 
+        }
+        
         var statMatch = (selStatus === 'ALL' || d.status.toLowerCase().includes(selStatus.toLowerCase()));
         var isErr = d.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
         var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isErr) || (selKelengkapan === 'ERROR' && isErr); 
         var textMatch = !sq || d.noOrder.toLowerCase().includes(sq) || d.listingCode.toLowerCase().includes(sq) || d.items.some(k => k.sku.toLowerCase().includes(sq));
         return dateMatch && statMatch && kMatch && textMatch;
       });
+
       var html = ''; var sOmset = 0; var sProfit = 0; var sQty = 0;
       if(filtered.length === 0) { html = '<div class="glass-card" style="padding:40px; text-align:center;">Tidak ada data.</div>'; }
       else {
