@@ -408,8 +408,8 @@
          </div>
          
          <!-- FAB BUTTON -->
-         <div id="fabContainer" class="hidden-section" style="position: fixed; bottom: 30px; right: 30px; z-index: 999999 !important; pointer-events: auto !important;">
-             <div onclick="fm_openTransaksiModal()" title="Catat Transaksi" style="width: 56px; height: 56px; border-radius: 50%; background: #00F0FF; color: black; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.5); transition: transform 0.2s;">
+         <div id="fabContainer" class="hidden-section" style="position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; z-index: 999999 !important;">
+             <div onclick="fm_openTransaksiModal()" title="Catat Transaksi" style="width: 100%; height: 100%; border-radius: 50%; background: #00F0FF; color: black; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.5); transition: transform 0.2s; pointer-events: auto;">
                  <i class="fas fa-plus"></i>
              </div>
          </div>
@@ -1610,7 +1610,11 @@
 
         google.script.run
             .withSuccessHandler(function(res) {
-                var wallets = res.wallets || [];
+                // Simpan data dari backend ke memori lokal
+                globalWallets = res.wallets || [];
+                globalTransactions = res.ledger || [];
+                
+                var wallets = globalWallets;
                 var totalBiz = 0; var totalFam = 0;
                 var countBiz = 0; var countFam = 0;
 
