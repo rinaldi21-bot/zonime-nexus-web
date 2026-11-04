@@ -408,12 +408,11 @@
          </div>
          
          <!-- FAB BUTTON -->
-         <div id="fabContainer" class="hidden-section pointer-events-auto">
-             <div class="fab-btn pointer-events-auto cursor-pointer" onclick="fm_openTransaksiModal()" title="Catat Transaksi">
-                 <i class="fas fa-plus text-black"></i>
+         <div id="fabContainer" class="hidden-section" style="position: fixed; bottom: 30px; right: 30px; z-index: 999999 !important; pointer-events: auto !important;">
+             <div onclick="fm_openTransaksiModal()" title="Catat Transaksi" style="width: 56px; height: 56px; border-radius: 50%; background: #00F0FF; color: black; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.5); transition: transform 0.2s;">
+                 <i class="fas fa-plus"></i>
              </div>
          </div>
-      </div>
 
       <!-- 3. LIVE SALES -->
       <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full relative z-10 pointer-events-auto">
@@ -854,8 +853,12 @@
           loadDashboard(); setTimeout(() => initCharts(), 100); 
       }
       else if(pageId === 'pageFinance') { 
-          loadFinanceData(); fm_renderTransactions(); setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
-          document.getElementById('fabContainer').classList.remove('hidden-section');
+          loadFinanceData(); 
+          fm_renderTransactions(); 
+          setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
+          
+          // Paksa reset ke tab Overview & Munculkan FAB secara otomatis
+          fm_switchTab('overview');
       }
       else if(pageId === 'pageSalesLog') { 
           loadSalesData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`; 
