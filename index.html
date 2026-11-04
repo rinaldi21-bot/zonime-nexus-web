@@ -266,7 +266,7 @@
 
          <!-- SUB-NAV TABS -->
          <div class="flex gap-4 border-b border-white/10 pb-2 shrink-0 z-20 relative pointer-events-auto">
-             <button id="fm_tab_overview_btn" onclick="fm_switchTab('overview'); loadFinanceData();" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Overview</button>
+             <button id="fm_tab_overview_btn" onclick="fm_switchTab('overview')" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Overview</button>
              <button id="fm_tab_ledger_btn" onclick="fm_switchTab('ledger')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Ledger (Buku Kas)</button>
              <button id="fm_tab_report_btn" onclick="fm_switchTab('report')" class="text-[11px] font-bold text-slate-500 hover:text-white uppercase tracking-widest pb-2 px-2 transition-colors cursor-pointer pointer-events-auto"><i class="fas fa-chart-pie mr-1"></i> Report & Kategori</button>
          </div>
@@ -295,7 +295,7 @@
                     </div>
                     <div class="glass-card flex-1 p-6 border-purple-500/20">
                         <span class="tiny-label">Family Balance</span>
-                        <div class="text-white text-3xl font-light mt-2 truncate" id="finBizBal">Rp 0</div>
+                        <div class="text-white text-3xl font-light mt-2 truncate" id="finFamilyBal">Rp 0</div>
                         <button class="btn btn-outline w-full mt-4 text-[9px] py-1.5 cursor-pointer pointer-events-auto hover:bg-white/10" onclick="loadFinanceData()">Request Update</button>
                     </div>
                     <div class="glass-card p-6 flex justify-between items-center border-emerald-400/20">
@@ -406,19 +406,12 @@
                  </div>
              </div>
          </div>
-         
-         <!-- FAB BUTTON -->
-         <div id="fabContainer" class="hidden-section" style="position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; z-index: 999999 !important;">
-             <div onclick="fm_openTransaksiModal()" title="Catat Transaksi" style="width: 100%; height: 100%; border-radius: 50%; background: #00F0FF; color: black; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.5); transition: transform 0.2s; pointer-events: auto;">
-                 <i class="fas fa-plus"></i>
-             </div>
-         </div>
+      </div>
 
       <!-- 3. LIVE SALES -->
       <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full relative z-10 pointer-events-auto">
-        <!-- FILTER BAR (Berjajar Horizontal Rapi & Interaktif) -->
+        <!-- FILTER BAR -->
         <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-30 mb-6">
-          
           <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto flex-1 min-w-[120px]" id="filterDateRangeSales" onchange="renderSalesTable();">
             <option value="ALL">Semua Waktu</option>
             <option value="TODAY">Hari Ini</option>
@@ -457,9 +450,9 @@
         </div>
         <div id="salesContainer" class="flex-1 overflow-y-auto custom-scroll pr-1 pb-10 pointer-events-auto relative z-10"><div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div></div>
       </div>
-      <!-- 4. SMART INVENTORY (SUPERCHARGED WITH TABS) -->
+
+      <!-- 4. SMART INVENTORY -->
       <div id="pageInventory" class="page-section hidden-section flex flex-col gap-5 relative h-full pointer-events-auto">
-         
          <!-- SUB-NAV TABS INVENTORY -->
          <div class="flex gap-4 border-b border-white/10 pb-2 shrink-0 z-20 relative pointer-events-auto">
              <button id="inv_tab_active_btn" onclick="inv_switchTab('active')" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest border-b-2 border-cyan-400 pb-2 px-2 transition-colors cursor-pointer pointer-events-auto">Stok Aktif</button>
@@ -491,15 +484,13 @@
                  <input type="text" class="glass-input pl-9 py-2 text-[11px] border-none bg-black/40" id="searchInv" placeholder="Cari Nama / SKU..." onkeyup="renderInventory()">
               </div>
               
-              <!-- TOMBOL CETAK FORM OPNAME -->
-<button onclick="printOpnameForm()" class="btn-outline py-2 px-4 text-[11px] cursor-pointer pointer-events-auto relative z-30 border border-white/10 hover:bg-white/10 rounded-xl shrink-0" title="Cetak Form Opname Fisik (PDF)">
-    <i class="fas fa-print mr-2 text-cyan-400"></i> Cetak Form Opname
-</button>
+              <button onclick="printOpnameForm()" class="btn-outline py-2 px-4 text-[11px] cursor-pointer pointer-events-auto relative z-30 border border-white/10 hover:bg-white/10 rounded-xl shrink-0" title="Cetak Form Opname Fisik (PDF)">
+                  <i class="fas fa-print mr-2 text-cyan-400"></i> Cetak Form Opname
+              </button>
             </div>
 
             <div class="glass-card flex-1 overflow-y-auto custom-scroll p-0 border-t-4 border-t-cyan-500/50">
               <table id="invTable" class="w-full">
-                <!-- HEADER TABEL DIUPDATE (Tambah Varian & Listing Code) -->
                 <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>Kode SKU</th><th>Detail Produk</th><th>Varian</th><th>Listing Code</th><th>Status</th><th style="text-align:center;">Stok</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Total Aset</th><th style="text-align:center;">Aksi</th></tr></thead>
                 <tbody></tbody>
               </table>
@@ -526,6 +517,7 @@
             </div>
          </div>
       </div>
+
       <!-- 5. PROCUREMENT -->
       <div id="pageProcurement" class="page-section hidden-section flex flex-col h-full">
         <div class="dashboard-cards shrink-0" style="grid-template-columns: repeat(3, 1fr);">
@@ -534,7 +526,6 @@
           <div class="glass-card stat-card"><div class="stat-title">Qty Masuk</div><div class="stat-value" style="color:var(--ryux-cyan);" id="procSumQty">0 Pcs</div></div>
         </div>
         
-        <!-- FILTER BAR (Diperbaiki: Berjajar Horizontal Rapi) -->
         <div class="glass-card p-4 flex gap-3 items-center shrink-0 flex-wrap pointer-events-auto z-20 mb-6">
           <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer flex-1 min-w-[120px]" id="filterMonthProc" onchange="renderProcurement()">
               <option value="ALL">Semua Bulan</option>
@@ -566,7 +557,7 @@
         <div class="glass-card" style="max-width:650px; margin:0 auto;">
           <div class="dg-header" style="color:var(--ryux-green);"><i class="fas fa-plus-circle"></i> Create New SKU Master</div>
           <div class="dg-body">
-            <form onsubmit="event.preventDefault(); submitSkuBaru();">
+            <form id="formSkuBaru" onsubmit="event.preventDefault(); submitSkuBaru();">
               <div class="form-group"><label class="tiny-label">KODE SKU</label><input type="text" id="newSku" class="glass-input" style="text-transform:uppercase;" required></div>
               <div style="display:flex; gap:16px; margin-bottom:16px;"><div style="flex:1;"><label class="tiny-label">Tipe</label><input type="text" id="newType" data-custom-list="listTypes" class="glass-input" autocomplete="off"></div><div style="flex:1;"><label class="tiny-label">Kategori</label><input type="text" id="newCat" data-custom-list="listCats" class="glass-input" autocomplete="off"></div></div>
               <div class="form-group"><label class="tiny-label">NAMA PRODUK</label><input type="text" id="newName" data-custom-list="listProdNames" class="glass-input" required oninput="onProductSelect(this.value)" autocomplete="off"></div>
@@ -582,7 +573,15 @@
   </div>
 
   <datalist id="skuSuggestions"></datalist><datalist id="listTypes"></datalist><datalist id="listCats"></datalist><datalist id="listSuppliers"></datalist><datalist id="listProdNames"></datalist>
-<div id="printOpnameArea" class="hidden-section"></div>
+  <div id="printOpnameArea" class="hidden-section"></div>
+
+  <!-- FAB BUTTON -->
+  <div id="fabContainer" class="hidden-section" style="position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; z-index: 999999 !important;">
+      <div onclick="fm_openTransaksiModal()" title="Catat Transaksi" style="width: 100%; height: 100%; border-radius: 50%; background: #00F0FF; color: black; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.5); transition: transform 0.2s; pointer-events: auto;">
+          <i class="fas fa-plus"></i>
+      </div>
+  </div>
+
   <!-- ============================================================== -->
   <!-- MODALS -->
   <!-- ============================================================== -->
@@ -653,6 +652,7 @@
       </div>
     </div>
   </div>
+
   <!-- MODAL EDIT WALLET -->
     <div id="fm_edit_wallet_modal" class="hidden-section fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm pointer-events-auto">
         <div class="bg-[#0f172a] border border-cyan-500/30 rounded-xl p-6 w-[400px] shadow-2xl relative">
@@ -825,6 +825,8 @@
         };
     }
 
+    var globalSalesData = []; var globalInvData = []; var globalProcData = []; var masterProductFullList = []; var todoItems = []; var globalWallets = []; var globalTransactions = [];
+
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     function formatRp(num) { return fmtAkuntan.format(num); }
 
@@ -911,8 +913,6 @@
     document.addEventListener('focusin', function(e) { if(e.target.hasAttribute('data-custom-list')) renderDropdown(e.target); }); 
     document.addEventListener('focusout', function(e) { setTimeout(() => customDropdown.classList.add('hidden-section'), 200); }); 
     
-    var globalSalesData = []; var globalInvData = []; var globalProcData = []; var masterProductFullList = []; var todoItems = [];
-
     function preloadDatalists() {
       // 1. Datalist untuk Form Create SKU & GRN
       google.script.run.withSuccessHandler(list => { 
@@ -1072,17 +1072,14 @@
         }
     }
 
-    // Adaptasi Fungsi Load Data agar mendukung object mutasi & BS (Jika backend sudah diupdate)
     function loadInventoryData() { 
         document.getElementById('invTable').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="7" class="loading-spinner">Loading...</td></tr>'; 
         google.script.run.withSuccessHandler(data => { 
-            // Fallback: Jika data masih berupa array tunggal (format lama)
             if(Array.isArray(data)) {
                 globalInvData = data;
                 globalInvDataBs = [];
                 globalInvLog = [];
             } else {
-                // Jika backend sudah mengirim multi-data (format baru)
                 globalInvData = data.aktif || [];
                 globalInvDataBs = data.bs || [];
                 globalInvLog = data.mutasi || [];
@@ -1116,13 +1113,13 @@
         }
         let html = '';
         globalInvLog.forEach(d => {
-            // Asumsi struktur d = { tanggal, tipe, sku, qty, ket }
             let color = d.tipe === 'OPNAME' ? 'text-cyan-400' : 'text-purple-400';
             let sign = (d.qty > 0) ? '+' : '';
             html += `<tr><td class="text-[10px] text-slate-400 font-semibold">${d.tanggal || '-'}</td><td><span class="border border-white/10 px-2 py-1 rounded text-[9px] uppercase font-bold ${color}">${d.tipe || '-'}</span></td><td><b class="text-white">${d.sku || '-'}</b></td><td class="text-center font-black ${d.qty < 0 ? 'text-rose-400' : 'text-emerald-400'}">${sign}${d.qty || 0}</td><td class="text-[11px]">${d.ket || '-'}</td></tr>`;
         });
         tbody.innerHTML = html;
-    }    
+    }   
+    
     function renderInventory() {
       var selT = document.getElementById('filterTypeInv').value; var selC = document.getElementById('filterCatInv').value; var selS = document.getElementById('filterStatusInv').value; var sq = document.getElementById('searchInv').value.toLowerCase();
       var filtered = globalInvData.filter(d => { 
@@ -1180,7 +1177,6 @@
         var dNow = new Date(); 
         var dateStr = dNow.toLocaleDateString('id-ID') + ' ' + dNow.toLocaleTimeString('id-ID');
         
-        // Menggunakan Inline Style murni agar kebal dari Dark Mode Tailwind
         var html = `<div style="color:black; font-family:sans-serif; padding:20px; background:white;">`;
         html += `<div style="text-align:center; margin-bottom:20px;"><h2>FORM OPNAME FISIK INVENTORY</h2><p>Dicetak pada: ${dateStr}</p></div>`;
         html += `<table style="width:100%; border-collapse:collapse; color:black; font-size:12px;">
@@ -1197,7 +1193,6 @@
                     </thead>
                     <tbody>`;
         
-        // Ambil data sesuai filter yang aktif saat ini
         var selT = document.getElementById('filterTypeInv').value; 
         var selC = document.getElementById('filterCatInv').value; 
         var selS = document.getElementById('filterStatusInv').value; 
@@ -1227,14 +1222,11 @@
         html += `</tbody></table></div>`;
         printDiv.innerHTML = html;
         
-        // Tampilkan elemen secara paksa (Abaikan CSS hidden-section)
         printDiv.classList.remove('hidden-section');
         printDiv.style.display = 'block';
         
-        // Panggil dialog print browser
         window.print();
         
-        // Kembalikan ke mode sembunyi hanya SETELAH dialog cetak tertutup
         window.onafterprint = function() {
             printDiv.classList.add('hidden-section');
             printDiv.style.display = 'none';
@@ -1242,7 +1234,6 @@
             window.onafterprint = null; 
         };
         
-        // Fallback darurat (jika browser gagal memicu onafterprint)
         setTimeout(() => { 
             printDiv.classList.add('hidden-section');
             printDiv.style.display = 'none';
@@ -1375,25 +1366,71 @@
         }
     }
 
-    function fm_loadWallets() {
-        const c = document.getElementById('fm_wallet_container'); 
-        if(c) c.innerHTML = '<div class="w-full text-center py-4 text-cyan-400 text-xs italic"><i class="fas fa-circle-notch fa-spin text-lg mb-2 block"></i>Sinkronisasi brankas...</div>';
-        if(globalWallets.length === 0) { google.script.run.withSuccessHandler(data => { globalWallets = data; fm_renderWallets(); }).withFailureHandler(err => { if(c) c.innerHTML = '<div class="text-rose-400 w-full text-center font-bold">Koneksi Database Gagal: '+err+'</div>'; }).fm_getWalletsData(); } else { fm_renderWallets(); }
-    }
+    function loadFinanceData() {
+        var container = document.getElementById('fm_wallet_container');
+        if (container) container.innerHTML = '<div class="w-full text-center py-4 text-slate-500 text-xs italic"><i class="fas fa-circle-notch fa-spin text-cyan-400 mb-2 text-xl block"></i> Memuat data...</div>';
 
-    function fm_renderWallets() {
-        const c = document.getElementById('fm_wallet_container'); if(!c) return;
-        let tBiz = 0, tFam = 0, html = '';
-        if(globalWallets.length === 0) { c.innerHTML='<div class="text-slate-500 w-full text-center py-4 text-xs">Belum ada pos keuangan yang didaftarkan.</div>'; } else {
-            globalWallets.forEach(w => {
-                if(w.category === 'Bisnis') tBiz += w.balance; else tFam += w.balance;
-                const badge = w.category==='Bisnis' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-                html += `<div class="flex-1 min-w-[220px] bg-black/40 border border-white/10 rounded-xl p-5 flex flex-col relative group hover:bg-white/5 transition-colors cursor-default"><button onclick="fm_openWalletModal('edit', '${w.id}')" class="absolute top-3 right-3 text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20 pointer-events-auto bg-black/50 w-7 h-7 rounded-lg flex items-center justify-center border border-white/10"><i class="fas fa-pen text-[10px]"></i></button><div class="flex justify-between items-center mb-5 pr-8"><span class="text-slate-300 text-[11px] font-bold"><i class="fas fa-wallet mr-1.5 text-slate-500"></i>${w.type}</span><span class="text-[8px] px-2 py-1 rounded border uppercase font-black tracking-widest ${badge}">${w.category}</span></div><div class="text-slate-400 text-[11px] font-semibold mb-1">${w.name}</div><div class="text-xl font-black text-white tracking-tight">${formatRp(w.balance)}</div></div>`;
-            });
-            c.innerHTML = html;
-        }
-        const bB = document.getElementById('finBizBal'); const fB = document.getElementById('finFamilyBal');
-        if(bB) bB.innerText = formatRp(tBiz); if(fB) fB.innerText = formatRp(tFam);
+        google.script.run
+            .withSuccessHandler(function(res) {
+                // SAVING GLOBALS DARI BACKEND
+                globalWallets = res.wallets || [];
+                globalTransactions = res.ledger || [];
+
+                var wallets = globalWallets;
+                var totalBiz = 0; var totalFam = 0;
+                var countBiz = 0; var countFam = 0;
+
+                var htmlBiz = '<div class="w-full mb-4"><h3 class="text-cyan-400 font-bold text-sm uppercase tracking-widest border-b border-white/10 pb-2 mb-4"><i class="fas fa-briefcase mr-2"></i>Akun Bisnis</h3><div class="flex flex-wrap gap-4">';
+                var htmlFam = '<div class="w-full mt-2"><h3 class="text-purple-400 font-bold text-sm uppercase tracking-widest border-b border-white/10 pb-2 mb-4"><i class="fas fa-house mr-2"></i>Akun Pribadi (Family)</h3><div class="flex flex-wrap gap-4">';
+
+                wallets.forEach(function(w) {
+                    var isBiz = (w.kategori === 'Bisnis');
+                    if (isBiz) { totalBiz += w.saldoAkhir; countBiz++; }
+                    else { totalFam += w.saldoAkhir; countFam++; }
+
+                    var icon = w.tipe === 'Bank' ? 'fa-building-columns' : (w.tipe === 'Tunai' ? 'fa-wallet' : 'fa-mobile-screen');
+                    var color = isBiz ? 'text-cyan-400' : 'text-purple-400';
+                    var bg = isBiz ? 'bg-cyan-500/10 border-cyan-500/20' : 'bg-purple-500/10 border-purple-500/20';
+
+                    var card = `
+                    <div class="glass-card flex-1 min-w-[220px] max-w-[300px] p-4 relative ${bg} border border-solid group transition-all">
+                        <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
+                            <button onclick="fm_openEditModal('${w.nama}', '${w.tipe}', '${w.kategori}', ${w.saldoAkhir})" class="text-slate-400 hover:text-cyan-400 bg-slate-900/80 border border-white/10 rounded px-2 py-1 text-xs pointer-events-auto"><i class="fas fa-pen"></i></button>
+                            <button onclick="fm_deleteWallet('${w.nama}')" class="text-slate-400 hover:text-rose-500 bg-slate-900/80 border border-white/10 rounded px-2 py-1 text-xs pointer-events-auto"><i class="fas fa-trash"></i></button>
+                        </div>
+                        
+                        <div class="flex justify-between items-start mb-2 mt-1">
+                            <div>
+                                <h4 class="text-white font-bold text-sm tracking-wide pr-12">${w.nama}</h4>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-widest">${w.tipe}</span>
+                            </div>
+                            <i class="fas ${icon} ${color} text-xl opacity-60"></i>
+                        </div>
+                        <div class="text-xl font-black text-white mt-4">${formatRp(w.saldoAkhir)}</div>
+                    </div>`;
+
+                    if (isBiz) htmlBiz += card; else htmlFam += card;
+                });
+
+                htmlBiz += countBiz === 0 ? '<div class="text-xs text-slate-500 italic">Belum ada akun.</div></div></div>' : '</div></div>';
+                htmlFam += countFam === 0 ? '<div class="text-xs text-slate-500 italic">Belum ada akun.</div></div></div>' : '</div></div>';
+
+                if (container) container.innerHTML = htmlBiz + htmlFam;
+
+                var elBiz = document.getElementById('finBizBal'); 
+                var elFam = document.getElementById('finFamilyBal'); 
+                if(elBiz) elBiz.innerText = formatRp(totalBiz);
+                if(elFam) elFam.innerText = formatRp(totalFam);
+
+                if(!document.getElementById('fm_tab_overview').classList.contains('flex')) {
+                    fm_renderTransactions();
+                    fm_renderReport();
+                }
+            })
+            .withFailureHandler(function(err) {
+                if (container) container.innerHTML = '<div class="w-full text-center py-4 text-rose-500 text-xs italic">Gagal: ' + err + '</div>';
+            })
+            .getFinanceData();
     }
 
     function fm_openWalletModal(act='add', id=null) {
@@ -1410,7 +1447,7 @@
         const d = { payload: { id: document.getElementById('fm_input_id').value || ('w_'+Date.now()), name: document.getElementById('fm_input_name').value, type: document.getElementById('fm_input_type').value, category: document.getElementById('fm_input_category').value, balance: parseFloat(document.getElementById('fm_input_balance').value) }, action: act };
         btn.innerText = "Menyimpan..."; btn.disabled = true;
         if(act==='add') { globalWallets.push(d.payload); } else { const idx = globalWallets.findIndex(x=>x.id===d.payload.id); if(idx!==-1) globalWallets[idx] = d.payload; }
-        google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; fm_renderWallets(); }).withFailureHandler(err => { alert("Gagal: "+err); btn.innerText="Simpan Akun"; btn.disabled=false; }).fm_saveWalletData(d);
+        google.script.run.withSuccessHandler(res => { fm_closeWalletModal(); btn.innerText="Simpan Akun"; btn.disabled=false; loadFinanceData(); }).withFailureHandler(err => { alert("Gagal: "+err); btn.innerText="Simpan Akun"; btn.disabled=false; }).addFinanceWallet(d.payload);
     }
 
     function fm_toggleMutasi(typeVal) {
@@ -1423,7 +1460,7 @@
         const sel = document.getElementById('fm_tx_wallet'); const selTo = document.getElementById('fm_tx_wallet_to');
         sel.innerHTML = '<option value="">-- Memuat Dompet... --</option>'; selTo.innerHTML = '<option value="">-- Pilih Dompet Tujuan --</option>';
         sel.innerHTML = '<option value="">-- Pilih Pos (Sumber/Tujuan) --</option>';
-        globalWallets.forEach(w => { let opt = `<option value="${w.id}">${w.name} (${w.category}) - ${formatRp(w.balance)}</option>`; sel.innerHTML += opt; selTo.innerHTML += opt; });
+        globalWallets.forEach(w => { let opt = `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`; sel.innerHTML += opt; selTo.innerHTML += opt; });
         document.getElementById('fm_tx_date').valueAsDate = new Date(); document.getElementById('fm_tx_amount').value=''; document.getElementById('fm_tx_note').value='';
         fm_toggleMutasi('IN'); document.querySelector('input[name="fm_tx_type"][value="IN"]').checked = true; document.getElementById('fm_transaksi_modal').classList.remove('hidden-section'); 
     }
@@ -1434,31 +1471,23 @@
         e.preventDefault(); const btn = document.getElementById('fm_btn_submit_tx');
         const wId = document.getElementById('fm_tx_wallet').value; const wObj = globalWallets.find(x => x.id === wId);
         const typeSelected = document.querySelector('input[name="fm_tx_type"]:checked').value; const subKategori = document.getElementById('fm_tx_subkategori').value;
-        const d = { nominal: document.getElementById('fm_tx_amount').value, kategori: typeSelected, subKategori: subKategori, deskripsi: document.getElementById('fm_tx_note').value, date: document.getElementById('fm_tx_date').value, walletId: wId, walletName: wObj ? wObj.name : '' };
+        const d = { nominal: document.getElementById('fm_tx_amount').value, kategori: typeSelected, subKategori: subKategori, deskripsi: document.getElementById('fm_tx_note').value, date: document.getElementById('fm_tx_date').value, walletId: wId, walletName: wObj ? wObj.nama : '' };
         
         let toWObj = null;
-        if (typeSelected === 'MUTASI') { d.toWalletId = document.getElementById('fm_tx_wallet_to').value; if (d.toWalletId === d.walletId) { alert("Dompet asal dan tujuan tidak boleh sama!"); return; } toWObj = globalWallets.find(x => x.id === d.toWalletId); d.toWalletName = toWObj ? toWObj.name : ''; d.subKategori = "Mutasi Antar Bank"; }
+        if (typeSelected === 'MUTASI') { d.toWalletId = document.getElementById('fm_tx_wallet_to').value; if (d.toWalletId === d.walletId) { alert("Dompet asal dan tujuan tidak boleh sama!"); return; } toWObj = globalWallets.find(x => x.id === d.toWalletId); d.toWalletName = toWObj ? toWObj.nama : ''; d.subKategori = "Mutasi Antar Bank"; }
         
         btn.innerText = "Menyimpan..."; btn.disabled = true;
         google.script.run.withSuccessHandler(res => { 
                 btn.disabled = false; btn.innerText = "Inject ke Ledger"; 
                 if(res === "SUCCESS") { 
                     fm_closeTransaksiModal(); document.getElementById('fm_transaksi_form').reset(); alert("Catatan berhasil disimpan!"); 
-                    if(typeSelected === 'MUTASI') {
-                        globalTransactions.unshift({ id: 'tx_' + Date.now() + 'a', type: 'OUT', amount: parseFloat(d.nominal), date: d.date, walletName: d.walletName, subKategori: d.subKategori, note: "MUTASI KELUAR ke " + d.toWalletName + " (" + d.deskripsi + ")" }); 
-                        globalTransactions.unshift({ id: 'tx_' + Date.now() + 'b', type: 'IN', amount: parseFloat(d.nominal), date: d.date, walletName: d.toWalletName, subKategori: d.subKategori, note: "MUTASI MASUK dari " + d.walletName + " (" + d.deskripsi + ")" }); 
-                        if (wObj) wObj.balance -= parseFloat(d.nominal); if (toWObj) toWObj.balance += parseFloat(d.nominal);
-                    } else {
-                        globalTransactions.unshift({ id: 'tx_' + Date.now(), type: d.kategori, amount: parseFloat(d.nominal), date: d.date, walletName: d.walletName, subKategori: d.subKategori, note: d.deskripsi }); 
-                        if (wObj) { if (d.kategori === 'IN') { wObj.balance += parseFloat(d.nominal); } else { wObj.balance -= parseFloat(d.nominal); } }
-                    }
-                    fm_resetTxFilter(); fm_renderWallets(); fm_renderReport();
+                    loadFinanceData();
                 } else { alert(res); } 
             }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Inject ke Ledger"; alert(err); }).simpanTransaksiFinance(d);
     }
 
     function fm_renderTransactions() {
-        const listMini = document.getElementById('fm_transaction_list'); const listFull = document.getElementById('fm_ledger_list'); 
+        const listFull = document.getElementById('fm_ledger_list'); 
         var kw = (document.getElementById('fm_search_tx') ? document.getElementById('fm_search_tx').value.toLowerCase() : '');
         var typeFilter = (document.getElementById('fm_filter_type') ? document.getElementById('fm_filter_type').value : 'ALL');
         var catFilter = (document.getElementById('fm_filter_cat') ? document.getElementById('fm_filter_cat').value : 'ALL');
@@ -1490,20 +1519,6 @@
                     htmlFull += `<div class="grid grid-cols-12 gap-4 p-3.5 rounded-xl border border-white/5 hover:bg-white/5 transition-colors items-center bg-black/20"><div class="col-span-2 text-[10px] text-slate-400 font-semibold">${tx.date}</div><div class="col-span-4 flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div class="text-white text-[12px] font-bold truncate" title="${tx.note}">${tx.note}</div></div><div class="col-span-2 text-center truncate">${catBadge}</div><div class="col-span-2 text-center text-[10px] text-slate-300 font-semibold truncate"><span class="bg-black/60 px-3 py-1.5 rounded-lg border border-white/5">${tx.walletName}</span></div><div class="col-span-2 text-right font-black text-[13px] ${color} pr-2 truncate">${sign} ${formatRp(tx.amount)}</div></div>`;
                 });
                 listFull.innerHTML = htmlFull;
-            }
-        }
-        if(listMini) {
-            if(globalTransactions.length === 0) { listMini.innerHTML = '<div class="text-slate-500 py-4 text-center text-xs italic">Belum ada transaksi.</div>'; } 
-            else {
-                let htmlMini = '';
-                filtered.slice(0, 10).forEach(tx => {
-                    const isMutasi = tx.note.includes("MUTASI"); const isInc = tx.type === 'IN'; 
-                    const color = isMutasi ? 'text-cyan-400' : (isInc ? 'text-emerald-400' : 'text-rose-400'); 
-                    const bg = isMutasi ? 'bg-cyan-500/10 border-cyan-500/20' : (isInc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'); 
-                    const icon = isMutasi ? 'fa-exchange-alt' : (isInc ? 'fa-arrow-down' : 'fa-arrow-up'); const sign = isMutasi ? '' : (isInc ? '+' : '-');
-                    htmlMini += `<div class="flex justify-between items-center p-3 bg-black/20 rounded-xl border border-white/10 hover:bg-black/40 cursor-default"><div class="flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 shrink-0 rounded-full border flex items-center justify-center ${bg} ${color}"><i class="fas ${icon} text-[10px]"></i></div><div class="truncate"><div class="text-white text-[11px] font-bold truncate">${tx.note}</div><div class="text-[9px] text-slate-500 mt-0.5">${tx.date} • ${tx.walletName}</div></div></div><div class="${color} font-black text-xs shrink-0">${sign} ${formatRp(tx.amount)}</div></div>`;
-                });
-                listMini.innerHTML = htmlMini;
             }
         }
         if(document.getElementById('fm_ledger_count')) { document.getElementById('fm_ledger_count').innerText = filtered.length; }
@@ -1552,122 +1567,6 @@
     function closeUtangModal() { document.getElementById('modalUtangPiutang').classList.add('hidden-section'); }
     function submitUtangData() { var btn = document.getElementById('btnSubmitUtang'); var p = { tipe: document.getElementById('utangTipe').value, nama: document.getElementById('utangNama').value, nominal: document.getElementById('utangNominal').value, tempo: document.getElementById('utangTempo').value }; btn.disabled = true; btn.innerText = "MENYIMPAN..."; google.script.run.withSuccessHandler(res => { btn.disabled = false; btn.innerText = "Simpan Catatan"; if (res === "SUCCESS") { alert("Catatan Utang/Piutang berhasil disimpan!"); document.getElementById('formUtang').reset(); closeUtangModal(); } else { alert(res); } }).withFailureHandler(err => { btn.disabled = false; btn.innerText = "Simpan Catatan"; alert("Gagal: " + err); }).simpanUtangPiutang(p); }
 
-    window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
-
-    // ==========================================
-    // MODULE: FINANCE MANAGER
-    // ==========================================
-
-    // 1. Fungsi Buka Modal Tambah Akun
-    function fm_openWalletModal() {
-        document.getElementById('fm_wallet_form').reset();
-        document.getElementById('fm_input_balance').value = 0; // Set default 0
-        document.getElementById('fm_wallet_modal').classList.remove('hidden-section');
-    }
-
-    // 2. Fungsi Tutup Modal Tambah Akun
-    function fm_closeWalletModal() {
-        document.getElementById('fm_wallet_modal').classList.add('hidden-section');
-    }
-
-    // 3. Fungsi Submit Data Kas/Bank ke Backend
-    function fm_submitWalletForm(event) {
-        event.preventDefault(); 
-        var btn = document.getElementById('fm_btn_submit');
-        
-        var payload = {
-            name: document.getElementById('fm_input_name').value,
-            type: document.getElementById('fm_input_type').value,
-            category: document.getElementById('fm_input_category').value,
-            balance: document.getElementById('fm_input_balance').value
-        };
-        
-        btn.disabled = true;
-        btn.innerText = "Menyimpan...";
-        
-        google.script.run
-            .withSuccessHandler(function(res) {
-                alert(res); 
-                btn.disabled = false;
-                btn.innerText = "Simpan Akun";
-                fm_closeWalletModal();
-                
-                // Memanggil data terbaru agar kartu dompet langsung muncul!
-                loadFinanceData(); 
-            })
-            .withFailureHandler(function(err) {
-                alert("Error: " + err);
-                btn.disabled = false;
-                btn.innerText = "Simpan Akun";
-            })
-            .addFinanceWallet(payload);
-    }
-
-    // 4. Fungsi Menarik & Menampilkan Data Finance (TATA LETAK BARU)
-    function loadFinanceData() {
-        var container = document.getElementById('fm_wallet_container');
-        if (container) container.innerHTML = '<div class="w-full text-center py-4 text-slate-500 text-xs italic"><i class="fas fa-circle-notch fa-spin text-cyan-400 mb-2 text-xl block"></i> Memuat data...</div>';
-
-        google.script.run
-            .withSuccessHandler(function(res) {
-                // Simpan data dari backend ke memori lokal
-                globalWallets = res.wallets || [];
-                globalTransactions = res.ledger || [];
-                
-                var wallets = globalWallets;
-                var totalBiz = 0; var totalFam = 0;
-                var countBiz = 0; var countFam = 0;
-
-                // Siapkan wadah terpisah
-                var htmlBiz = '<div class="w-full mb-4"><h3 class="text-cyan-400 font-bold text-sm uppercase tracking-widest border-b border-white/10 pb-2 mb-4"><i class="fas fa-briefcase mr-2"></i>Akun Bisnis</h3><div class="flex flex-wrap gap-4">';
-                var htmlFam = '<div class="w-full mt-2"><h3 class="text-purple-400 font-bold text-sm uppercase tracking-widest border-b border-white/10 pb-2 mb-4"><i class="fas fa-house mr-2"></i>Akun Pribadi (Family)</h3><div class="flex flex-wrap gap-4">';
-
-                wallets.forEach(function(w) {
-                    var isBiz = (w.kategori === 'Bisnis');
-                    if (isBiz) { totalBiz += w.saldoAkhir; countBiz++; }
-                    else { totalFam += w.saldoAkhir; countFam++; }
-
-                    var icon = w.tipe === 'Bank' ? 'fa-building-columns' : (w.tipe === 'Tunai' ? 'fa-wallet' : 'fa-mobile-screen');
-                    var color = isBiz ? 'text-cyan-400' : 'text-purple-400';
-                    var bg = isBiz ? 'bg-cyan-500/10 border-cyan-500/20' : 'bg-purple-500/10 border-purple-500/20';
-
-                    var card = `
-                    <div class="glass-card flex-1 min-w-[220px] max-w-[300px] p-4 relative ${bg} border border-solid group transition-all">
-                        <!-- Tombol Aksi (Muncul saat hover) -->
-                        <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
-                            <button onclick="fm_openEditModal('${w.nama}', '${w.tipe}', '${w.kategori}')" class="text-slate-400 hover:text-cyan-400 bg-slate-900/80 border border-white/10 rounded px-2 py-1 text-xs"><i class="fas fa-pen"></i></button>
-                            <button onclick="fm_deleteWallet('${w.nama}')" class="text-slate-400 hover:text-rose-500 bg-slate-900/80 border border-white/10 rounded px-2 py-1 text-xs"><i class="fas fa-trash"></i></button>
-                        </div>
-                        
-                        <div class="flex justify-between items-start mb-2 mt-1">
-                            <div>
-                                <h4 class="text-white font-bold text-sm tracking-wide pr-12">${w.nama}</h4>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-widest">${w.tipe}</span>
-                            </div>
-                            <i class="fas ${icon} ${color} text-xl opacity-60"></i>
-                        </div>
-                        <div class="text-xl font-black text-white mt-4">Rp ${w.saldoAkhir.toLocaleString('id-ID')}</div>
-                    </div>`;
-
-                    if (isBiz) htmlBiz += card; else htmlFam += card;
-                });
-
-                htmlBiz += countBiz === 0 ? '<div class="text-xs text-slate-500 italic">Belum ada akun.</div></div></div>' : '</div></div>';
-                htmlFam += countFam === 0 ? '<div class="text-xs text-slate-500 italic">Belum ada akun.</div></div></div>' : '</div></div>';
-
-                if (container) container.innerHTML = htmlBiz + htmlFam;
-
-                var elBiz = document.getElementById('finBizBal'); 
-                var elFam = document.getElementById('finFamilyBal'); 
-                if(elBiz) elBiz.innerText = "Rp " + totalBiz.toLocaleString('id-ID');
-                if(elFam) elFam.innerText = "Rp " + totalFam.toLocaleString('id-ID');
-            })
-            .withFailureHandler(function(err) {
-                if (container) container.innerHTML = '<div class="w-full text-center py-4 text-rose-500 text-xs italic">Gagal: ' + err + '</div>';
-            })
-            .getFinanceData();
-    }
-
     function fm_openEditModal(nama, tipe, kategori, nominal) {
         document.getElementById('fm_edit_old_name').value = nama;
         document.getElementById('fm_edit_input_name').value = nama;
@@ -1711,12 +1610,8 @@
         }
     }
     
-    document.addEventListener('DOMContentLoaded', function() {
-    // Beri sedikit jeda agar DOM benar-benar siap
-    setTimeout(function() {
-        loadFinanceData();
-    }, 500); 
-});
+    window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
+
   </script>
 </body>
 </html>
