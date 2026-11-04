@@ -288,12 +288,12 @@
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start pointer-events-auto">
                  <div class="flex flex-col gap-6">
                     <div class="glass-card flex-1 p-6 border-cyan-400/20">
-                        <span class="tiny-label">Family Balance</span>
+                        <span class="tiny-label">Biz Balance</span>
                         <div class="text-white text-3xl font-light mt-2 truncate" id="finBizBal">Rp 0</div>
                         <div class="text-[10px] text-cyan-400 mt-3 font-bold tracking-widest">★ SHARE ACTIVE</div>
                     </div>
                     <div class="glass-card flex-1 p-6 border-purple-500/20">
-                        <span class="tiny-label">Biz Balance</span>
+                        <span class="tiny-label">Family Balance</span>
                         <div class="text-white text-3xl font-light mt-2 truncate" id="finBizBal">Rp 0</div>
                         <button class="btn btn-outline w-full mt-4 text-[9px] py-1.5 cursor-pointer pointer-events-auto hover:bg-white/10" onclick="loadFinanceData()">Request Update</button>
                     </div>
@@ -680,6 +680,10 @@
                         </select>
                     </div>
                 </div>
+                <div class="mb-4">
+                    <label class="block text-[10px] font-bold text-cyan-400 uppercase tracking-widest mb-1">Nominal Saldo (Rp)</label>
+                    <input type="number" id="fm_edit_input_balance" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white text-sm font-bold focus:border-cyan-400 focus:outline-none" required>
+                </div>
                 <button type="submit" id="fm_btn_edit_submit" class="w-full py-3 bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-500/50 text-cyan-400 font-bold rounded-lg transition-colors text-sm tracking-wide mt-4">SIMPAN PERUBAHAN</button>
             </form>
         </div>
@@ -811,6 +815,8 @@
                 runner.fm_getWalletsData = function() { _call('fm_getWalletsData'); };
                 runner.simpanTransaksiFinance = function(payload) { _call('simpanTransaksiFinance', payload); };
                 runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
+                runner.editFinanceWallet = function(payload) { _call('editFinanceWallet', payload); };
+                runner.deleteFinanceWallet = function(nama) { _call('deleteFinanceWallet', {nama: nama}); };
                 return runner; 
               } 
               return createRunner(null, null); 
@@ -846,9 +852,10 @@
       if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
      else if(pageId === 'pageFinance') { 
           loadFinanceData(); fm_renderTransactions(); setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
-          if(document.getElementById('fm_tab_overview').classList.contains('flex') || document.getElementById('fm_tab_ledger').classList.contains('flex')) {
-              document.getElementById('fabContainer').classList.remove('hidden-section');
-          }
+          
+          // Paksa tombol (+) agar selalu muncul saat menu Finance dibuka
+          document.getElementById('fabContainer').classList.remove('hidden-section');
+      }
       }
       else if(pageId === 'pageSalesLog') { loadSalesData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`; }
       else if(pageId === 'pageInventory') { loadInventoryData(); }
@@ -1656,6 +1663,15 @@
         document.getElementById('fm_edit_wallet_modal').classList.remove('hidden-section');
     }
 
+    function fm_openEditModal(nama, tipe, kategori, nominal) {
+        document.getElementById('fm_edit_old_name').value = nama;
+        document.getElementById('fm_edit_input_name').value = nama;
+        document.getElementById('fm_edit_input_type').value = tipe;
+        document.getElementById('fm_edit_input_category').value = kategori;
+        document.getElementById('fm_edit_input_balance').value = nominal;
+        document.getElementById('fm_edit_wallet_modal').classList.remove('hidden-section');
+    }
+
     function fm_submitEditForm(event) {
         event.preventDefault();
         var btn = document.getElementById('fm_btn_edit_submit');
@@ -1663,7 +1679,8 @@
             oldName: document.getElementById('fm_edit_old_name').value,
             newName: document.getElementById('fm_edit_input_name').value,
             type: document.getElementById('fm_edit_input_type').value,
-            category: document.getElementById('fm_edit_input_category').value
+            category: document.getElementById('fm_edit_input_category').value,
+            balance: document.getElementById('fm_edit_input_balance').value
         };
         btn.disabled = true; btn.innerText = "MENYIMPAN...";
         
