@@ -1664,14 +1664,6 @@
             .getFinanceData();
     }
 
-    function fm_openEditModal(nama, tipe, kategori) {
-        document.getElementById('fm_edit_old_name').value = nama;
-        document.getElementById('fm_edit_input_name').value = nama;
-        document.getElementById('fm_edit_input_type').value = tipe;
-        document.getElementById('fm_edit_input_category').value = kategori;
-        document.getElementById('fm_edit_wallet_modal').classList.remove('hidden-section');
-    }
-
     function fm_openEditModal(nama, tipe, kategori, nominal) {
         document.getElementById('fm_edit_old_name').value = nama;
         document.getElementById('fm_edit_input_name').value = nama;
