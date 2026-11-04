@@ -1606,7 +1606,12 @@
             })
             .getFinanceData();
     }
-    loadFinanceData();
+    document.addEventListener('DOMContentLoaded', function() {
+    // Beri sedikit jeda agar DOM benar-benar siap
+    setTimeout(function() {
+        loadFinanceData();
+    }, 500); 
+});
   </script>
 </body>
 </html>
