@@ -844,8 +844,8 @@
       if(window.innerWidth < 768) { document.getElementById('mainSidebar').classList.remove('active'); }
 
       if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
-      else if(pageId === 'pageFinance') { 
-          fm_loadWallets(); fm_renderTransactions(); setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
+     else if(pageId === 'pageFinance') { 
+          loadFinanceData(); fm_renderTransactions(); setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
           if(document.getElementById('fm_tab_overview').classList.contains('flex') || document.getElementById('fm_tab_ledger').classList.contains('flex')) {
               document.getElementById('fabContainer').classList.remove('hidden-section');
           }
