@@ -849,17 +849,22 @@
       
       if(window.innerWidth < 768) { document.getElementById('mainSidebar').classList.remove('active'); }
 
-      if(pageId === 'pageDashboard') { loadDashboard(); setTimeout(() => initCharts(), 100); }
-     else if(pageId === 'pageFinance') { 
+      if(pageId === 'pageDashboard') { 
+          loadDashboard(); setTimeout(() => initCharts(), 100); 
+      }
+      else if(pageId === 'pageFinance') { 
           loadFinanceData(); fm_renderTransactions(); setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
-          
-          // Paksa tombol (+) agar selalu muncul saat menu Finance dibuka
           document.getElementById('fabContainer').classList.remove('hidden-section');
       }
+      else if(pageId === 'pageSalesLog') { 
+          loadSalesData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`; 
       }
-      else if(pageId === 'pageSalesLog') { loadSalesData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-outline" onclick="runAutoFillSKU()"><i class="fas fa-magic"></i> Auto-Fix</button><button class="btn btn-warning" onclick="openImportModal()"><i class="fas fa-bolt"></i> Import</button><button class="btn btn-primary" onclick="runSyncSales()"><i class="fas fa-sync"></i> Sync</button>`; }
-      else if(pageId === 'pageInventory') { loadInventoryData(); }
-      else if(pageId === 'pageProcurement') { loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()">+ GRN</button>`; }
+      else if(pageId === 'pageInventory') { 
+          loadInventoryData(); 
+      }
+      else if(pageId === 'pageProcurement') { 
+          loadProcurementData(); document.getElementById('headerActions').innerHTML = `<button class="btn btn-primary" onclick="openGrnModal()">+ GRN</button>`; 
+      }
     }
 
     let dashChartTrend = null; 
