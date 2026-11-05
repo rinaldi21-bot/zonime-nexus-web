@@ -576,6 +576,7 @@
   <!-- ============================================================== -->
   
   <div id="modalImport" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:450px;"><div class="modal-header"><span style="color:white;"><i class="fab fa-tiktok"></i> Import Engine</span><button onclick="closeImportModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><div class="form-group"><label class="tiny-label">TARGET ACCOUNT</label><select id="importAccount" class="glass-input"><option value="Zonime Biru">Zonime Biru</option><option value="Zonime Merah">Zonime Merah</option></select></div><div style="display:flex; gap:12px; margin-top:24px;"><button type="button" onclick="closeImportModal()" class="btn btn-outline" style="flex:1;">Cancel</button><button type="button" onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2;">Execute</button></div></div></div></div>
+  
   <div id="modalInvAction" class="modal-overlay hidden-section pointer-events-auto">
         <div class="modal-card pointer-events-auto relative z-50" style="max-width:500px;">
           <div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline pointer-events-auto cursor-pointer" style="border:none; font-size:20px;">&times;</button></div>
@@ -619,9 +620,49 @@
         </div>
       </div>
     
-  <div id="modalGrn" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:900px;"><div class="modal-header"><span style="color:var(--ryux-green);"><i class="fas fa-file-invoice"></i> Input GRN</span><button onclick="closeGrnModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:12px; margin-bottom:20px; display:flex; flex-wrap:wrap; gap:16px;"><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">TANGGAL</label><input type="date" id="grnTgl" class="glass-input" required></div><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div><div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div></div><div style="margin-bottom:20px;"><button type="button" class="btn btn-outline" onclick="addGrnRow()">+ Tambah Barang</button></div><div id="grnItemsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;"></div><div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:12px; margin-bottom:20px; display:flex; gap:16px;"><div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-red">VOUCHER (-)</label><input type="number" id="grnVoc" class="glass-input text-ryux-red" value="0" oninput="calcGrn()"></div><div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-cyan">FEE (+)</label><input type="number" id="grnFee" class="glass-input text-ryux-cyan" value="0" oninput="calcGrn()"></div><div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-yellow">ONGKIR (+)</label><input type="number" id="grnOng" class="glass-input text-ryux-yellow" value="0" oninput="calcGrn()"></div></div><div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:900;"><div style="font-size:12px;">Subtotal: <span id="grnSubtotalLabel">Rp 0</span></div><div style="font-size:18px; color:var(--ryux-cyan);">Net Total: <span id="grnTotalBersihLabel">Rp 0</span></div></div><div style="display:flex; gap:16px;"><button type="button" class="btn btn-outline" style="flex:1;" onclick="closeGrnModal()">Batal</button><button type="button" class="btn btn-primary" style="flex:2;" onclick="submitGrnData()" id="btnSubmitGrn">Simpan GRN</button></div></div></div></div>
+  <div id="modalGrn" class="modal-overlay hidden-section">
+      <div class="modal-card" style="max-width:900px;">
+          <div class="modal-header">
+              <span style="color:var(--ryux-green);"><i class="fas fa-file-invoice"></i> Input GRN</span>
+              <button onclick="closeGrnModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button>
+          </div>
+          <div class="modal-body">
+              <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:12px; margin-bottom:20px; display:flex; flex-wrap:wrap; gap:16px;">
+                  <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">TANGGAL</label><input type="date" id="grnTgl" class="glass-input" required></div>
+                  <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div>
+                  <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div>
+                  <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div>
+                  <!-- TAMBAHAN: DROPDOWN WALLET UNTUK GRN -->
+                  <div class="form-group" style="flex:1; min-width:200px;">
+                      <label class="tiny-label text-cyan-400">SUMBER DANA (OPSIONAL)</label>
+                      <select id="grnWallet" class="glass-input border-cyan-500/30 cursor-pointer">
+                          <option value="">-- Jangan Potong Saldo (Data Lama) --</option>
+                      </select>
+                  </div>
+              </div>
+              <div style="margin-bottom:20px;"><button type="button" class="btn btn-outline" onclick="addGrnRow()">+ Tambah Barang</button></div>
+              <div id="grnItemsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;"></div>
+              <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:12px; margin-bottom:20px; display:flex; gap:16px;">
+                  <div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-red">VOUCHER (-)</label><input type="number" id="grnVoc" class="glass-input text-ryux-red" value="0" oninput="calcGrn()"></div>
+                  <div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-cyan">FEE (+)</label><input type="number" id="grnFee" class="glass-input text-ryux-cyan" value="0" oninput="calcGrn()"></div>
+                  <div class="form-group" style="flex:1;"><label class="tiny-label text-ryux-yellow">ONGKIR (+)</label><input type="number" id="grnOng" class="glass-input text-ryux-yellow" value="0" oninput="calcGrn()"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:900;">
+                  <div style="font-size:12px;">Subtotal: <span id="grnSubtotalLabel">Rp 0</span></div>
+                  <div style="font-size:18px; color:var(--ryux-cyan);">Net Total: <span id="grnTotalBersihLabel">Rp 0</span></div>
+              </div>
+              <div style="display:flex; gap:16px;">
+                  <button type="button" class="btn btn-outline" style="flex:1;" onclick="closeGrnModal()">Batal</button>
+                  <button type="button" class="btn btn-primary" style="flex:2;" onclick="submitGrnData()" id="btnSubmitGrn">Simpan GRN</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
   <div id="modalFixSales" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:650px;"><div class="modal-header"><span style="color:var(--ryux-yellow);"><i class="fas fa-wrench"></i> Fix Data</span><button onclick="closeFixModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><input type="hidden" id="fixRowIdx"><div id="fixRefBox" style="background:rgba(0,240,255,0.05); padding:16px; border-radius:12px; margin-bottom:16px;"></div><div id="fixItemsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;"></div><button type="button" class="btn btn-outline" style="width:100%; margin-bottom:16px;" onclick="addFixRowUI('', 1)">+ Insert Row</button><button type="button" onclick="saveFixModal()" id="btnSaveFix" class="btn btn-primary" style="width:100%;">Apply</button></div></div></div>
+  
   <div id="modalRetur" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:500px;"><div class="modal-header"><span style="color:var(--ryux-red);"><i class="fas fa-undo"></i> Log Retur</span><button onclick="closeReturModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><form onsubmit="event.preventDefault(); submitRetur();"><input type="hidden" id="returRowIdx"><div style="background:rgba(255,0,85,0.05); padding:16px; border-radius:12px; margin-bottom:16px;"><div class="tiny-label" style="color:var(--ryux-red);">ORDER ID</div><div style="font-size:16px; font-weight:900;" id="returNoOrderLabel"></div></div><div id="returItemsList" style="margin-bottom:16px;"></div><div class="form-group"><label class="tiny-label">KONDISI</label><select id="returKondisi" class="glass-input"><option value="BAIK">Bagus (Ke Stok Baik)</option><option value="BS">Rusak (Ke Stok BS)</option></select></div><div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="returKeterangan" class="glass-input"></div><button type="submit" id="btnSubmitRetur" class="btn btn-danger" style="width:100%;">Proses Retur</button></form></div></div></div>
+  
   <div id="modalReviseProc" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:450px;"><div class="modal-header"><span style="color:var(--ryux-yellow);"><i class="fas fa-edit"></i> Edit Ledger</span><button onclick="closeReviseProcModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><form onsubmit="event.preventDefault(); submitReviseProc();"><div class="form-group"><label class="tiny-label">NOTA</label><input type="text" id="revProcNota" class="glass-input" readonly></div><div class="form-group"><label class="tiny-label">SKU</label><input type="text" id="revProcSku" data-custom-list="skuSuggestions" class="glass-input" required><input type="hidden" id="revProcOldSku"></div><div style="display:flex; gap:16px;"><div class="form-group" style="flex:1;"><label class="tiny-label">QTY</label><input type="number" id="revProcQty" class="glass-input" required></div><div class="form-group" style="flex:2;"><label class="tiny-label text-ryux-yellow">HARGA</label><input type="number" id="revProcHarga" class="glass-input" required></div></div><button type="submit" id="btnSubmitReviseProc" class="btn btn-warning" style="width:100%;">Update</button></form></div></div></div>
   
   <div id="fm_wallet_modal" class="modal-overlay hidden-section">
@@ -1251,7 +1292,12 @@
       var html = ''; var tBelanja = 0; var tQty = 0;
       orderList.forEach(k => {
         var g = groups[k]; tBelanja += g.tot; var iHtml = '';
-        g.items.forEach(itm => { tQty += itm.qty; iHtml += `<div class="dg-row"><div style="flex:1;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(itm.hargaCogs)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div><div class="money-stat" style="width:100px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><button class="btn btn-outline btn-icon" onclick="openReviseProcModal('${g.noOrder}','${itm.sku}',${itm.qty},${itm.hargaAsli})"><i class="fas fa-pen"></i></button></div>`; });
+        g.items.forEach(itm => { 
+            tQty += itm.qty; 
+            // PERBAIKAN: Menggunakan harga atau hargaCogs untuk tampilan agar tidak undefined error
+            let showPrice = itm.harga || itm.hargaCogs || 0; 
+            iHtml += `<div class="dg-row"><div style="flex:1;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(showPrice)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div><div class="money-stat" style="width:100px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><button class="btn btn-outline btn-icon" onclick="openReviseProcModal('${g.noOrder}','${itm.sku}',${itm.qty},${showPrice})"><i class="fas fa-pen"></i></button></div>`; 
+        });
         html += `<div class="data-group-card glass-card"><div class="dg-header"><div style="display:flex; gap:12px; align-items:center;"><span class="badge-info">${g.noOrder}</span><span style="color:white; font-size:14px;">${g.sup}</span><span class="badge-warning">${g.mp}</span></div><div class="money-stat"><span>INV TOTAL</span><div style="color:var(--ryux-cyan); font-size:18px;">${formatRp(g.tot)}</div></div></div><div class="dg-body">${iHtml}</div></div>`;
       });
       document.getElementById('procSumBelanja').innerText = formatRp(tBelanja); document.getElementById('procSumQty').innerText = tQty + " Pcs"; document.getElementById('procSumInvoice').innerText = orderList.length; document.getElementById('procurementContainer').innerHTML = html || '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong</div>';
@@ -1296,11 +1342,108 @@
     function openReviseProcModal(no, sku, qty, harga) { document.getElementById('revProcNota').value = no; document.getElementById('revProcOldSku').value = sku; document.getElementById('revProcSku').value = sku; document.getElementById('revProcQty').value = qty; document.getElementById('revProcHarga').value = harga; document.getElementById('modalReviseProc').classList.remove('hidden-section'); }
     function closeReviseProcModal() { document.getElementById('modalReviseProc').classList.add('hidden-section'); }
     function submitReviseProc() { google.script.run.withSuccessHandler(res => { alert(res); closeReviseProcModal(); loadProcurementData(); }).simpanRevisiProcurement(document.getElementById('revProcNota').value, document.getElementById('revProcOldSku').value, document.getElementById('revProcSku').value, document.getElementById('revProcQty').value, document.getElementById('revProcHarga').value); }
-    function openGrnModal() { document.getElementById('modalGrn').classList.remove('hidden-section'); }
+    
+    // --- INTEGRASI GRN DENGAN FINANCE ---
+    function openGrnModal() { 
+        document.getElementById('grnTgl').valueAsDate = new Date();
+        document.getElementById('grnNota').value = '';
+        document.getElementById('grnVoc').value = 0;
+        document.getElementById('grnFee').value = 0;
+        document.getElementById('grnOng').value = 0;
+        document.getElementById('grnItemsContainer').innerHTML = '';
+        calcGrn();
+        
+        // Memuat opsi dompet ke dropdown GRN Wallet
+        const selWallet = document.getElementById('grnWallet');
+        selWallet.innerHTML = '<option value="">-- Jangan Potong Saldo (Data Lama) --</option>';
+        globalWallets.forEach(w => { 
+            let opt = `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`; 
+            selWallet.innerHTML += opt; 
+        });
+
+        document.getElementById('modalGrn').classList.remove('hidden-section'); 
+    }
+    
     function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); }
     function addGrnRow() { document.getElementById('grnItemsContainer').innerHTML += `<div class="grn-item-row" style="display:flex; gap:12px; margin-bottom:12px;"><input type="text" class="glass-input grn-sku" data-custom-list="skuSuggestions" placeholder="SKU"><input type="number" class="glass-input grn-qty" placeholder="Qty" style="width:80px;" value="1" oninput="calcGrn()"><input type="number" class="glass-input grn-hrg" placeholder="Harga" oninput="calcGrn()"></div>`; }
-    function calcGrn() { var sub = 0; document.querySelectorAll('.grn-item-row').forEach(r => { sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); }); var v = parseFloat(document.getElementById('grnVoc').value)||0; var f = parseFloat(document.getElementById('grnFee').value)||0; var o = parseFloat(document.getElementById('grnOng').value)||0; document.getElementById('grnSubtotalLabel').innerText = formatRp(sub); document.getElementById('grnTotalBersihLabel').innerText = formatRp(sub - v + f + o); }
-    function submitGrnData() { var nota = { noOrder: document.getElementById('grnNota').value, tglOrder: document.getElementById('grnTgl').value, marketplace: document.getElementById('grnMp').value, supplier: document.getElementById('grnSupp').value, voucher: document.getElementById('grnVoc').value, ongkir: document.getElementById('grnOng').value, fee: document.getElementById('grnFee').value }; var items = []; document.querySelectorAll('.grn-item-row').forEach(row => { var s = row.querySelector('.grn-sku').value; if(s) items.push({ skuLengkap: s, qty: row.querySelector('.grn-qty').value, harga: row.querySelector('.grn-hrg').value }); }); if(items.length===0) return alert("Pilih item!"); document.getElementById('btnSubmitGrn').innerText = "Processing..."; google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('btnSubmitGrn').innerText="Simpan GRN"; closeGrnModal(); loadProcurementData(); }).simpanDataGRNBaru(nota, items); }
+    
+    let currentGrnNetTotal = 0; // Variabel global untuk menyimpan net total real-time
+    function calcGrn() { 
+        var sub = 0; 
+        document.querySelectorAll('.grn-item-row').forEach(r => { 
+            sub += (parseInt(r.querySelector('.grn-qty').value)||0) * (parseFloat(r.querySelector('.grn-hrg').value)||0); 
+        }); 
+        var v = parseFloat(document.getElementById('grnVoc').value)||0; 
+        var f = parseFloat(document.getElementById('grnFee').value)||0; 
+        var o = parseFloat(document.getElementById('grnOng').value)||0; 
+        
+        document.getElementById('grnSubtotalLabel').innerText = formatRp(sub); 
+        currentGrnNetTotal = sub - v + f + o;
+        document.getElementById('grnTotalBersihLabel').innerText = formatRp(currentGrnNetTotal); 
+    }
+    
+    function submitGrnData() { 
+        var noNota = document.getElementById('grnNota').value;
+        var tglNota = document.getElementById('grnTgl').value;
+        var walletId = document.getElementById('grnWallet').value;
+
+        var nota = { 
+            noOrder: noNota, 
+            tglOrder: tglNota, 
+            marketplace: document.getElementById('grnMp').value, 
+            supplier: document.getElementById('grnSupp').value, 
+            voucher: document.getElementById('grnVoc').value, 
+            ongkir: document.getElementById('grnOng').value, 
+            fee: document.getElementById('grnFee').value 
+        }; 
+        
+        var items = []; 
+        document.querySelectorAll('.grn-item-row').forEach(row => { 
+            var s = row.querySelector('.grn-sku').value; 
+            if(s) items.push({ skuLengkap: s, qty: row.querySelector('.grn-qty').value, harga: row.querySelector('.grn-hrg').value }); 
+        }); 
+        
+        if(items.length===0) return alert("Pilih minimal 1 item!"); 
+        
+        document.getElementById('btnSubmitGrn').innerText = "Processing..."; 
+        document.getElementById('btnSubmitGrn').disabled = true;
+        
+        // 1. Jika Wallet dipilih, catat pengeluaran Finance dulu secara paralel
+        if(walletId && walletId !== "") {
+            const wObj = globalWallets.find(x => x.id === walletId);
+            const financePayload = { 
+                nominal: currentGrnNetTotal, 
+                kategori: "OUT", 
+                subKategori: "Restock HPP", 
+                deskripsi: "Pembelian GRN Nota: " + noNota, 
+                date: tglNota, 
+                walletId: walletId, 
+                walletName: wObj ? wObj.nama : '' 
+            };
+            // Tembak API Finance
+            google.script.run.simpanTransaksiFinance(financePayload);
+            // Tambahkan langsung ke UI lokal agar responsif
+            globalTransactions.unshift({ id: 'tx_' + Date.now(), type: 'OUT', amount: parseFloat(currentGrnNetTotal), date: tglNota, walletName: financePayload.walletName, subKategori: "Restock HPP", note: financePayload.deskripsi }); 
+            if(wObj) wObj.saldoAkhir -= parseFloat(currentGrnNetTotal);
+        }
+
+        // 2. Simpan Data GRN ke Procurement
+        google.script.run
+            .withSuccessHandler(res => { 
+                alert(res); 
+                document.getElementById('btnSubmitGrn').innerText="Simpan GRN"; 
+                document.getElementById('btnSubmitGrn').disabled = false;
+                closeGrnModal(); 
+                loadProcurementData(); 
+            })
+            .withFailureHandler(err => {
+                alert("Error: " + err);
+                document.getElementById('btnSubmitGrn').innerText="Simpan GRN"; 
+                document.getElementById('btnSubmitGrn').disabled = false;
+            })
+            .simpanDataGRNBaru(nota, items); 
+    }
+    
     function submitSkuBaru() { var p = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value }; google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p); }
 
     // =======================================================
