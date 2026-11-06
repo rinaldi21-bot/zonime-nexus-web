@@ -305,8 +305,10 @@
                          <div class="tiny-label mb-2">CASH FLOW TREND (IN VS OUT)</div>
                          <div class="absolute inset-0 top-14 left-6 right-6 bottom-6"><canvas id="financeChart"></canvas></div>
                      </div>
-                     <div class="flex flex-col md:flex-row gap-6">
-                         <div class="glass-card p-6 flex-1 flex flex-col relative z-20 pointer-events-auto h-[220px]">
+                     
+                     <!-- PERBAIKAN: Layout Grid untuk widget Utang & P&L agar proporsional -->
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                         <div class="glass-card p-6 flex flex-col relative z-20 pointer-events-auto h-auto min-h-[220px]">
                              <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
                                  <span class="font-bold uppercase text-[11px] text-slate-400 tracking-wider">Utang & Piutang</span>
                                  <button class="btn btn-outline btn-icon relative z-30 pointer-events-auto cursor-pointer hover:bg-white/10" style="width:24px; height:24px;" onclick="openUtangModal()"><i class="fas fa-plus text-[10px]"></i></button>
@@ -322,7 +324,7 @@
                                  </div>
                              </div>
                          </div>
-                         <div class="glass-card p-6 flex-1 flex flex-col relative z-20 border-t-2 border-t-purple-500/30 h-[220px]">
+                         <div class="glass-card p-6 flex flex-col relative z-20 border-t-2 border-t-purple-500/30 h-auto min-h-[220px]">
                              <div class="tiny-label mb-3 text-purple-400">P&L & SETTLEMENT (MTH)</div>
                              <div class="bg-black/30 p-3 rounded-xl border border-white/5 mb-4 hover:bg-white/5 transition-colors cursor-default">
                                  <div class="flex justify-between items-center mb-1"><span class="text-[10px] text-slate-400 font-semibold">Dana Mengambang (MP)</span><i class="fas fa-wallet text-slate-500 text-[10px]"></i></div>
@@ -632,7 +634,6 @@
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div>
-                  <!-- TAMBAHAN: DROPDOWN WALLET UNTUK GRN -->
                   <div class="form-group" style="flex:1; min-width:200px;">
                       <label class="tiny-label text-cyan-400">SUMBER DANA (OPSIONAL)</label>
                       <select id="grnWallet" class="glass-input border-cyan-500/30 cursor-pointer">
@@ -822,6 +823,7 @@
                 runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
                 runner.editFinanceWallet = function(payload) { _call('editFinanceWallet', payload); };
                 runner.deleteFinanceWallet = function(nama) { _call('deleteFinanceWallet', {nama: nama}); };
+                runner.hapusDataGrn = function(payload) { _call('hapusDataGrn', payload); }; // Tambahan routing
                 return runner; 
               } 
               return createRunner(null, null); 
@@ -862,14 +864,12 @@
           loadDashboard(); setTimeout(() => initCharts(), 100); 
       }
       else if(pageId === 'pageFinance') { 
-          // INJECT TOMBOL TAMBAH TRANSAKSI KE POJOK KANAN ATAS HEADER
           document.getElementById('headerActions').innerHTML = '<button class="btn btn-primary" onclick="fm_openTransaksiModal()"><i class="fas fa-plus"></i> Tambah Transaksi</button>';
           
           loadFinanceData(); 
           fm_renderTransactions(); 
           setTimeout(() => { initFinanceChart(); fm_renderReport(); }, 100); 
           
-          // Paksa reset ke tab Overview
           fm_switchTab('overview');
       }
       else if(pageId === 'pageSalesLog') { 
@@ -1055,7 +1055,6 @@
     let globalInvDataBs = [];
     let globalInvLog = [];
 
-    // Fungsi Pindah Tab Inventory
     function inv_switchTab(tab) {
         const activeBtn = document.getElementById('inv_tab_active_btn');
         const bsBtn = document.getElementById('inv_tab_bs_btn');
@@ -1163,7 +1162,6 @@
       tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="9" class="text-center py-10 text-slate-500 italic">Data kosong</td></tr>' : html;
     }
 
-    // FUNGSI EDIT SKU MODAL
     function openEditSkuModal(dataString) {
         let data = JSON.parse(dataString.replace(/&quot;/g, '"'));
         document.getElementById('editOldSku').value = data.sku; document.getElementById('editSku').value = data.sku; document.getElementById('editNama').value = data.nama;
@@ -1179,7 +1177,6 @@
         google.script.run.withSuccessHandler(res => { alert(res); btn.disabled = false; btn.innerText = "Update Data SKU"; closeEditSkuModal(); loadInventoryData(); }).updateMasterSku(payload);
     }
 
-    // FUNGSI CETAK FORM OPNAME
     function printOpnameForm() {
         var printDiv = document.getElementById('printOpnameArea');
         if (!printDiv) return alert("Error: Area print tidak ditemukan!");
@@ -1276,6 +1273,37 @@
             })
             .getProcurementData(); 
     }
+    
+    function resetProcFilter() {
+        if(document.getElementById('searchProc')) document.getElementById('searchProc').value = '';
+        if(document.getElementById('filterMonthProc')) document.getElementById('filterMonthProc').value = 'ALL';
+        if(document.getElementById('filterSellerProc')) document.getElementById('filterSellerProc').value = 'ALL';
+        if(document.getElementById('procStartDate')) document.getElementById('procStartDate').value = '';
+        if(document.getElementById('procEndDate')) document.getElementById('procEndDate').value = '';
+        renderProcurement();
+    }
+
+    // FUNGSI HAPUS DATA GRN DARI TOMBOL UI
+    function hapusDataGrn(noOrder) {
+        if (confirm("YAKIN INGIN MENGHAPUS NOTA GRN: " + noOrder + "?\n\nCatatan: Ini akan menghapus data di Procurement Log secara permanen.")) {
+            var btn = event.currentTarget;
+            var originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            btn.disabled = true;
+            
+            google.script.run
+                .withSuccessHandler(res => {
+                    alert(res);
+                    loadProcurementData();
+                })
+                .withFailureHandler(err => {
+                    alert("Gagal menghapus: " + err);
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                })
+                .hapusDataGrn({noOrder: noOrder});
+        }
+    }
 
     function renderProcurement() {
       var m = document.getElementById('filterMonthProc').value; 
@@ -1304,15 +1332,34 @@
       var groups = {}; var orderList = [];
       filtered.forEach(d => { if(!groups[d.noOrder]) { groups[d.noOrder]={ noOrder:d.noOrder, sup:d.supplier, tgl:d.tanggal, mp:d.marketplace, tot:0, items:[] }; orderList.push(d.noOrder); } groups[d.noOrder].items.push(d); groups[d.noOrder].tot+=d.total; });
       var html = ''; var tBelanja = 0; var tQty = 0;
+      
       orderList.forEach(k => {
         var g = groups[k]; tBelanja += g.tot; var iHtml = '';
         g.items.forEach(itm => { 
             tQty += itm.qty; 
-            // PERBAIKAN FALLBACK: Menambahkan itm.hargaAsli agar tidak undefined[cite: 26]
             let showPrice = itm.harga || itm.hargaAsli || itm.hargaCogs || 0; 
             iHtml += `<div class="dg-row"><div style="flex:1;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(showPrice)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div><div class="money-stat" style="width:100px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><button class="btn btn-outline btn-icon" onclick="openReviseProcModal('${g.noOrder}','${itm.sku}',${itm.qty},${showPrice})"><i class="fas fa-pen"></i></button></div>`; 
         });
-        html += `<div class="data-group-card glass-card"><div class="dg-header"><div style="display:flex; gap:12px; align-items:center;"><span class="badge-info">${g.noOrder}</span><span style="color:white; font-size:14px;">${g.sup}</span><span class="badge-warning">${g.mp}</span></div><div class="money-stat"><span>INV TOTAL</span><div style="color:var(--ryux-cyan); font-size:18px;">${formatRp(g.tot)}</div></div></div><div class="dg-body">${iHtml}</div></div>`;
+        
+        // PERBAIKAN: Menambahkan tombol Hapus GRN di sebelah informasi Total Invoice
+        html += `
+        <div class="data-group-card glass-card">
+            <div class="dg-header">
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <span class="badge-info">${g.noOrder}</span>
+                    <span style="color:white; font-size:14px;">${g.sup}</span>
+                    <span class="badge-warning">${g.mp}</span>
+                </div>
+                <div style="display:flex; gap:16px; align-items:center;">
+                    <div class="money-stat">
+                        <span>INV TOTAL</span>
+                        <div style="color:var(--ryux-cyan); font-size:18px;">${formatRp(g.tot)}</div>
+                    </div>
+                    <button class="btn btn-danger btn-icon" onclick="hapusDataGrn('${g.noOrder}')" title="Hapus Nota GRN"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="dg-body">${iHtml}</div>
+        </div>`;
       });
       document.getElementById('procSumBelanja').innerText = formatRp(tBelanja); document.getElementById('procSumQty').innerText = tQty + " Pcs"; document.getElementById('procSumInvoice').innerText = orderList.length; document.getElementById('procurementContainer').innerHTML = html || '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong</div>';
     }
@@ -1367,7 +1414,6 @@
         document.getElementById('grnItemsContainer').innerHTML = '';
         calcGrn();
         
-        // Memuat opsi dompet ke dropdown GRN Wallet
         const selWallet = document.getElementById('grnWallet');
         selWallet.innerHTML = '<option value="">-- Jangan Potong Saldo (Data Lama) --</option>';
         globalWallets.forEach(w => { 
@@ -1381,7 +1427,7 @@
     function closeGrnModal() { document.getElementById('modalGrn').classList.add('hidden-section'); }
     function addGrnRow() { document.getElementById('grnItemsContainer').innerHTML += `<div class="grn-item-row" style="display:flex; gap:12px; margin-bottom:12px;"><input type="text" class="glass-input grn-sku" data-custom-list="skuSuggestions" placeholder="SKU"><input type="number" class="glass-input grn-qty" placeholder="Qty" style="width:80px;" value="1" oninput="calcGrn()"><input type="number" class="glass-input grn-hrg" placeholder="Harga" oninput="calcGrn()"></div>`; }
     
-    let currentGrnNetTotal = 0; // Variabel global untuk menyimpan net total real-time
+    let currentGrnNetTotal = 0;
     function calcGrn() { 
         var sub = 0; 
         document.querySelectorAll('.grn-item-row').forEach(r => { 
@@ -1422,7 +1468,6 @@
         document.getElementById('btnSubmitGrn').innerText = "Processing..."; 
         document.getElementById('btnSubmitGrn').disabled = true;
         
-        // 1. Jika Wallet dipilih, catat pengeluaran Finance dulu secara paralel
         if(walletId && walletId !== "") {
             const wObj = globalWallets.find(x => x.id === walletId);
             const financePayload = { 
@@ -1434,14 +1479,11 @@
                 walletId: walletId, 
                 walletName: wObj ? wObj.nama : '' 
             };
-            // Tembak API Finance
             google.script.run.simpanTransaksiFinance(financePayload);
-            // Tambahkan langsung ke UI lokal agar responsif
             globalTransactions.unshift({ id: 'tx_' + Date.now(), type: 'OUT', amount: parseFloat(currentGrnNetTotal), date: tglNota, walletName: financePayload.walletName, subKategori: "Restock HPP", note: financePayload.deskripsi }); 
             if(wObj) wObj.saldoAkhir -= parseFloat(currentGrnNetTotal);
         }
 
-        // 2. Simpan Data GRN ke Procurement
         google.script.run
             .withSuccessHandler(res => { 
                 alert(res); 
@@ -1497,7 +1539,6 @@
 
         google.script.run
             .withSuccessHandler(function(res) {
-                // SAVING GLOBALS DARI BACKEND
                 globalWallets = res.wallets || [];
                 globalTransactions = res.ledger || [];
 
