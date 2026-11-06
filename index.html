@@ -306,7 +306,6 @@
                          <div class="absolute inset-0 top-14 left-6 right-6 bottom-6"><canvas id="financeChart"></canvas></div>
                      </div>
                      
-                     <!-- PERBAIKAN: Layout Grid untuk widget Utang & P&L agar proporsional -->
                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                          <div class="glass-card p-6 flex flex-col relative z-20 pointer-events-auto h-auto min-h-[220px]">
                              <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
@@ -634,6 +633,7 @@
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div>
+                  <!-- TAMBAHAN: DROPDOWN WALLET UNTUK GRN -->
                   <div class="form-group" style="flex:1; min-width:200px;">
                       <label class="tiny-label text-cyan-400">SUMBER DANA (OPSIONAL)</label>
                       <select id="grnWallet" class="glass-input border-cyan-500/30 cursor-pointer">
@@ -720,32 +720,6 @@
         </div>
     </div>
 
-  <div id="fm_transaksi_modal" class="modal-overlay hidden-section">
-    <div class="modal-card" style="max-width:500px; box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);">
-      <div class="modal-header text-cyan-400 border-b border-cyan-500/20 bg-cyan-900/10"><h3 class="text-sm font-black tracking-wider"><i class="fas fa-bolt mr-2"></i> INPUT TRANSAKSI CEPAT</h3><button type="button" onclick="fm_closeTransaksiModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button></div>
-      <div class="modal-body bg-black/40">
-        <form id="fm_transaksi_form" onsubmit="fm_submitTransaksi(event)">
-          <div style="display:flex; gap:12px; margin-bottom:20px;">
-            <label style="flex:1; cursor:pointer;"><input type="radio" name="fm_tx_type" value="IN" class="peer sr-only" required onchange="fm_toggleMutasi(this.value)"><div class="text-center py-2 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all text-[10px] font-black uppercase tracking-widest"><i class="fas fa-arrow-down mr-1"></i> Masuk</div></label>
-            <label style="flex:1; cursor:pointer;"><input type="radio" name="fm_tx_type" value="OUT" class="peer sr-only" onchange="fm_toggleMutasi(this.value)"><div class="text-center py-2 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-rose-500/20 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all text-[10px] font-black uppercase tracking-widest"><i class="fas fa-arrow-up mr-1"></i> Keluar</div></label>
-            <label style="flex:1; cursor:pointer;"><input type="radio" name="fm_tx_type" value="MUTASI" class="peer sr-only" onchange="fm_toggleMutasi(this.value)"><div class="text-center py-2 rounded-xl border border-white/10 text-slate-400 peer-checked:bg-cyan-500/20 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all text-[10px] font-black uppercase tracking-widest"><i class="fas fa-exchange-alt mr-1"></i> Mutasi</div></label>
-          </div>
-          <div style="display:flex; gap:16px; margin-bottom:16px;">
-            <div class="form-group" style="flex:1;"><label class="tiny-label text-cyan-400">Nominal (Rp)</label><input type="number" id="fm_tx_amount" required min="1" class="glass-input text-lg font-black text-white bg-black/60 border-cyan-500/30 focus:border-cyan-400"></div>
-            <div class="form-group" style="flex:1;"><label class="tiny-label">Tanggal</label><input type="date" id="fm_tx_date" required class="glass-input text-[13px]"></div>
-          </div>
-          <div class="form-group mb-4" id="fm_wrapper_wallet_from"><label class="tiny-label" id="fm_lbl_wallet_from">Pilih Dompet Utama</label><select id="fm_tx_wallet" required class="glass-input text-[13px] cursor-pointer"><option value="">-- Memuat Dompet... --</option></select></div>
-          <div class="form-group mb-4 hidden" id="fm_wrapper_wallet_to"><label class="tiny-label text-cyan-400">Pilih Dompet Tujuan Mutasi</label><select id="fm_tx_wallet_to" class="glass-input text-[13px] cursor-pointer border-cyan-500/30"><option value="">-- Pilih Dompet Tujuan --</option></select></div>
-          <div class="form-group mb-4" id="fm_wrapper_category"><label class="tiny-label text-purple-400">Kategori Laporan (Report)</label>
-              <select id="fm_tx_subkategori" class="glass-input text-[13px] cursor-pointer"><option value="-">Tanpa Kategori</option><optgroup label="Pengeluaran Bisnis"><option value="Operasional">Operasional (Gaji, Sewa, Listrik)</option><option value="Marketing & Ads">Marketing & Iklan (Ads)</option><option value="Restock HPP">Belanja Stok (HPP)</option><option value="Pajak & Legal">Pajak & Legal</option></optgroup><optgroup label="Lainnya"><option value="Pribadi">Kebutuhan Pribadi</option><option value="Lain-lain">Lain-lain</option></optgroup></select>
-          </div>
-          <div class="form-group mb-6"><label class="tiny-label">Deskripsi Transaksi</label><input type="text" id="fm_tx_note" required placeholder="Cth: Pembayaran Invoice #001 / Beli Bensin" class="glass-input text-[13px]"></div>
-          <button type="submit" id="fm_btn_submit_tx" class="btn btn-primary" style="width:100%; padding:18px; font-size:12px; letter-spacing:2px; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2);">Inject ke Ledger</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
   <div id="modalUtangPiutang" class="modal-overlay hidden-section">
     <div class="modal-card" style="max-width:450px;">
       <div class="modal-header"><span style="color:var(--ryux-cyan);"><i class="fas fa-handshake"></i> Catat Utang / Piutang</span><button type="button" onclick="closeUtangModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div>
@@ -823,7 +797,7 @@
                 runner.simpanUtangPiutang = function(payload) { _call('simpanUtangPiutang', payload); };
                 runner.editFinanceWallet = function(payload) { _call('editFinanceWallet', payload); };
                 runner.deleteFinanceWallet = function(nama) { _call('deleteFinanceWallet', {nama: nama}); };
-                runner.hapusDataGrn = function(payload) { _call('hapusDataGrn', payload); }; // Tambahan routing
+                runner.hapusDataGrn = function(payload) { _call('hapusDataGrn', payload); };
                 return runner; 
               } 
               return createRunner(null, null); 
@@ -855,7 +829,6 @@
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       if(navEl) navEl.classList.add('active');
       
-      // BERSIHKAN HEADER ACTIONS AGAR TOMBOL MENU SEBELUMNYA TIDAK MENYANGKUT
       document.getElementById('headerActions').innerHTML = '';
 
       if(window.innerWidth < 768) { document.getElementById('mainSidebar').classList.remove('active'); }
@@ -924,19 +897,15 @@
     document.addEventListener('focusout', function(e) { setTimeout(() => customDropdown.classList.add('hidden-section'), 200); }); 
     
     function preloadDatalists() {
-      // 1. Datalist untuk Form Create SKU & GRN
       google.script.run.withSuccessHandler(list => { 
           var dl = document.getElementById('skuSuggestions'); dl.innerHTML = ''; 
           list.forEach(item => { var opt = document.createElement('option'); opt.value = item; dl.appendChild(opt); }); 
       }).getSmartSkuList();
       
-      // 2. Kategori dan Tipe untuk Form DAN Filter Inventory
       google.script.run.withSuccessHandler(res => { 
-          // Untuk form Create SKU
           var dlType = document.getElementById('listTypes'); dlType.innerHTML = ''; 
           var dlCat = document.getElementById('listCats'); dlCat.innerHTML = ''; 
           
-          // Untuk Filter di Menu Inventory
           var filterTypeInv = document.getElementById('filterTypeInv');
           if(filterTypeInv) filterTypeInv.innerHTML = '<option value="ALL">Semua Tipe</option>';
           var filterCatInv = document.getElementById('filterCatInv');
@@ -953,13 +922,11 @@
           }); 
       }).getCategoryTypeSuggestions();
       
-      // 3. Datalist Supplier untuk Form GRN
       google.script.run.withSuccessHandler(list => { 
           var dlSupp = document.getElementById('listSuppliers'); dlSupp.innerHTML = ''; 
           list.forEach(s => { var o = document.createElement('option'); o.value=s; dlSupp.appendChild(o); }); 
       }).getSupplierSuggestions();
       
-      // 4. Data Master Produk untuk auto-fill
       google.script.run.withSuccessHandler(data => { 
           masterProductFullList = data; 
           var dlProd = document.getElementById('listProdNames'); dlProd.innerHTML = ''; 
@@ -1004,12 +971,10 @@
       var now = new Date(); now.setHours(0,0,0,0); 
       var targetStart = null, targetEnd = null;
       
-      // Prioritaskan input kalender manual jika diisi
       if (selStart || selEnd) {
           if (selStart) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); }
           if (selEnd) { targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
       } else {
-          // Jika kosong, gunakan dropdown waktu
           if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
           else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
           else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
@@ -1341,7 +1306,6 @@
             iHtml += `<div class="dg-row"><div style="flex:1;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(showPrice)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div><div class="money-stat" style="width:100px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><button class="btn btn-outline btn-icon" onclick="openReviseProcModal('${g.noOrder}','${itm.sku}',${itm.qty},${showPrice})"><i class="fas fa-pen"></i></button></div>`; 
         });
         
-        // PERBAIKAN: Menambahkan tombol Hapus GRN di sebelah informasi Total Invoice
         html += `
         <div class="data-group-card glass-card">
             <div class="dg-header">
@@ -1444,6 +1408,11 @@
     
     function submitGrnData() { 
         var noNota = document.getElementById('grnNota').value;
+        if (!noNota || noNota.trim() === "") {
+            alert("Nomor Nota WAJIB diisi!");
+            return;
+        }
+
         var tglNota = document.getElementById('grnTgl').value;
         var walletId = document.getElementById('grnWallet').value;
 
