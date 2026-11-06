@@ -171,6 +171,32 @@
 
   <canvas id="cyberRainCanvas"></canvas>
 
+  <!-- SCREEN LOGIN / AUTENTIKASI -->
+  <div id="loginScreen" class="fixed inset-0 z-[999999] flex items-center justify-center bg-[#05030a]/90 backdrop-blur-xl transition-opacity duration-500">
+      <div class="glass-card w-[90%] max-w-[400px] p-8 flex flex-col items-center text-center shadow-[0_0_50px_rgba(0,240,255,0.15)]">
+          <div class="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+              <i class="fas fa-fingerprint text-3xl text-cyan-400"></i>
+          </div>
+          <h1 class="text-2xl font-black text-white tracking-widest mb-1">ZONIME NEXUS</h1>
+          <p class="text-[10px] text-cyan-400 font-bold tracking-[0.2em] mb-8 border border-cyan-400/30 px-3 py-1 rounded-full uppercase">Restricted Access</p>
+          
+          <form id="loginForm" onsubmit="prosesLogin(event)" class="w-full flex flex-col gap-5 text-left">
+              <div>
+                  <label class="tiny-label text-cyan-400">USERNAME</label>
+                  <input type="text" id="loginUser" required class="glass-input text-sm text-center tracking-widest" autocomplete="off">
+              </div>
+              <div>
+                  <label class="tiny-label text-purple-400">PASSWORD</label>
+                  <input type="password" id="loginPass" required class="glass-input text-sm text-center tracking-widest">
+              </div>
+              <div id="loginError" class="text-rose-500 text-[10px] font-bold text-center hidden"></div>
+              <button type="submit" id="btnLogin" class="btn btn-primary w-full py-4 mt-2 text-xs tracking-[0.2em] shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)]">
+                  INITIATE SEQUENCE
+              </button>
+          </form>
+      </div>
+  </div>
+
   <!-- SIDEBAR (Bisa Minimize) -->
   <div class="sidebar" id="mainSidebar">
     <div class="sidebar-toggle" onclick="toggleSidebar()">
@@ -215,6 +241,13 @@
       <div class="nav-item" onclick="openGrnModal()" title="Input GRN">
           <i class="fas fa-pen-nib"></i> <span class="nav-text">Input GRN</span>
       </div>
+    </div>
+    
+    <!-- TOMBOL LOGOUT -->
+    <div class="px-5 py-4 mt-auto border-t border-white/5 pointer-events-auto">
+        <button onclick="prosesLogout()" class="w-full btn btn-outline border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 py-3 text-[10px] tracking-widest" title="Akhiri Sesi">
+            <i class="fas fa-power-off mr-2"></i> SIGN OUT
+        </button>
     </div>
   </div>
 
@@ -633,7 +666,6 @@
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div>
-                  <!-- TAMBAHAN: DROPDOWN WALLET UNTUK GRN -->
                   <div class="form-group" style="flex:1; min-width:200px;">
                       <label class="tiny-label text-cyan-400">SUMBER DANA (OPSIONAL)</label>
                       <select id="grnWallet" class="glass-input border-cyan-500/30 cursor-pointer">
@@ -798,6 +830,7 @@
                 runner.editFinanceWallet = function(payload) { _call('editFinanceWallet', payload); };
                 runner.deleteFinanceWallet = function(nama) { _call('deleteFinanceWallet', {nama: nama}); };
                 runner.hapusDataGrn = function(payload) { _call('hapusDataGrn', payload); };
+                runner.verifikasiLogin = function(payload) { _call('verifikasiLogin', payload); };
                 return runner; 
               } 
               return createRunner(null, null); 
@@ -810,6 +843,55 @@
 
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     function formatRp(num) { return fmtAkuntan.format(num); }
+
+    function checkSession() {
+        if (localStorage.getItem('zonime_session') === 'ACTIVE') {
+            document.getElementById('loginScreen').classList.add('hidden-section');
+        }
+    }
+
+    function prosesLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnLogin');
+        const errBox = document.getElementById('loginError');
+        const u = document.getElementById('loginUser').value;
+        const p = document.getElementById('loginPass').value;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> VERIFYING...';
+        errBox.classList.add('hidden');
+
+        google.script.run
+            .withSuccessHandler(res => {
+                if (res === "SUCCESS") {
+                    localStorage.setItem('zonime_session', 'ACTIVE');
+                    document.getElementById('loginScreen').classList.add('opacity-0');
+                    setTimeout(() => {
+                        document.getElementById('loginScreen').classList.add('hidden-section');
+                        document.getElementById('loginScreen').classList.remove('opacity-0');
+                    }, 500);
+                    btn.disabled = false;
+                    btn.innerHTML = 'INITIATE SEQUENCE';
+                } else {
+                    errBox.innerText = res;
+                    errBox.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = 'INITIATE SEQUENCE';
+                }
+            })
+            .withFailureHandler(err => {
+                errBox.innerText = "Connection Error: " + err;
+                errBox.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = 'INITIATE SEQUENCE';
+            })
+            .verifikasiLogin({username: u, password: p});
+    }
+
+    function prosesLogout() {
+        localStorage.removeItem('zonime_session');
+        window.location.reload();
+    }
 
     // Sidebar Toggle Function
     function toggleSidebar() {
@@ -1248,7 +1330,6 @@
         renderProcurement();
     }
 
-    // FUNGSI HAPUS DATA GRN DARI TOMBOL UI
     function hapusDataGrn(noOrder) {
         if (confirm("YAKIN INGIN MENGHAPUS NOTA GRN: " + noOrder + "?\n\nCatatan: Ini akan menghapus data di Procurement Log secara permanen.")) {
             var btn = event.currentTarget;
@@ -1368,7 +1449,6 @@
     function closeReviseProcModal() { document.getElementById('modalReviseProc').classList.add('hidden-section'); }
     function submitReviseProc() { google.script.run.withSuccessHandler(res => { alert(res); closeReviseProcModal(); loadProcurementData(); }).simpanRevisiProcurement(document.getElementById('revProcNota').value, document.getElementById('revProcOldSku').value, document.getElementById('revProcSku').value, document.getElementById('revProcQty').value, document.getElementById('revProcHarga').value); }
     
-    // --- INTEGRASI GRN DENGAN FINANCE ---
     function openGrnModal() { 
         document.getElementById('grnTgl').valueAsDate = new Date();
         document.getElementById('grnNota').value = '';
@@ -1470,12 +1550,6 @@
     }
     
     function submitSkuBaru() { var p = { sku: document.getElementById('newSku').value, tipe: document.getElementById('newType').value, kategori: document.getElementById('newCat').value, nama: document.getElementById('newName').value, varian: document.getElementById('newVar').value, listingCode: document.getElementById('newLc').value, stokAwal: document.getElementById('newStock').value, cogsAwal: document.getElementById('newCogs').value }; google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('formSkuBaru').reset(); preloadDatalists(); }).simpanSkuBaru(p); }
-
-    // =======================================================
-    // FINANCE MANAGER LOGIC (TAB, WALLETS, LEDGER, CHARTS)
-    // =======================================================
-    
-    let reportChartObj = null;
 
     function fm_switchTab(tab) {
         const overviewBtn = document.getElementById('fm_tab_overview_btn');
@@ -1745,7 +1819,7 @@
         }
     }
     
-    window.onload = function() { loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
+    window.onload = function() { checkSession(); loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
 
   </script>
 </body>
