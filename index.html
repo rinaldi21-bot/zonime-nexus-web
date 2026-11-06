@@ -1294,7 +1294,7 @@
         var g = groups[k]; tBelanja += g.tot; var iHtml = '';
         g.items.forEach(itm => { 
             tQty += itm.qty; 
-            // PERBAIKAN: Menggunakan harga atau hargaCogs untuk tampilan agar tidak undefined error
+            // PERBAIKAN FALLBACK: Menambahkan itm.hargaAsli agar tidak undefined[cite: 26]
             let showPrice = itm.harga || itm.hargaAsli || itm.hargaCogs || 0; 
             iHtml += `<div class="dg-row"><div style="flex:1;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>PRICE</span><div style="color:var(--ryux-yellow);">${formatRp(showPrice)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div><div class="money-stat" style="width:100px;"><span>TOTAL</span><div style="color:var(--ryux-cyan);">${formatRp(itm.total)}</div></div><button class="btn btn-outline btn-icon" onclick="openReviseProcModal('${g.noOrder}','${itm.sku}',${itm.qty},${showPrice})"><i class="fas fa-pen"></i></button></div>`; 
         });
