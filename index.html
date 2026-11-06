@@ -73,11 +73,8 @@
       border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; z-index: 100; 
       transition: width 0.3s ease; position: relative;
     }
-    
-    /* PERBAIKAN: Aturan ketat untuk mode collapsed */
     .sidebar.collapsed { width: 80px; align-items: center; }
     
-    /* Sembunyikan elemen teks saat collapse */
     .sidebar.collapsed .logo h1, 
     .sidebar.collapsed .logo span, 
     .sidebar.collapsed .nav-group, 
@@ -86,50 +83,24 @@
         display: none !important; 
     }
     
-    /* Modifikasi Logo Container saat collapse */
     .sidebar.collapsed .logo-container { 
-        padding: 24px 0; 
-        align-items: center; 
-        justify-content: center;
-        width: 100%;
+        padding: 24px 0; align-items: center; justify-content: center; width: 100%;
     }
     
-    /* Tampilkan huruf "Z" besar cyan menggantikan logo */
     .sidebar.collapsed .logo-container::before { 
-        content: "Z"; 
-        font-size: 28px; 
-        font-weight: 900; 
-        color: var(--ryux-cyan); 
-        filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.5)); 
-        display: block;
+        content: "Z"; font-size: 28px; font-weight: 900; color: var(--ryux-cyan); 
+        filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.5)); display: block;
     }
     
-    /* Pusatkan ikon navigasi saat collapse */
     .sidebar.collapsed .nav-item { 
-        justify-content: center; 
-        padding: 14px 0; 
-        margin: 4px 12px; 
-        width: calc(100% - 24px);
+        justify-content: center; padding: 14px 0; margin: 4px 12px; width: calc(100% - 24px);
     }
     .sidebar.collapsed .nav-item i { margin: 0; font-size: 16px; }
     
-    /* Pusatkan area tombol sign out saat collapse */
-    .sidebar.collapsed .logout-container {
-        padding: 16px 12px;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-    .sidebar.collapsed .logout-btn {
-        padding: 12px;
-        width: auto;
-        justify-content: center;
-    }
-    .sidebar.collapsed .logout-btn i {
-        margin: 0 !important;
-    }
+    .sidebar.collapsed .logout-container { padding: 16px 12px; width: 100%; display: flex; justify-content: center; }
+    .sidebar.collapsed .logout-btn { padding: 12px; width: auto; justify-content: center; }
+    .sidebar.collapsed .logout-btn i { margin: 0 !important; }
     
-    /* Toggle Button Sidebar */
     .sidebar-toggle {
         position: absolute; top: 20px; right: -15px; width: 30px; height: 30px;
         background: var(--ryux-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -171,12 +142,6 @@
     .btn-outline { background: rgba(255, 255, 255, 0.05); border-color: var(--glass-border); color: #cbd5e1; }
     .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; justify-content: center; }
 
-    .dashboard-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
-    @media (min-width: 768px) { .dashboard-cards { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
-    .stat-card { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
-    .stat-title { font-size: 9px; font-weight: 900; color: var(--ryux-muted); text-transform: uppercase; letter-spacing: 2px; }
-    .stat-value { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
-
     .dg-header { padding: 16px 24px; border-bottom: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; gap: 16px; font-size: 11px; font-weight: 900; }
     @media (min-width: 768px) { .dg-header { flex-direction: row; justify-content: space-between; align-items: center; } }
     .dg-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
@@ -205,9 +170,6 @@
     .badge-purple { background: rgba(176, 38, 255, 0.1); color: #d8b4fe; border: 1px solid rgba(176, 38, 255, 0.3); padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
 
     .loading-spinner { text-align: center; padding: 40px; color: var(--ryux-cyan); font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;}
-    .todo-list { list-style: none; padding: 0; margin: 0; }
-    .todo-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px dashed var(--glass-border); font-size: 12px; color: white; }
-    .todo-item.completed span { text-decoration: line-through; color: var(--ryux-muted); }
     .cyber-dropdown { position: fixed; z-index: 999999; background: #0a0d14; border: 1px solid var(--ryux-cyan); border-radius: 12px; max-height: 250px; overflow-y: auto; display: none; padding: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
     .cyber-dropdown-item { padding: 12px 16px; font-size: 11px; font-weight: 700; cursor: pointer; color: #cbd5e1; }
     .cyber-dropdown-item:hover { background: rgba(0, 240, 255, 0.2); color: var(--ryux-cyan); }
@@ -289,7 +251,6 @@
       </div>
     </div>
     
-    <!-- TOMBOL LOGOUT -->
     <div class="px-5 py-4 mt-auto border-t border-white/5 pointer-events-auto logout-container">
         <button onclick="prosesLogout()" class="w-full btn btn-outline border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 py-3 text-[10px] tracking-widest logout-btn" title="Akhiri Sesi">
             <i class="fas fa-power-off mr-2"></i> <span class="sign-out-text">SIGN OUT</span>
@@ -313,27 +274,93 @@
     
     <div class="content-scroll" id="mainScroll">
       
-      <!-- 1. DASHBOARD UTAMA -->
-      <div id="pageDashboard" class="page-section">
-        <div class="dashboard-cards" id="dashCards">
-          <div class="loading-spinner" style="grid-column: span 4;"><i class="fas fa-circle-notch fa-spin"></i> Initializing OS...</div>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr; gap:24px;">
-            <div class="glass-card" style="padding:24px; height:320px;">
-                <div class="tiny-label">REVENUE MATRIX</div>
-                <div style="height:90%;"><canvas id="trendChart"></canvas></div>
-            </div>
-            <div class="glass-card">
-                <div class="dg-header" style="color:var(--ryux-cyan);">TASK PROTOCOL</div>
-                <div style="padding:24px;">
-                    <div style="display:flex; gap:12px; margin-bottom:16px;">
-                        <input type="text" id="todoInput" class="glass-input" placeholder="Enter command..." onkeypress="if(event.key === 'Enter') addTodo()">
-                        <button class="btn btn-primary" onclick="addTodo()">ADD</button>
-                    </div>
-                    <ul class="todo-list" id="todoListUI"></ul>
-                </div>
-            </div>
-        </div>
+      <!-- 1. DASHBOARD UTAMA (REWORK: ACTION-DRIVEN) -->
+      <div id="pageDashboard" class="page-section flex flex-col gap-6 relative h-full pointer-events-auto overflow-hidden">
+         
+         <!-- BARIS 1: Quick Actions & Filter -->
+         <div class="flex justify-between items-center shrink-0 flex-wrap gap-4 z-20">
+             <select id="dashFilterWaktu" class="glass-input w-auto py-2 px-4 text-xs cursor-pointer bg-black/40 border-cyan-500/30 text-cyan-400 font-bold tracking-wider" onchange="loadDashboard()">
+                 <option value="ALL">🗓️ Semua Waktu</option>
+                 <option value="MONTH" selected>📅 Bulan Ini</option>
+                 <option value="TODAY">🕒 Hari Ini</option>
+             </select>
+             <div class="flex gap-2">
+                 <button class="btn btn-outline hover:bg-white/10" onclick="openGrnModal()"><i class="fas fa-box-open text-cyan-400"></i> + Input GRN</button>
+                 <button class="btn btn-outline hover:bg-white/10" onclick="fm_openTransaksiModal()"><i class="fas fa-wallet text-emerald-400"></i> + Transaksi Kas</button>
+                 <button class="btn btn-primary shadow-[0_0_15px_rgba(0,240,255,0.2)]" onclick="runSyncSales()"><i class="fas fa-sync-alt"></i> Sync Sales</button>
+             </div>
+         </div>
+         
+         <!-- SCROLLABLE AREA -->
+         <div class="flex-1 overflow-y-auto custom-scroll pr-2 flex flex-col gap-6 pb-20">
+             
+             <!-- BARIS 2: KPI -->
+             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                 <div class="glass-card p-5 border-t-2 border-cyan-400 relative overflow-hidden group">
+                     <i class="fas fa-chart-line absolute -right-2 -bottom-2 text-6xl text-white/5 group-hover:text-cyan-400/10 transition-colors"></i>
+                     <span class="tiny-label text-cyan-400">TOTAL OMSET</span>
+                     <div class="text-2xl font-black text-white mt-1 truncate" id="dashOmset">...</div>
+                 </div>
+                 <div class="glass-card p-5 border-t-2 border-emerald-400 relative overflow-hidden group">
+                     <i class="fas fa-coins absolute -right-2 -bottom-2 text-6xl text-white/5 group-hover:text-emerald-400/10 transition-colors"></i>
+                     <span class="tiny-label text-emerald-400">NET PROFIT</span>
+                     <div class="text-2xl font-black text-white mt-1 truncate" id="dashProfit">...</div>
+                 </div>
+                 <div class="glass-card p-5 border-t-2 border-purple-400 relative overflow-hidden group">
+                     <i class="fas fa-building-columns absolute -right-2 -bottom-2 text-6xl text-white/5 group-hover:text-purple-400/10 transition-colors"></i>
+                     <span class="tiny-label text-purple-400">SALDO KAS (ALL)</span>
+                     <div class="text-2xl font-black text-white mt-1 truncate" id="dashSaldo">...</div>
+                 </div>
+                 <div class="glass-card p-5 border-t-2 border-yellow-400 relative overflow-hidden group">
+                     <i class="fas fa-shopping-cart absolute -right-2 -bottom-2 text-6xl text-white/5 group-hover:text-yellow-400/10 transition-colors"></i>
+                     <span class="tiny-label text-yellow-400">TOTAL PESANAN</span>
+                     <div class="text-2xl font-black text-white mt-1 truncate" id="dashOrder">...</div>
+                 </div>
+             </div>
+
+             <!-- BARIS 3: Matrix & Alerts -->
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                 <!-- REVENUE MATRIX -->
+                 <div class="glass-card p-6 lg:col-span-2 h-[320px] flex flex-col relative z-20 border border-white/10 shadow-lg">
+                     <div class="flex justify-between items-center mb-4">
+                         <span class="tiny-label text-white">REVENUE MATRIX</span>
+                         <span class="text-[9px] text-slate-500 bg-white/5 px-2 py-1 rounded">Last 7 Days Activity</span>
+                     </div>
+                     <div class="flex-1 relative w-full h-full"><canvas id="trendChart"></canvas></div>
+                 </div>
+                 
+                 <!-- SMART ALERTS -->
+                 <div class="glass-card p-6 flex flex-col relative z-20 h-[320px] bg-white/5 border border-white/10">
+                     <span class="tiny-label text-white mb-4 flex justify-between">
+                         SMART ALERTS <i class="fas fa-bell text-rose-400 animate-pulse"></i>
+                     </span>
+                     <div id="dashAlerts" class="flex-1 overflow-y-auto custom-scroll flex flex-col gap-3 pr-1">
+                         <div class="text-center text-xs text-slate-500 py-4"><i class="fas fa-circle-notch fa-spin"></i> Scanning systems...</div>
+                     </div>
+                 </div>
+             </div>
+
+             <!-- BARIS 4: Top Performers -->
+             <div class="glass-card flex flex-col overflow-hidden border border-white/10 shadow-xl relative z-10">
+                 <div class="bg-black/40 px-6 py-4 border-b border-white/5 flex justify-between items-center">
+                     <span class="text-xs font-black tracking-widest text-yellow-400"><i class="fas fa-crown mr-2"></i>TOP 5 PERFORMERS</span>
+                 </div>
+                 <div class="overflow-x-auto w-full">
+                     <table class="w-full text-left border-collapse">
+                         <thead class="bg-white/5 text-[9px] uppercase tracking-widest text-slate-400 font-black">
+                             <tr>
+                                 <th class="py-3 px-6">Produk / Master SKU</th>
+                                 <th class="py-3 px-6 text-center">Qty Terjual</th>
+                                 <th class="py-3 px-6 text-right">Estimasi Omset</th>
+                             </tr>
+                         </thead>
+                         <tbody id="dashTopSku" class="text-xs font-bold">
+                             <tr><td colspan="3" class="text-center py-6 text-slate-500"><i class="fas fa-circle-notch fa-spin mr-2"></i>Compiling data...</td></tr>
+                         </tbody>
+                     </table>
+                 </div>
+             </div>
+         </div>
       </div>
 
       <!-- VIEW: FINANCE MANAGER -->
@@ -712,7 +739,6 @@
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div>
-                  <!-- TAMBAHAN: DROPDOWN WALLET UNTUK GRN -->
                   <div class="form-group" style="flex:1; min-width:200px;">
                       <label class="tiny-label text-cyan-400">SUMBER DANA (OPSIONAL)</label>
                       <select id="grnWallet" class="glass-input border-cyan-500/30 cursor-pointer">
@@ -848,7 +874,7 @@
                   });
                 }; 
 
-                runner.getDashboardData = function() { _call('getDashboardData'); }; 
+                runner.getDashboardData = function(payload) { _call('getDashboardData', payload); }; 
                 runner.getDashboardNotes = function() { _call('getDashboardNotes'); }; 
                 runner.saveDashboardNote = function(a, b) { _call('saveDashboardNote', {type: a, content: b}); };
                 runner.getSalesData = function() { _call('getSalesData'); }; 
@@ -963,7 +989,7 @@
       if(window.innerWidth < 768) { document.getElementById('mainSidebar').classList.remove('active'); }
 
       if(pageId === 'pageDashboard') { 
-          loadDashboard(); setTimeout(() => initCharts(), 100); 
+          loadDashboard(); 
       }
       else if(pageId === 'pageFinance') { 
           document.getElementById('headerActions').innerHTML = '<button class="btn btn-primary" onclick="fm_openTransaksiModal()"><i class="fas fa-plus"></i> Tambah Transaksi</button>';
@@ -986,7 +1012,7 @@
     }
 
     let dashChartTrend = null; 
-    function initCharts() {
+    function renderDashboardChart(labels, revenue, profit) {
       const trendEl = document.getElementById('trendChart');
       if (!trendEl) return;
       if (dashChartTrend) { dashChartTrend.destroy(); }
@@ -994,18 +1020,85 @@
       const ctxTrend = trendEl.getContext('2d');
       let gradientFill = ctxTrend.createLinearGradient(0, 0, 0, 300);
       gradientFill.addColorStop(0, 'rgba(0, 240, 255, 0.3)'); gradientFill.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
+      
       dashChartTrend = new Chart(ctxTrend, { 
         type: 'line', 
         data: { 
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 
+          labels: labels.length > 0 ? labels : ['No Data'], 
           datasets: [ 
-            { type: 'line', label: 'Gross Revenue', data: [120, 190, 150, 250, 220, 300, 280], borderColor: '#00F0FF', backgroundColor: gradientFill, fill: true, tension: 0.4, borderWidth: 2, pointBackgroundColor: '#06080c', pointRadius: 4 }, 
-            { type: 'bar', label: 'Net Profit', data: [40, 60, 50, 90, 80, 110, 100], backgroundColor: 'rgba(0, 255, 102, 0.15)', borderColor: '#00FF66', borderWidth: 1, borderRadius: 4 } 
+            { type: 'line', label: 'Gross Revenue', data: revenue.length > 0 ? revenue : [0], borderColor: '#00F0FF', backgroundColor: gradientFill, fill: true, tension: 0.4, borderWidth: 2, pointBackgroundColor: '#06080c', pointRadius: 4 }, 
+            { type: 'bar', label: 'Net Profit', data: profit.length > 0 ? profit : [0], backgroundColor: 'rgba(0, 255, 102, 0.15)', borderColor: '#00FF66', borderWidth: 1, borderRadius: 4, barPercentage: 0.5 } 
           ]
         }, 
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { y: { display: false }, x: { grid: { display: false } } } } 
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { 
+                legend: { display:false },
+                tooltip: { backgroundColor: 'rgba(5,3,10,0.9)', titleColor: '#fff', bodyColor: '#fff', padding: 12, callbacks: { label: function(context) { return context.dataset.label + ': ' + formatRp(context.raw); } } }
+            }, 
+            scales: { y: { display: false }, x: { grid: { display: false } } } 
+        } 
       });
     }
+
+    // FUNGSI DASHBOARD TERBARU
+    function loadDashboard() { 
+        var filterVal = document.getElementById('dashFilterWaktu') ? document.getElementById('dashFilterWaktu').value : 'MONTH';
+        
+        document.getElementById('dashOmset').innerHTML = '<i class="fas fa-circle-notch fa-spin text-sm text-cyan-400"></i>';
+        document.getElementById('dashProfit').innerHTML = '<i class="fas fa-circle-notch fa-spin text-sm text-emerald-400"></i>';
+        document.getElementById('dashSaldo').innerHTML = '<i class="fas fa-circle-notch fa-spin text-sm text-purple-400"></i>';
+        document.getElementById('dashOrder').innerHTML = '<i class="fas fa-circle-notch fa-spin text-sm text-yellow-400"></i>';
+        document.getElementById('dashAlerts').innerHTML = '<div class="text-center text-xs text-slate-500 py-4"><i class="fas fa-circle-notch fa-spin"></i> Loading alerts...</div>';
+        document.getElementById('dashTopSku').innerHTML = '<tr><td colspan="3" class="text-center py-6 text-slate-500"><i class="fas fa-circle-notch fa-spin mr-2"></i>Compiling data...</td></tr>';
+
+        google.script.run
+            .withSuccessHandler(data => { 
+                // 1. Render KPI
+                document.getElementById('dashOmset').innerText = formatRp(data.kpi.omset);
+                document.getElementById('dashProfit').innerText = formatRp(data.kpi.profit);
+                document.getElementById('dashSaldo').innerText = formatRp(data.kpi.saldoKas);
+                document.getElementById('dashOrder').innerText = data.kpi.pesanan;
+                
+                // 2. Render Smart Alerts
+                var alertsHtml = '';
+                data.alerts.forEach(a => {
+                    alertsHtml += `<div class="flex gap-3 items-start p-3 rounded-lg border ${a.bg} transition-all">
+                                      <div class="mt-0.5"><i class="fas ${a.icon} ${a.color}"></i></div>
+                                      <div class="flex-1">
+                                          <div class="text-[11px] font-bold text-white mb-0.5 leading-tight">${a.text}</div>
+                                          <div class="text-[9px] text-slate-400 leading-tight">${a.subtext}</div>
+                                      </div>
+                                   </div>`;
+                });
+                document.getElementById('dashAlerts').innerHTML = alertsHtml;
+                
+                // 3. Render Top SKU
+                var skuHtml = '';
+                if(data.topSku.length === 0) {
+                    skuHtml = '<tr><td colspan="3" class="text-center py-6 text-slate-500 italic text-xs">Belum ada data penjualan.</td></tr>';
+                } else {
+                    data.topSku.forEach((s, idx) => {
+                        var medal = idx === 0 ? '<i class="fas fa-trophy text-yellow-400 mr-1"></i>' : (idx===1 ? '<i class="fas fa-medal text-slate-300 mr-1"></i>' : (idx===2 ? '<i class="fas fa-medal text-orange-400 mr-1"></i>' : `<span class="text-slate-500 mr-1 opacity-50">${idx+1}.</span>`));
+                        skuHtml += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                       <td class="py-2.5 px-6"><div class="flex items-center gap-2">${medal} <span class="truncate max-w-[200px]" title="${s.nama}">${s.nama}</span></div><div class="text-[9px] text-slate-500 font-mono ml-5">${s.sku}</div></td>
+                                       <td class="py-2.5 px-6 text-center text-cyan-400">${s.qty}</td>
+                                       <td class="py-2.5 px-6 text-right text-emerald-400">${formatRp(s.omset)}</td>
+                                    </tr>`;
+                    });
+                }
+                document.getElementById('dashTopSku').innerHTML = skuHtml;
+                
+                // 4. Render Chart
+                setTimeout(() => { renderDashboardChart(data.chart.labels, data.chart.revenue, data.chart.profit); }, 100);
+            })
+            .withFailureHandler(err => {
+                document.getElementById('dashAlerts').innerHTML = `<div class="text-center text-xs text-rose-500 py-4">Gagal memuat: ${err}</div>`;
+            })
+            .getDashboardData({ filterWaktu: filterVal }); 
+    }
+
 
     const customDropdown = document.createElement('div'); customDropdown.className = 'cyber-dropdown hidden-section'; document.body.appendChild(customDropdown);
     function renderDropdown(inputEl) { 
@@ -1064,14 +1157,6 @@
       }).getInventoryDataFull();
     }
     function onProductSelect(val) { var match = masterProductFullList.find(d => d.nama.toLowerCase() === val.toLowerCase() || d.nama.toLowerCase().includes(val.toLowerCase())); if(match) { document.getElementById('newSku').value = match.sku || ''; document.getElementById('newType').value = match.tipe !== '-' ? match.tipe : ''; document.getElementById('newCat').value = match.kategori !== '-' ? match.kategori : ''; document.getElementById('newVar').value = match.varian !== '-' ? match.varian : ''; document.getElementById('newLc').value = match.listingCode !== '-' ? match.listingCode : ''; document.getElementById('newCogs').value = match.cogs || 0; } }
-
-    function loadDashboard() { google.script.run.withSuccessHandler(data => { document.getElementById('dashCards').innerHTML = `<div class="stat-card glass-card" style="border-color:rgba(0,240,255,0.2);"><div class="stat-title">Omset</div><div class="stat-value text-ryux-cyan">${data.omset}</div></div><div class="stat-card glass-card" style="border-color:rgba(0,255,102,0.2);"><div class="stat-title">Profit</div><div class="stat-value text-ryux-green">${data.profit}</div></div><div class="stat-card glass-card" style="border-color:rgba(255,215,0,0.2);"><div class="stat-title">Terjual</div><div class="stat-value text-ryux-yellow">${data.terjual}</div></div><div class="stat-card glass-card" style="border-color:rgba(176,38,255,0.2);"><div class="stat-title">Stok Aktif</div><div class="stat-value text-ryux-purple">${data.stokQty}</div><div style="font-size:10px; color:var(--ryux-muted); margin-top:8px;">Aset: ${data.stokNilai}</div></div>`; }).getDashboardData(); }
-    function loadDashboardNotes() { google.script.run.withSuccessHandler(data => { todoItems = data.todoList || []; renderTodoList(); }).getDashboardNotes(); }
-    function renderTodoList() { var listUI = document.getElementById('todoListUI'); if (!todoItems || todoItems.length === 0) { listUI.innerHTML = '<li style="text-align:center; opacity:0.5;">Kosong</li>'; return; } var html = ''; todoItems.forEach((item, index) => { var checked = item.done ? 'checked' : ''; var compClass = item.done ? 'completed' : ''; html += `<li class="todo-item ${compClass}"><input type="checkbox" class="todo-checkbox" ${checked} onchange="toggleTodo(${index})"><span style="flex:1;">${item.text}</span><button class="btn-icon" style="background:transparent; border:none; color:var(--ryux-muted);" onclick="deleteTodo(${index})"><i class="fas fa-times"></i></button></li>`; }); listUI.innerHTML = html; }
-    function addTodo() { var input = document.getElementById('todoInput'); if (!input.value.trim()) return; todoItems.push({ text: input.value.trim(), done: false }); input.value = ''; renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
-    function toggleTodo(index) { todoItems[index].done = !todoItems[index].done; renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
-    function deleteTodo(index) { todoItems.splice(index, 1); renderTodoList(); google.script.run.saveDashboardNote('todoList', todoItems); }
-    function populateMonthFilter(data, elId) { var s = new Set(); data.forEach(d => s.add(d.valBulan + "|" + d.labelBulan)); var sel = document.getElementById(elId); sel.innerHTML = '<option value="ALL">Semua Waktu</option>'; Array.from(s).sort().reverse().forEach(v => { var p = v.split("|"); sel.innerHTML += `<option value="${p[0]}">${p[1]}</option>`; }); }
 
     // MODULE: SALES
     function loadSalesData() { document.getElementById('salesContainer').innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Fetching Sales...</div>'; google.script.run.withSuccessHandler(data => { globalSalesData = data; populateMonthFilter(data, 'filterDateRangeSales'); renderSalesTable(); }).getSalesData(); }
@@ -1460,7 +1545,7 @@
     function openImportModal() { document.getElementById('modalImport').classList.remove('hidden-section'); }
     function closeImportModal() { document.getElementById('modalImport').classList.add('hidden-section'); }
     function executeImport() { var acc = document.getElementById('importAccount').value; document.getElementById('btnExecImport').innerText = "Syncing..."; google.script.run.withSuccessHandler(res => { alert(res); closeImportModal(); document.getElementById('btnExecImport').innerText = "Execute"; }).importTikTokFromTemp(acc); }
-    function runSyncSales() { alert("Sync Dimulai di Background"); google.script.run.withSuccessHandler(res => { alert(res); loadSalesData(); }).syncTikTokAutoWorkflow(); }
+    function runSyncSales() { alert("Sync Dimulai di Background"); google.script.run.withSuccessHandler(res => { alert(res); loadSalesData(); loadDashboard(); }).syncTikTokAutoWorkflow(); }
     function runAutoFillSKU() { alert("Fixing SKU..."); google.script.run.withSuccessHandler(res => { alert(res); loadSalesData(); }).autoFillMissingSKUs(); }
     function openInvActionModal(sku, nama, stok, cogs) { document.getElementById('invActSku').value = sku; document.getElementById('invActCogs').value = cogs; document.getElementById('invActSkuLabel').innerText = sku; document.getElementById('invActStokSistem').value = stok; switchInvTab('OPNAME'); document.getElementById('modalInvAction').classList.remove('hidden-section'); }
     function closeInvActionModal() { document.getElementById('modalInvAction').classList.add('hidden-section'); }
@@ -1866,7 +1951,7 @@
         }
     }
     
-    window.onload = function() { checkSession(); loadDashboardNotes(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
+    window.onload = function() { checkSession(); preloadDatalists(); showPage('pageDashboard', document.querySelector('.nav-item')); };
 
   </script>
 </body>
