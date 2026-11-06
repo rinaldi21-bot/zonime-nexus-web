@@ -1252,15 +1252,29 @@
     }
 
     // MODULE: PROCUREMENT
-    function loadProcurementData() { document.getElementById('procurementContainer').innerHTML = '<div class="loading-spinner">Loading Ledger...</div>'; google.script.run.withSuccessHandler(data => { globalProcData = data; populateMonthFilter(data, 'filterMonthProc'); renderProcurement(); }).getProcurementData(); }
-    
-    function resetProcFilter() {
-        if(document.getElementById('searchProc')) document.getElementById('searchProc').value = '';
-        if(document.getElementById('filterMonthProc')) document.getElementById('filterMonthProc').value = 'ALL';
-        if(document.getElementById('filterSellerProc')) document.getElementById('filterSellerProc').value = 'ALL';
-        if(document.getElementById('procStartDate')) document.getElementById('procStartDate').value = '';
-        if(document.getElementById('procEndDate')) document.getElementById('procEndDate').value = '';
-        renderProcurement();
+    function loadProcurementData() { 
+        var container = document.getElementById('procurementContainer');
+        if (container) {
+            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Loading Ledger...</div>';
+        }
+
+        google.script.run
+            .withSuccessHandler(data => { 
+                globalProcData = data; 
+                populateMonthFilter(data, 'filterMonthProc'); 
+                renderProcurement(); 
+            })
+            .withFailureHandler(err => {
+                if (container) {
+                    container.innerHTML = `<div class="glass-card" style="padding:40px; text-align:center; color: var(--ryux-red); border-color: rgba(255, 0, 85, 0.3);">
+                        <i class="fas fa-exclamation-triangle text-3xl mb-3 block"></i>
+                        <div class="font-bold text-[12px] uppercase tracking-widest mb-1">Gagal Memuat Data</div>
+                        <div class="text-[10px] text-slate-400">${err}</div>
+                    </div>`;
+                }
+                console.error("Procurement API Error:", err);
+            })
+            .getProcurementData(); 
     }
 
     function renderProcurement() {
