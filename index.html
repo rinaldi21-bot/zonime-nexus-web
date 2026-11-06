@@ -73,12 +73,61 @@
       border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; z-index: 100; 
       transition: width 0.3s ease; position: relative;
     }
-    .sidebar.collapsed { width: 80px; }
-    .sidebar.collapsed .logo h1, .sidebar.collapsed .logo span, .sidebar.collapsed .nav-group, .sidebar.collapsed .nav-text { display: none; }
-    .sidebar.collapsed .logo { align-items: center; padding: 28px 0; }
-    .sidebar.collapsed .logo::before { content: "Z"; font-size: 24px; font-weight: 900; color: white; filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.3)); }
-    .sidebar.collapsed .nav-item { justify-content: center; padding: 14px 0; margin: 4px 8px; }
-    .sidebar.collapsed .nav-item i { margin: 0; font-size: 18px; }
+    
+    /* PERBAIKAN: Aturan ketat untuk mode collapsed */
+    .sidebar.collapsed { width: 80px; align-items: center; }
+    
+    /* Sembunyikan elemen teks saat collapse */
+    .sidebar.collapsed .logo h1, 
+    .sidebar.collapsed .logo span, 
+    .sidebar.collapsed .nav-group, 
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .sign-out-text { 
+        display: none !important; 
+    }
+    
+    /* Modifikasi Logo Container saat collapse */
+    .sidebar.collapsed .logo-container { 
+        padding: 24px 0; 
+        align-items: center; 
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Tampilkan huruf "Z" besar cyan menggantikan logo */
+    .sidebar.collapsed .logo-container::before { 
+        content: "Z"; 
+        font-size: 28px; 
+        font-weight: 900; 
+        color: var(--ryux-cyan); 
+        filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.5)); 
+        display: block;
+    }
+    
+    /* Pusatkan ikon navigasi saat collapse */
+    .sidebar.collapsed .nav-item { 
+        justify-content: center; 
+        padding: 14px 0; 
+        margin: 4px 12px; 
+        width: calc(100% - 24px);
+    }
+    .sidebar.collapsed .nav-item i { margin: 0; font-size: 16px; }
+    
+    /* Pusatkan area tombol sign out saat collapse */
+    .sidebar.collapsed .logout-container {
+        padding: 16px 12px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .sidebar.collapsed .logout-btn {
+        padding: 12px;
+        width: auto;
+        justify-content: center;
+    }
+    .sidebar.collapsed .logout-btn i {
+        margin: 0 !important;
+    }
     
     /* Toggle Button Sidebar */
     .sidebar-toggle {
@@ -94,15 +143,12 @@
         .sidebar.active { transform: translateX(0); }
         .sidebar-toggle { display: none; }
         .sidebar .logo h1, .sidebar .logo span, .sidebar .nav-group, .sidebar .nav-text { display: block !important; }
-        .sidebar .logo::before { display:none; }
-        .sidebar .nav-item { justify-content: flex-start; padding: 14px 20px; margin: 4px 16px; }
-        .sidebar .logo { align-items: flex-start; padding: 28px; }
+        .sidebar .logo-container::before { display:none !important; }
+        .sidebar .nav-item { justify-content: flex-start; padding: 14px 20px; margin: 4px 16px; width: auto; }
+        .sidebar .logo-container { align-items: flex-start; padding: 28px; justify-content: flex-start; }
     }
 
-    .logo { padding: 28px; display: flex; flex-direction: column; gap: 8px; }
-    .logo h1 { margin: 0; font-size: 20px; font-weight: 900; filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.3)); }
-    .logo span { font-size: 9px; color: var(--ryux-cyan); border: 1px solid rgba(0, 240, 255, 0.3); padding: 4px 12px; border-radius: 99px; width: fit-content; font-weight: 800; letter-spacing: 2px; }
-    .nav-group { padding: 20px 28px 8px; font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 900; }
+    .nav-group { padding: 20px 28px 8px; font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 900; width: 100%; }
     .nav-item { padding: 14px 20px; margin: 4px 16px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 12px; border-radius: 12px; color: var(--ryux-muted); font-weight: 700; transition: 0.3s; }
     .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: white; }
     .nav-item.active { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--ryux-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.1); }
@@ -202,51 +248,51 @@
     <div class="sidebar-toggle" onclick="toggleSidebar()">
         <i class="fas fa-chevron-left"></i>
     </div>
-    <div class="p-7 flex flex-col gap-2 logo-container text-center md:text-left">
-      <h1 class="m-0 text-xl font-black filter drop-shadow-[0_0_15px_rgba(0,240,255,0.3)] text-white">ZONIME NEXUS</h1>
-      <span class="text-[9px] text-cyan-400 border border-cyan-400/30 px-3 py-1 rounded-full w-fit font-extrabold tracking-widest mx-auto md:mx-0">Cyber OS v4.0</span>
+    <div class="p-7 flex flex-col gap-2 logo-container text-center md:text-left w-full">
+      <h1 class="m-0 text-xl font-black filter drop-shadow-[0_0_15px_rgba(0,240,255,0.3)] text-white logo-text">ZONIME NEXUS</h1>
+      <span class="text-[9px] text-cyan-400 border border-cyan-400/30 px-3 py-1 rounded-full w-fit font-extrabold tracking-widest mx-auto md:mx-0 logo-badge">Cyber OS v4.0</span>
     </div>
-    <div class="flex-1 overflow-y-auto pb-6">
-      <div class="px-7 py-3 text-[10px] uppercase text-slate-500 font-black nav-group">Workspace</div>
-      <div class="nav-item active" onclick="showPage('pageDashboard', this)" title="Control Center">
+    <div class="flex-1 overflow-y-auto pb-6 w-full flex flex-col items-center md:items-start">
+      <div class="nav-group">Workspace</div>
+      <div class="nav-item active w-full" onclick="showPage('pageDashboard', this)" title="Control Center">
           <i class="fas fa-layer-group"></i> <span class="nav-text">Control Center</span>
       </div>
-      <div class="nav-item" onclick="showPage('pageFinance', this)" title="Finance Manager">
+      <div class="nav-item w-full" onclick="showPage('pageFinance', this)" title="Finance Manager">
           <i class="fas fa-wallet"></i> <span class="nav-text">Finance Manager</span>
       </div>
       
-      <div class="px-7 py-3 text-[10px] uppercase text-slate-500 font-black nav-group">Database</div>
-      <div class="nav-item" onclick="showPage('pageSalesLog', this)" title="Live Sales">
+      <div class="nav-group">Database</div>
+      <div class="nav-item w-full" onclick="showPage('pageSalesLog', this)" title="Live Sales">
           <i class="fas fa-satellite-dish"></i> <span class="nav-text">Live Sales</span>
       </div>
-      <div class="nav-item" onclick="showPage('pageInventory', this)" title="Smart Inventory">
+      <div class="nav-item w-full" onclick="showPage('pageInventory', this)" title="Smart Inventory">
           <i class="fas fa-cubes"></i> <span class="nav-text">Smart Inventory</span>
       </div>
-      <div class="nav-item" onclick="showPage('pageSkuBaru', this)" title="Create SKU">
+      <div class="nav-item w-full" onclick="showPage('pageSkuBaru', this)" title="Create SKU">
           <i class="fas fa-microchip"></i> <span class="nav-text">Create SKU</span>
       </div>
       
-      <div class="px-7 py-3 text-[10px] uppercase text-slate-500 font-black nav-group">Automation</div>
-      <div class="nav-item" onclick="openImportModal()" title="Import TikTok">
+      <div class="nav-group">Automation</div>
+      <div class="nav-item w-full" onclick="openImportModal()" title="Import TikTok">
           <i class="fas fa-bolt"></i> <span class="nav-text">Import TikTok</span>
       </div>
-      <div class="nav-item" onclick="runSyncSales()" title="Sync Engine">
+      <div class="nav-item w-full" onclick="runSyncSales()" title="Sync Engine">
           <i class="fas fa-sync-alt"></i> <span class="nav-text">Sync Engine</span>
       </div>
       
-      <div class="px-7 py-3 text-[10px] uppercase text-slate-500 font-black nav-group">Procurement</div>
-      <div class="nav-item" onclick="showPage('pageProcurement', this)" title="GRN Ledger">
+      <div class="nav-group">Procurement</div>
+      <div class="nav-item w-full" onclick="showPage('pageProcurement', this)" title="GRN Ledger">
           <i class="fas fa-file-invoice-dollar"></i> <span class="nav-text">GRN Ledger</span>
       </div>
-      <div class="nav-item" onclick="openGrnModal()" title="Input GRN">
+      <div class="nav-item w-full" onclick="openGrnModal()" title="Input GRN">
           <i class="fas fa-pen-nib"></i> <span class="nav-text">Input GRN</span>
       </div>
     </div>
     
     <!-- TOMBOL LOGOUT -->
-    <div class="px-5 py-4 mt-auto border-t border-white/5 pointer-events-auto">
-        <button onclick="prosesLogout()" class="w-full btn btn-outline border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 py-3 text-[10px] tracking-widest" title="Akhiri Sesi">
-            <i class="fas fa-power-off mr-2"></i> SIGN OUT
+    <div class="px-5 py-4 mt-auto border-t border-white/5 pointer-events-auto logout-container">
+        <button onclick="prosesLogout()" class="w-full btn btn-outline border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 py-3 text-[10px] tracking-widest logout-btn" title="Akhiri Sesi">
+            <i class="fas fa-power-off mr-2"></i> <span class="sign-out-text">SIGN OUT</span>
         </button>
     </div>
   </div>
@@ -666,6 +712,7 @@
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">PLATFORM</label><select id="grnMp" class="glass-input"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="TikTok">TikTok</option><option value="1688">1688</option></select></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">SUPPLIER</label><input type="text" id="grnSupp" data-custom-list="listSuppliers" class="glass-input" required autocomplete="off"></div>
                   <div class="form-group" style="flex:1; min-width:150px;"><label class="tiny-label">NOTA</label><input type="text" id="grnNota" class="glass-input" required></div>
+                  <!-- TAMBAHAN: DROPDOWN WALLET UNTUK GRN -->
                   <div class="form-group" style="flex:1; min-width:200px;">
                       <label class="tiny-label text-cyan-400">SUMBER DANA (OPSIONAL)</label>
                       <select id="grnWallet" class="glass-input border-cyan-500/30 cursor-pointer">
