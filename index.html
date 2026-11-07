@@ -1078,6 +1078,16 @@
 
         google.script.run
             .withSuccessHandler(data => { 
+                // ---- SISIPKAN KODE INI ----
+                console.log("🚨 WUJUD ASLI DATA DARI SERVER:", data);
+                // ---------------------------
+
+                // PENGAMANAN KETAT (Fallback): Memastikan objek terdefinisi sebelum dibaca
+                var omsetVal = (data && data.kpi && data.kpi.omset) ? data.kpi.omset : 0;
+                // ---------------------------
+
+                // PENGAMANAN KETAT (Fallback): Memastikan objek terdefinisi sebelum dibaca
+                var omsetVal = (data && data.kpi && data.kpi.omset) ? data.kpi.omset : 0;
                 // PENGAMANAN KETAT (Fallback): Memastikan objek terdefinisi sebelum dibaca
                 var omsetVal = (data && data.kpi && data.kpi.omset) ? data.kpi.omset : 0;
                 var profitVal = (data && data.kpi && data.kpi.profit) ? data.kpi.profit : 0;
