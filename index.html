@@ -781,7 +781,78 @@
   <div id="modalRetur" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:500px;"><div class="modal-header"><span style="color:var(--ryux-red);"><i class="fas fa-undo"></i> Log Retur</span><button onclick="closeReturModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><form onsubmit="event.preventDefault(); submitRetur();"><input type="hidden" id="returRowIdx"><div style="background:rgba(255,0,85,0.05); padding:16px; border-radius:12px; margin-bottom:16px;"><div class="tiny-label" style="color:var(--ryux-red);">ORDER ID</div><div style="font-size:16px; font-weight:900;" id="returNoOrderLabel"></div></div><div id="returItemsList" style="margin-bottom:16px;"></div><div class="form-group"><label class="tiny-label">KONDISI</label><select id="returKondisi" class="glass-input"><option value="BAIK">Bagus (Ke Stok Baik)</option><option value="BS">Rusak (Ke Stok BS)</option></select></div><div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="returKeterangan" class="glass-input"></div><button type="submit" id="btnSubmitRetur" class="btn btn-danger" style="width:100%;">Proses Retur</button></form></div></div></div>
   
   <div id="modalReviseProc" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:450px;"><div class="modal-header"><span style="color:var(--ryux-yellow);"><i class="fas fa-edit"></i> Edit Ledger</span><button onclick="closeReviseProcModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><form onsubmit="event.preventDefault(); submitReviseProc();"><div class="form-group"><label class="tiny-label">NOTA</label><input type="text" id="revProcNota" class="glass-input" readonly></div><div class="form-group"><label class="tiny-label">SKU</label><input type="text" id="revProcSku" data-custom-list="skuSuggestions" class="glass-input" required><input type="hidden" id="revProcOldSku"></div><div style="display:flex; gap:16px;"><div class="form-group" style="flex:1;"><label class="tiny-label">QTY</label><input type="number" id="revProcQty" class="glass-input" required></div><div class="form-group" style="flex:2;"><label class="tiny-label text-ryux-yellow">HARGA</label><input type="number" id="revProcHarga" class="glass-input" required></div></div><button type="submit" id="btnSubmitReviseProc" class="btn btn-warning" style="width:100%;">Update</button></form></div></div></div>
-  
+
+  <!-- MODAL TRANSAKSI KAS -->
+  <div id="fm_transaksi_modal" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:550px;">
+      <div class="modal-header">
+          <span style="color:var(--ryux-green);"><i class="fas fa-exchange-alt"></i> Form Transaksi Kas</span>
+          <button type="button" onclick="fm_closeTransaksiModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="fm_transaksi_form" onsubmit="fm_submitTransaksi(event)">
+          
+          <!-- Radio Button Tipe Transaksi -->
+          <div class="form-group" style="display:flex; gap:16px; margin-bottom:20px; background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border);">
+              <label style="flex:1; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--ryux-green); font-size:10px; font-weight:900;">
+                  <input type="radio" name="fm_tx_type" value="IN" onchange="fm_toggleMutasi(this.value)" checked> PEMASUKAN (+)
+              </label>
+              <label style="flex:1; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--ryux-red); font-size:10px; font-weight:900;">
+                  <input type="radio" name="fm_tx_type" value="OUT" onchange="fm_toggleMutasi(this.value)"> PENGELUARAN (-)
+              </label>
+              <label style="flex:1; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--ryux-cyan); font-size:10px; font-weight:900;">
+                  <input type="radio" name="fm_tx_type" value="MUTASI" onchange="fm_toggleMutasi(this.value)"> MUTASI
+              </label>
+          </div>
+          
+          <div class="form-group">
+              <label class="tiny-label">TANGGAL</label>
+              <input type="date" id="fm_tx_date" class="glass-input" required>
+          </div>
+
+          <div class="form-group">
+              <label class="tiny-label" id="fm_lbl_wallet_from">PILIH DOMPET UTAMA</label>
+              <select id="fm_tx_wallet" class="glass-input" required></select>
+          </div>
+
+          <!-- Bungkus Dompet Tujuan (Default Hidden) -->
+          <div class="form-group hidden" id="fm_wrapper_wallet_to">
+              <label class="tiny-label text-cyan-400">PILIH DOMPET TUJUAN (UNTUK MUTASI)</label>
+              <select id="fm_tx_wallet_to" class="glass-input border-cyan-500/30"></select>
+          </div>
+
+          <div style="display:flex; gap:16px; margin-bottom:16px;">
+              <div class="form-group" style="flex:1;">
+                  <label class="tiny-label text-yellow-400">NOMINAL (Rp)</label>
+                  <input type="number" id="fm_tx_amount" class="glass-input font-bold" required min="1">
+              </div>
+              
+              <!-- Bungkus Kategori -->
+              <div class="form-group" style="flex:1;" id="fm_wrapper_category">
+                  <label class="tiny-label">SUB-KATEGORI</label>
+                  <select id="fm_tx_subkategori" class="glass-input">
+                      <option value="-">Tanpa Kategori</option>
+                      <option value="Operasional">Operasional</option>
+                      <option value="Marketing & Ads">Marketing & Ads</option>
+                      <option value="Restock HPP">Restock HPP</option>
+                      <option value="Gaji & Fee">Gaji & Fee</option>
+                      <option value="Pribadi">Pribadi / Lainnya</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="form-group mb-6">
+              <label class="tiny-label">KETERANGAN / CATATAN</label>
+              <input type="text" id="fm_tx_note" class="glass-input" required placeholder="Contoh: Beli lakban / Transfer ke rekening B">
+          </div>
+
+          <button type="submit" id="fm_btn_submit_tx" class="btn btn-primary" style="width:100%; padding:16px; letter-spacing: 2px;">
+              SIMPAN TRANSAKSI
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
   <div id="fm_wallet_modal" class="modal-overlay hidden-section">
     <div class="modal-card" style="max-width:450px;">
       <div class="modal-header"><span style="color:var(--ryux-cyan);" id="fm_modal_title"><i class="fas fa-wallet"></i> Tambah Pos Keuangan</span><button type="button" onclick="fm_closeWalletModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div>
@@ -1847,12 +1918,54 @@
     }
 
     function fm_openTransaksiModal() {
-        const sel = document.getElementById('fm_tx_wallet'); const selTo = document.getElementById('fm_tx_wallet_to');
-        sel.innerHTML = '<option value="">-- Memuat Dompet... --</option>'; selTo.innerHTML = '<option value="">-- Pilih Dompet Tujuan --</option>';
-        sel.innerHTML = '<option value="">-- Pilih Pos (Sumber/Tujuan) --</option>';
-        globalWallets.forEach(w => { let opt = `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`; sel.innerHTML += opt; selTo.innerHTML += opt; });
-        document.getElementById('fm_tx_date').valueAsDate = new Date(); document.getElementById('fm_tx_amount').value=''; document.getElementById('fm_tx_note').value='';
-        fm_toggleMutasi('IN'); document.querySelector('input[name="fm_tx_type"][value="IN"]').checked = true; document.getElementById('fm_transaksi_modal').classList.remove('hidden-section'); 
+        // Fungsi internal untuk merender dan menampilkan modal
+        function renderAndShowModal() {
+            const sel = document.getElementById('fm_tx_wallet'); 
+            const selTo = document.getElementById('fm_tx_wallet_to');
+            
+            sel.innerHTML = '<option value="">-- Pilih Pos (Sumber/Asal) --</option>';
+            selTo.innerHTML = '<option value="">-- Pilih Dompet Tujuan --</option>';
+            
+            globalWallets.forEach(w => { 
+                let opt = `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`; 
+                sel.innerHTML += opt; 
+                selTo.innerHTML += opt; 
+            });
+            
+            document.getElementById('fm_tx_date').valueAsDate = new Date(); 
+            document.getElementById('fm_tx_amount').value = ''; 
+            document.getElementById('fm_tx_note').value = '';
+            document.getElementById('fm_tx_subkategori').value = '-';
+            
+            // Setel default radio button ke "IN" dan sesuaikan form
+            fm_toggleMutasi('IN'); 
+            var radioIn = document.querySelector('input[name="fm_tx_type"][value="IN"]');
+            if (radioIn) radioIn.checked = true;
+            
+            document.getElementById('fm_transaksi_modal').classList.remove('hidden-section');
+            document.body.style.cursor = 'default';
+        }
+
+        // Cek ketersediaan data globalWallets
+        if (globalWallets.length === 0) {
+            // Ubah cursor jadi loading jika memanggil dari Dashboard pertama kali
+            document.body.style.cursor = 'wait';
+            
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    globalWallets = res.wallets || [];
+                    globalTransactions = res.ledger || [];
+                    renderAndShowModal();
+                })
+                .withFailureHandler(function(err) {
+                    document.body.style.cursor = 'default';
+                    alert("Gagal mengambil data wallet dari server: " + err);
+                })
+                .getFinanceData();
+        } else {
+            // Jika data sudah ada, langsung eksekusi tanpa nembak API lagi
+            renderAndShowModal();
+        }
     }
     
     function fm_closeTransaksiModal() { document.getElementById('fm_transaksi_modal').classList.add('hidden-section'); }
