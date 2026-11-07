@@ -1065,7 +1065,7 @@
       });
     }
 
-    // FUNGSI DASHBOARD TERBARU
+    // FUNGSI DASHBOARD TERBARU DENGAN FALLBACK SECURITY
     function loadDashboard() { 
         var filterVal = document.getElementById('dashFilterWaktu') ? document.getElementById('dashFilterWaktu').value : 'MONTH';
         
@@ -1078,46 +1078,62 @@
 
         google.script.run
             .withSuccessHandler(data => { 
+                // PENGAMANAN KETAT (Fallback): Memastikan objek terdefinisi sebelum dibaca
+                var omsetVal = (data && data.kpi && data.kpi.omset) ? data.kpi.omset : 0;
+                var profitVal = (data && data.kpi && data.kpi.profit) ? data.kpi.profit : 0;
+                var saldoVal = (data && data.kpi && data.kpi.saldoKas) ? data.kpi.saldoKas : 0;
+                var pesananVal = (data && data.kpi && data.kpi.pesanan) ? data.kpi.pesanan : 0;
+                
+                var alertsArr = (data && data.alerts && Array.isArray(data.alerts)) ? data.alerts : [];
+                var topSkuArr = (data && data.topSku && Array.isArray(data.topSku)) ? data.topSku : [];
+                var chartData = (data && data.chart) ? data.chart : { labels: [], revenue: [], profit: [] };
+
                 // 1. Render KPI
-                document.getElementById('dashOmset').innerText = formatRp(data.kpi.omset);
-                document.getElementById('dashProfit').innerText = formatRp(data.kpi.profit);
-                document.getElementById('dashSaldo').innerText = formatRp(data.kpi.saldoKas);
-                document.getElementById('dashOrder').innerText = data.kpi.pesanan;
+                document.getElementById('dashOmset').innerText = formatRp(omsetVal);
+                document.getElementById('dashProfit').innerText = formatRp(profitVal);
+                document.getElementById('dashSaldo').innerText = formatRp(saldoVal);
+                document.getElementById('dashOrder').innerText = pesananVal;
                 
                 // 2. Render Smart Alerts
                 var alertsHtml = '';
-                data.alerts.forEach(a => {
-                    alertsHtml += `<div class="flex gap-3 items-start p-3 rounded-lg border ${a.bg} transition-all">
-                                      <div class="mt-0.5"><i class="fas ${a.icon} ${a.color}"></i></div>
-                                      <div class="flex-1">
-                                          <div class="text-[11px] font-bold text-white mb-0.5 leading-tight">${a.text}</div>
-                                          <div class="text-[9px] text-slate-400 leading-tight">${a.subtext}</div>
-                                      </div>
-                                   </div>`;
-                });
+                if(alertsArr.length === 0) {
+                    alertsHtml = '<div class="text-center text-xs text-slate-500 py-4">Tidak ada data alert valid dari server.</div>';
+                } else {
+                    alertsArr.forEach(a => {
+                        alertsHtml += `<div class="flex gap-3 items-start p-3 rounded-lg border ${a.bg || 'bg-slate-800 border-slate-700'} transition-all">
+                                          <div class="mt-0.5"><i class="fas ${a.icon || 'fa-info-circle'} ${a.color || 'text-slate-400'}"></i></div>
+                                          <div class="flex-1">
+                                              <div class="text-[11px] font-bold text-white mb-0.5 leading-tight">${a.text || '-'}</div>
+                                              <div class="text-[9px] text-slate-400 leading-tight">${a.subtext || '-'}</div>
+                                          </div>
+                                       </div>`;
+                    });
+                }
                 document.getElementById('dashAlerts').innerHTML = alertsHtml;
                 
                 // 3. Render Top SKU
                 var skuHtml = '';
-                if(data.topSku.length === 0) {
-                    skuHtml = '<tr><td colspan="3" class="text-center py-6 text-slate-500 italic text-xs">Belum ada data penjualan.</td></tr>';
+                if(topSkuArr.length === 0) {
+                    skuHtml = '<tr><td colspan="3" class="text-center py-6 text-slate-500 italic text-xs">Belum ada data penjualan atau struktur salah.</td></tr>';
                 } else {
-                    data.topSku.forEach((s, idx) => {
+                    topSkuArr.forEach((s, idx) => {
                         var medal = idx === 0 ? '<i class="fas fa-trophy text-yellow-400 mr-1"></i>' : (idx===1 ? '<i class="fas fa-medal text-slate-300 mr-1"></i>' : (idx===2 ? '<i class="fas fa-medal text-orange-400 mr-1"></i>' : `<span class="text-slate-500 mr-1 opacity-50">${idx+1}.</span>`));
                         skuHtml += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                       <td class="py-2.5 px-6"><div class="flex items-center gap-2">${medal} <span class="truncate max-w-[200px]" title="${s.nama}">${s.nama}</span></div><div class="text-[9px] text-slate-500 font-mono ml-5">${s.sku}</div></td>
-                                       <td class="py-2.5 px-6 text-center text-cyan-400">${s.qty}</td>
-                                       <td class="py-2.5 px-6 text-right text-emerald-400">${formatRp(s.omset)}</td>
+                                       <td class="py-2.5 px-6"><div class="flex items-center gap-2">${medal} <span class="truncate max-w-[200px]" title="${s.nama || '-'}">${s.nama || '-'}</span></div><div class="text-[9px] text-slate-500 font-mono ml-5">${s.sku || '-'}</div></td>
+                                       <td class="py-2.5 px-6 text-center text-cyan-400">${s.qty || 0}</td>
+                                       <td class="py-2.5 px-6 text-right text-emerald-400">${formatRp(s.omset || 0)}</td>
                                     </tr>`;
                     });
                 }
                 document.getElementById('dashTopSku').innerHTML = skuHtml;
                 
                 // 4. Render Chart
-                setTimeout(() => { renderDashboardChart(data.chart.labels, data.chart.revenue, data.chart.profit); }, 100);
+                setTimeout(() => { 
+                    renderDashboardChart(chartData.labels || [], chartData.revenue || [], chartData.profit || []); 
+                }, 100);
             })
             .withFailureHandler(err => {
-                document.getElementById('dashAlerts').innerHTML = `<div class="text-center text-xs text-rose-500 py-4">Gagal memuat: ${err}</div>`;
+                document.getElementById('dashAlerts').innerHTML = `<div class="text-center text-xs text-rose-500 py-4">Gagal memuat API Dashboard: ${err}</div>`;
             })
             .getDashboardData({ filterWaktu: filterVal }); 
     }
