@@ -540,9 +540,16 @@
             <input type="date" id="salesEndDate" class="bg-transparent text-white text-[10px] outline-none cursor-pointer w-full pointer-events-auto relative z-50" onchange="renderSalesTable()">
           </div>
 
-          <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto flex-1 min-w-[120px]" id="filterStatusSales" onchange="renderSalesTable()">
-            <option value="ALL">Semua Status</option><option value="Selesai">Selesai</option><option value="Menunggu Pengambilan">Menunggu</option><option value="Sedang Transit">Transit</option><option value="Batal">Batal</option><option value="Return">Return</option><option value="Refund & Return">Refund</option>
-          </select>
+         <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto flex-1 min-w-[120px]" id="filterStatusSales" onchange="renderSalesTable()">
+  <option value="ALL">Semua Status</option>
+  <option value="Selesai">Selesai</option>
+  <option value="Terkirim">Terkirim</option>
+  <option value="Menunggu">Menunggu</option>
+  <option value="Sedang Transit">Transit</option>
+  <option value="Batal">Batal</option>
+  <option value="Return">Return COD</option>
+  <option value="Refund & Return">Refund & Return</option>
+</select>
 
           <select class="glass-input w-auto py-2 text-[11px] border-none bg-black/40 cursor-pointer pointer-events-auto flex-1 min-w-[120px]" id="filterKelengkapanSales" onchange="renderSalesTable()">
             <option value="ALL">Semua Data</option><option value="AMAN">Data Valid</option><option value="ERROR">Butuh Koreksi</option>
