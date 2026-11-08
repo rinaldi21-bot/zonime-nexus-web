@@ -1340,113 +1340,126 @@
         renderSalesTable();
     }
 
-    function renderSalesTable() {
-      var container = document.getElementById('salesContainer');
-      if(!container || globalSalesData.length === 0) { 
-        container.innerHTML = '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong.</div>'; 
-        return; 
-      }
-      
-      var selDate = document.getElementById('filterDateRangeSales').value; 
-      var selStart = document.getElementById('salesStartDate').value; 
-      var selEnd = document.getElementById('salesEndDate').value; 
-      var selStatus = document.getElementById('filterStatusSales').value; 
-      var selKelengkapan = document.getElementById('filterKelengkapanSales').value; 
-      var sq = document.getElementById('searchSales').value.toLowerCase();
-      
-      var now = new Date(); now.setHours(0,0,0,0); 
-      var targetStart = null, targetEnd = null;
-      
-      if (selStart || selEnd) {
-          if (selStart) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); }
-          if (selEnd) { targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
-      } else {
-          if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
-          else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
-          else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
-          else if(selDate === 'THIS_MONTH') { targetStart = new Date(now.getFullYear(), now.getMonth(), 1); targetEnd = new Date(now); }
-      }
+    // ==========================================
+// REVISI: RENDER SALES TABLE (SORTING TERBARU & TAMPIL TANGGAL)
+// ==========================================
+function renderSalesTable() {
+  var container = document.getElementById('salesContainer');
+  if(!container || globalSalesData.length === 0) { 
+    container.innerHTML = '<div class="glass-card" style="padding:40px; text-align:center;">Data kosong.</div>'; 
+    return; 
+  }
+  
+  var selDate = document.getElementById('filterDateRangeSales').value; 
+  var selStart = document.getElementById('salesStartDate').value; 
+  var selEnd = document.getElementById('salesEndDate').value; 
+  var selStatus = document.getElementById('filterStatusSales').value; 
+  var selKelengkapan = document.getElementById('filterKelengkapanSales').value; 
+  var sq = document.getElementById('searchSales').value.toLowerCase();
+  
+  var now = new Date(); now.setHours(0,0,0,0); 
+  var targetStart = null, targetEnd = null;
+  
+  if (selStart || selEnd) {
+      if (selStart) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); }
+      if (selEnd) { targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
+  } else {
+      if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
+      else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
+      else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
+      else if(selDate === 'THIS_MONTH') { targetStart = new Date(now.getFullYear(), now.getMonth(), 1); targetEnd = new Date(now); }
+  }
 
-      var filtered = globalSalesData.filter(d => {
-        var dTime = new Date(d.tanggal).getTime();
-        var dateMatch = true;
-        
-        if (targetStart || targetEnd) { 
-            if (targetStart && dTime < targetStart.getTime()) dateMatch = false; 
-            if (targetEnd && dTime > targetEnd.getTime()) dateMatch = false; 
-        } else if (selDate !== 'ALL' && selDate.includes('-')) { 
-            dateMatch = (d.valBulan === selDate); 
-        }
-        
-        var statMatch = (selStatus === 'ALL' || d.status.toLowerCase().includes(selStatus.toLowerCase()));
-        var isErr = d.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
-        
-        var fallbackLcSearch = d.listingCode ? d.listingCode.toLowerCase() : "";
-        var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isErr) || (selKelengkapan === 'ERROR' && isErr); 
-        var textMatch = !sq || d.noOrder.toLowerCase().includes(sq) || fallbackLcSearch.includes(sq) || d.items.some(k => (k.sku ? k.sku.toLowerCase() : "").includes(sq));
-        
-        return dateMatch && statMatch && kMatch && textMatch;
-      });
-
-      var html = ''; var sOmset = 0; var sProfit = 0; var sQty = 0;
-      if(filtered.length === 0) { 
-        html = '<div class="glass-card" style="padding:40px; text-align:center;">Tidak ada data.</div>'; 
-      } else {
-        filtered.forEach(d => {
-          if(d.status.includes("Selesai") || d.status.includes("Refund")) { 
-            sOmset += d.totalPendapatan; 
-            sProfit += d.profit; 
-          }
-          
-          var badgeClass = 'badge-info'; 
-          if(d.status.includes("Selesai")) badgeClass = 'badge-success'; 
-          else if(d.status.includes("Return") || d.status.includes("Batal")) badgeClass = 'badge-danger'; 
-          else if(d.status.includes("Transit") || d.status.toLowerCase().includes("perlu")) badgeClass = 'badge-warning';
-          
-          var itemsHtml = '';
-          d.items.forEach(itm => { 
-              if(itm.qty > 0) { 
-                  sQty += itm.qty; 
-                  itemsHtml += `<div class="dg-row"><div style="flex:1; font-weight:700;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>COGS</span><div style="color:var(--ryux-muted);">${formatRp(itm.cogs*itm.qty)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div></div>`; 
-              } 
-          });
-          
-          var actBtn = `<button class="btn btn-outline" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Fix</button>`;
-          if(d.status.includes("Return")) actBtn = `<button class="btn btn-danger" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Retur</button>`;
-          
-          var displayLc = "-";
-          if (d.items && d.items.length > 0 && d.items[0].listingCode && d.items[0].listingCode !== "undefined") {
-              displayLc = d.items[0].listingCode;
-          } else if (d.listingCode && d.listingCode !== "undefined") {
-              displayLc = d.listingCode;
-          }
-
-          html += `<div class="data-group-card glass-card">
-                      <div class="dg-header">
-                          <div style="display:flex; gap:12px; align-items:center;">
-                              <span class="${badgeClass}">${d.status}</span>
-                              <span style="font-size:14px; color:white;">${d.noOrder}</span>
-                              <span class="badge-purple">LC: ${displayLc}</span>
-                          </div>
-                          <div style="display:flex; gap:16px; align-items:center;">
-                              <div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div>
-                              <div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green);">${formatRp(d.profit)}</div></div>
-                              ${actBtn}
-                          </div>
-                      </div>
-                      <div class="dg-body">
-                          <div style="font-size:10px; color:var(--ryux-muted); margin-bottom:8px;">REF: ${d.mpProductName} (VAR: ${d.mpVariant})</div>
-                          ${itemsHtml}
-                      </div>
-                   </div>`;
-        });
-      }
-      document.getElementById('sumOmset').innerText = formatRp(sOmset); 
-      document.getElementById('sumProfit').innerText = formatRp(sProfit);
-      document.getElementById('sumOrder').innerText = filtered.length; 
-      document.getElementById('sumQty').innerText = sQty + " Pcs"; 
-      container.innerHTML = html;
+  var filtered = globalSalesData.filter(d => {
+    var dTime = new Date(d.tanggal).getTime();
+    var dateMatch = true;
+    
+    if (targetStart || targetEnd) { 
+        if (targetStart && dTime < targetStart.getTime()) dateMatch = false; 
+        if (targetEnd && dTime > targetEnd.getTime()) dateMatch = false; 
+    } else if (selDate !== 'ALL' && selDate.includes('-')) { 
+        dateMatch = (d.valBulan === selDate); 
     }
+    
+    var statMatch = (selStatus === 'ALL' || d.status.toLowerCase().includes(selStatus.toLowerCase()));
+    var isErr = d.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
+    
+    var fallbackLcSearch = d.listingCode ? d.listingCode.toLowerCase() : "";
+    var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isErr) || (selKelengkapan === 'ERROR' && isErr); 
+    var textMatch = !sq || d.noOrder.toLowerCase().includes(sq) || fallbackLcSearch.includes(sq) || d.items.some(k => (k.sku ? k.sku.toLowerCase() : "").includes(sq));
+    
+    return dateMatch && statMatch && kMatch && textMatch;
+  });
+
+  // PENGURUTAN: Menampilkan pesanan terbaru di paling atas (Newest First)
+  filtered.sort(function(a, b) {
+    var timeA = new Date(a.tanggal).getTime() || 0;
+    var timeB = new Date(b.tanggal).getTime() || 0;
+    if (timeB !== timeA) return timeB - timeA;
+    return b.rowIdx - a.rowIdx;
+  });
+
+  var html = ''; var sOmset = 0; var sProfit = 0; var sQty = 0;
+  if(filtered.length === 0) { 
+    html = '<div class="glass-card" style="padding:40px; text-align:center;">Tidak ada data pesanan yang sesuai filter.</div>'; 
+  } else {
+    filtered.forEach(d => {
+      if(d.status.includes("Selesai") || d.status.includes("Refund")) { 
+        sOmset += d.totalPendapatan; 
+        sProfit += d.profit; 
+      }
+      
+      var badgeClass = 'badge-info'; 
+      if(d.status.includes("Selesai")) badgeClass = 'badge-success'; 
+      else if(d.status.includes("Return") || d.status.includes("Batal")) badgeClass = 'badge-danger'; 
+      else if(d.status.includes("Transit") || d.status.toLowerCase().includes("perlu")) badgeClass = 'badge-warning';
+      
+      var itemsHtml = '';
+      d.items.forEach(itm => { 
+          if(itm.qty > 0) { 
+              sQty += itm.qty; 
+              itemsHtml += `<div class="dg-row"><div style="flex:1; font-weight:700;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>COGS</span><div style="color:var(--ryux-muted);">${formatRp(itm.cogs*itm.qty)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div></div>`; 
+          } 
+      });
+      
+      var actBtn = `<button class="btn btn-outline" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Fix</button>`;
+      if(d.status.includes("Return")) actBtn = `<button class="btn btn-danger" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Retur</button>`;
+      
+      var displayLc = "-";
+      if (d.items && d.items.length > 0 && d.items[0].listingCode && d.items[0].listingCode !== "undefined") {
+          displayLc = d.items[0].listingCode;
+      } else if (d.listingCode && d.listingCode !== "undefined") {
+          displayLc = d.listingCode;
+      }
+
+      // TAMPILKAN TANGGAL PADA HEADER KARTU
+      html += `<div class="data-group-card glass-card">
+                  <div class="dg-header">
+                      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                          <span class="${badgeClass}">${d.status}</span>
+                          <span style="font-size:14px; color:white; font-weight:800;">${d.noOrder}</span>
+                          <span class="text-[11px] text-slate-400 font-mono"><i class="far fa-clock mr-1 text-cyan-400"></i>${d.tanggal || '-'}</span>
+                          <span class="badge-purple">LC: ${displayLc}</span>
+                      </div>
+                      <div style="display:flex; gap:16px; align-items:center;">
+                          <div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div>
+                          <div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green);">${formatRp(d.profit)}</div></div>
+                          ${actBtn}
+                      </div>
+                  </div>
+                  <div class="dg-body">
+                      <div style="font-size:10px; color:var(--ryux-muted); margin-bottom:8px;">REF: ${d.mpProductName} (VAR: ${d.mpVariant})</div>
+                      ${itemsHtml}
+                  </div>
+               </div>`;
+    });
+  }
+  document.getElementById('sumOmset').innerText = formatRp(sOmset); 
+  document.getElementById('sumProfit').innerText = formatRp(sProfit);
+  document.getElementById('sumOrder').innerText = filtered.length; 
+  document.getElementById('sumQty').innerText = sQty + " Pcs"; 
+  container.innerHTML = html;
+}
 
     // MODULE: INVENTORY
     let globalInvDataBs = [];
