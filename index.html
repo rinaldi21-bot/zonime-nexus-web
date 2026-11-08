@@ -544,7 +544,7 @@
   <option value="ALL">Semua Status</option>
   <option value="Selesai">Selesai</option>
   <option value="Terkirim">Terkirim</option>
-  <option value="Menunggu">Menunggu</option>
+  <option value="Perlu dikirim">Perlu dikirim</option>
   <option value="Sedang Transit">Transit</option>
   <option value="Batal">Batal</option>
   <option value="Return">Return COD</option>
@@ -1335,8 +1335,11 @@
         
         var statMatch = (selStatus === 'ALL' || d.status.toLowerCase().includes(selStatus.toLowerCase()));
         var isErr = d.items.some(z => z.sku === '-' || z.nama.includes('⚠️')); 
+        
+        var fallbackLcSearch = d.listingCode ? d.listingCode.toLowerCase() : "";
         var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isErr) || (selKelengkapan === 'ERROR' && isErr); 
-        var textMatch = !sq || d.noOrder.toLowerCase().includes(sq) || d.listingCode.toLowerCase().includes(sq) || d.items.some(k => k.sku.toLowerCase().includes(sq));
+        var textMatch = !sq || d.noOrder.toLowerCase().includes(sq) || fallbackLcSearch.includes(sq) || d.items.some(k => (k.sku ? k.sku.toLowerCase() : "").includes(sq));
+        
         return dateMatch && statMatch && kMatch && textMatch;
       });
 
@@ -1345,12 +1348,50 @@
       else {
         filtered.forEach(d => {
           if(d.status.includes("Selesai") || d.status.includes("Refund")) { sOmset += d.totalPendapatan; sProfit += d.profit; }
-          var badgeClass = 'badge-info'; if(d.status.includes("Selesai")) badgeClass = 'badge-success'; else if(d.status.includes("Return") || d.status.includes("Batal")) badgeClass = 'badge-danger'; else if(d.status.includes("Transit") || d.status.includes("Menunggu")) badgeClass = 'badge-warning';
+          
+          // PERUBAHAN: Warna Kuning untuk Perlu dikirim
+          var badgeClass = 'badge-info'; 
+          if(d.status.includes("Selesai")) badgeClass = 'badge-success'; 
+          else if(d.status.includes("Return") || d.status.includes("Batal")) badgeClass = 'badge-danger'; 
+          else if(d.status.includes("Transit") || d.status.toLowerCase().includes("perlu")) badgeClass = 'badge-warning';
+          
           var isErr = false; var itemsHtml = '';
-          d.items.forEach(itm => { if(itm.qty>0) { sQty+=itm.qty; if(itm.sku==='-') isErr = true; itemsHtml += `<div class="dg-row"><div style="flex:1; font-weight:700;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>COGS</span><div style="color:var(--ryux-muted);">${formatRp(itm.cogs*itm.qty)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div></div>`; } });
+          d.items.forEach(itm => { 
+              if(itm.qty > 0) { 
+                  sQty += itm.qty; 
+                  if(itm.sku === '-') isErr = true; 
+                  itemsHtml += `<div class="dg-row"><div style="flex:1; font-weight:700;">${itm.nama} <span class="badge-info">${itm.sku}</span></div><div class="money-stat"><span>COGS</span><div style="color:var(--ryux-muted);">${formatRp(itm.cogs*itm.qty)}</div></div><div class="money-stat" style="width:50px;"><span>QTY</span><div>${itm.qty}</div></div></div>`; 
+              } 
+          });
+          
           var actBtn = `<button class="btn btn-outline" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Fix</button>`;
           if(d.status.includes("Return")) actBtn = `<button class="btn btn-danger" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Retur</button>`;
-          html += `<div class="data-group-card glass-card"><div class="dg-header"><div style="display:flex; gap:12px; align-items:center;"><span class="${badgeClass}">${d.status}</span><span style="font-size:14px; color:white;">${d.noOrder}</span><span class="badge-purple">LC: ${d.listingCode}</span></div><div style="display:flex; gap:16px; align-items:center;"><div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div><div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green);">${formatRp(d.profit)}</div></div>${actBtn}</div></div><div class="dg-body"><div style="font-size:10px; color:var(--ryux-muted); margin-bottom:8px;">REF: ${d.mpProductName} (VAR: ${d.mpVariant})</div>${itemsHtml}</div></div>`;
+          
+          var displayLc = "-";
+          if (d.items && d.items.length > 0 && d.items[0].listingCode && d.items[0].listingCode !== "undefined") {
+              displayLc = d.items[0].listingCode;
+          } else if (d.listingCode && d.listingCode !== "undefined") {
+              displayLc = d.listingCode;
+          }
+
+          html += `<div class="data-group-card glass-card">
+                      <div class="dg-header">
+                          <div style="display:flex; gap:12px; align-items:center;">
+                              <span class="${badgeClass}">${d.status}</span>
+                              <span style="font-size:14px; color:white;">${d.noOrder}</span>
+                              <span class="badge-purple">LC: ${displayLc}</span>
+                          </div>
+                          <div style="display:flex; gap:16px; align-items:center;">
+                              <div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div>
+                              <div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green);">${formatRp(d.profit)}</div></div>
+                              ${actBtn}
+                          </div>
+                      </div>
+                      <div class="dg-body">
+                          <div style="font-size:10px; color:var(--ryux-muted); margin-bottom:8px;">REF: ${d.mpProductName} (VAR: ${d.mpVariant})</div>
+                          ${itemsHtml}
+                      </div>
+                   </div>`;
         });
       }
       document.getElementById('sumOmset').innerText = formatRp(sOmset); document.getElementById('sumProfit').innerText = formatRp(sProfit);
