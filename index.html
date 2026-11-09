@@ -673,6 +673,35 @@
   <!-- ============================================================== -->
   <!-- MODALS -->
   <!-- ============================================================== -->
+  <!-- MODAL EDIT LISTING CODE -->
+  <div id="modalEditListingCode" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:480px;">
+      <div class="modal-header">
+        <span style="color:var(--ryux-purple);"><i class="fas fa-barcode"></i> Edit Listing Code</span>
+        <button onclick="closeEditListingCodeModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="event.preventDefault(); submitEditListingCode();">
+          <input type="hidden" id="editLcRowIdx">
+          <div style="background:rgba(176,38,255,0.08); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid rgba(176,38,255,0.2);">
+            <div class="tiny-label" style="color:var(--ryux-purple);">ORDER ID</div>
+            <div style="font-size:15px; font-weight:900; color:white;" id="editLcOrderLabel"></div>
+          </div>
+          <div class="form-group">
+            <label class="tiny-label text-cyan-400">INPUT LISTING CODE BARU</label>
+            <input type="text" id="editLcInput" class="glass-input font-mono font-bold text-white text-sm" placeholder="Contoh: poci 5 x 2, stand x 1" required autocomplete="off">
+            <div class="text-[9px] text-slate-400 mt-2">
+              * Pisahkan koma jika multi-item. Contoh: <code>poci 5 x 2, stand x 1</code>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; margin-top:24px;">
+            <button type="button" onclick="closeEditListingCodeModal()" class="btn btn-outline" style="flex:1;">Batal</button>
+            <button type="submit" id="btnSubmitEditLc" class="btn btn-primary" style="flex:2;">Simpan & Re-Parse</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
   
   <div id="modalImport" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:450px;"><div class="modal-header"><span style="color:white;"><i class="fab fa-tiktok"></i> Import Engine</span><button onclick="closeImportModal()" class="btn-outline" style="border:none; font-size:20px;">&times;</button></div><div class="modal-body"><div class="form-group"><label class="tiny-label">TARGET ACCOUNT</label><select id="importAccount" class="glass-input"><option value="Zonime Biru">Zonime Biru</option><option value="Zonime Merah">Zonime Merah</option></select></div><div style="display:flex; gap:12px; margin-top:24px;"><button type="button" onclick="closeImportModal()" class="btn-outline" style="flex:1;">Cancel</button><button type="button" onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2;">Execute</button></div></div></div></div>
   
@@ -1019,6 +1048,7 @@
                 runner.editFinanceWallet = function(payload) { _call('editFinanceWallet', payload); };
                 runner.deleteFinanceWallet = function(nama) { _call('deleteFinanceWallet', {nama: nama}); };
                 runner.hapusDataGrn = function(payload) { _call('hapusDataGrn', payload); };
+                runner.simpanEditListingCode = function(payload) { _call('simpanEditListingCode', payload); };
                 runner.verifikasiLogin = function(payload) { _call('verifikasiLogin', payload); };
                 return runner; 
               } 
@@ -1050,6 +1080,53 @@
         }
     }
 
+    // CONTROLLER: BOTTOM NAV KHUSUS HP
+function mobileNavSwitch(pageId, btnEl) {
+  if (navigator.vibrate) navigator.vibrate(20);
+  showPage(pageId, null);
+  document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+    btn.className = 'mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-white';
+  });
+  if (btnEl) btnEl.className = 'mobile-nav-btn flex flex-col items-center gap-1 text-cyan-400';
+}
+
+// CONTROLLER: MODAL EDIT LISTING CODE
+function openEditListingCodeModal(rowIdx, noOrder, currentLc) {
+  document.getElementById('editLcRowIdx').value = rowIdx;
+  document.getElementById('editLcOrderLabel').innerText = noOrder;
+  document.getElementById('editLcInput').value = (currentLc && currentLc !== '-' && currentLc !== 'undefined') ? currentLc : '';
+  document.getElementById('modalEditListingCode').classList.remove('hidden-section');
+  setTimeout(() => document.getElementById('editLcInput').focus(), 100);
+}
+
+function closeEditListingCodeModal() {
+  document.getElementById('modalEditListingCode').classList.add('hidden-section');
+}
+
+function submitEditListingCode() {
+  var btn = document.getElementById('btnSubmitEditLc');
+  var rowIdx = document.getElementById('editLcRowIdx').value;
+  var newLc = document.getElementById('editLcInput').value;
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses...';
+
+  google.script.run
+    .withSuccessHandler(res => {
+      alert(res);
+      btn.disabled = false;
+      btn.innerHTML = 'Simpan & Re-Parse';
+      closeEditListingCodeModal();
+      loadSalesData();
+    })
+    .withFailureHandler(err => {
+      alert("Error: " + err);
+      btn.disabled = false;
+      btn.innerHTML = 'Simpan & Re-Parse';
+    })
+    .simpanEditListingCode({ rowIdx: rowIdx, newListingCode: newLc });
+}
+    
     function prosesLogin(e) {
         e.preventDefault();
         const btn = document.getElementById('btnLogin');
@@ -2527,5 +2604,28 @@ function renderSalesTable() {
     };
 
   </script>
+  <!-- FLOATING CYBER MOBILE BOTTOM NAV DOCK (KHUSUS HP) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-[999] bg-[#0b0f19]/90 backdrop-blur-xl border-t border-cyan-500/20 px-3 py-2 flex justify-around items-center shadow-[0_-5px_20px_rgba(0,0,0,0.8)] pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+    <button onclick="mobileNavSwitch('pageDashboard', this)" class="mobile-nav-btn flex flex-col items-center gap-1 text-cyan-400">
+      <i class="fas fa-layer-group text-lg"></i>
+      <span class="text-[9px] font-bold tracking-wider">Control</span>
+    </button>
+    <button onclick="mobileNavSwitch('pageFinance', this)" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-white">
+      <i class="fas fa-wallet text-lg"></i>
+      <span class="text-[9px] font-bold tracking-wider">Finance</span>
+    </button>
+    <button onclick="mobileNavSwitch('pageSalesLog', this)" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-white">
+      <i class="fas fa-satellite-dish text-lg"></i>
+      <span class="text-[9px] font-bold tracking-wider">Sales</span>
+    </button>
+    <button onclick="mobileNavSwitch('pageInventory', this)" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-white">
+      <i class="fas fa-cubes text-lg"></i>
+      <span class="text-[9px] font-bold tracking-wider">Stock</span>
+    </button>
+    <button onclick="toggleMobileMenu()" class="flex flex-col items-center gap-1 text-slate-400 hover:text-white">
+      <i class="fas fa-bars text-lg"></i>
+      <span class="text-[9px] font-bold tracking-wider">Menu</span>
+    </button>
+  </nav>
 </body>
 </html>
