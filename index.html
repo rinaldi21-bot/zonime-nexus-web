@@ -281,6 +281,12 @@
           <h2 id="headerTitle"><div class="pip-indicator"></div> Control Center</h2>
       </div>
       <div class="header-actions">
+        <!-- TOMBOL PRIVASI (SEMBUNYIKAN / TAMPILKAN NOMINAL) -->
+        <button id="btnPrivacyToggle" onclick="togglePrivacyMode()" class="btn btn-outline py-1 px-2.5 text-[9px] flex items-center gap-1.5" title="Mode Privasi (Sembunyikan Nominal)">
+            <i class="fas fa-eye-slash text-slate-400" id="privacyIcon"></i>
+            <span id="privacyLabel" class="hidden sm:inline text-slate-400">Privasi</span>
+        </button>
+
         <div style="display:flex; align-items:center; gap:5px; padding:3px 10px; background:rgba(255,255,255,0.05); border-radius:99px; font-size:7.5px; font-weight:900;">
           <div class="pip-indicator" style="background:var(--ryux-green);"></div> CONNECTED
         </div>
@@ -611,7 +617,7 @@
           <div class="dg-header border-none p-0 mb-2.5" style="color:var(--ryux-green); font-size:12px;"><i class="fas fa-plus-circle mr-1"></i> Buat SKU Baru</div>
           <form id="formSkuBaru" onsubmit="event.preventDefault(); submitSkuBaru();">
             <div class="form-group"><label class="tiny-label">KODE SKU</label><input type="text" id="newSku" class="glass-input" style="text-transform:uppercase;" required></div>
-            <div style="display:flex; gap:8px; margin-bottom:10px;"><div style="flex:1;"><label class="tiny-label">Tipe</label><input type="text" id="newType" data-custom-list="listTypes" class="glass-input" autocomplete="off"></div><div style="flex:1;"><label class="tiny-label">Kategori</label><input type="text" id="newCat" data-custom-list="listCats" class="glass-input" autocomplete="off"></div></div>
+            <div style="display:gap:8px; margin-bottom:10px;"><div style="flex:1;"><label class="tiny-label">Tipe</label><input type="text" id="newType" data-custom-list="listTypes" class="glass-input" autocomplete="off"></div><div style="flex:1;"><label class="tiny-label">Kategori</label><input type="text" id="newCat" data-custom-list="listCats" class="glass-input" autocomplete="off"></div></div>
             <div class="form-group"><label class="tiny-label">NAMA PRODUK</label><input type="text" id="newName" data-custom-list="listProdNames" class="glass-input" required oninput="onProductSelect(this.value)" autocomplete="off"></div>
             <div style="display:flex; gap:8px; margin-bottom:10px;"><div style="flex:1;"><label class="tiny-label">Varian</label><input type="text" id="newVar" class="glass-input"></div><div style="flex:1;"><label class="tiny-label">Listing Code</label><input type="text" id="newLc" class="glass-input"></div></div>
             <div style="display:flex; gap:8px; margin-bottom:14px;"><div style="flex:1;"><label class="tiny-label" style="color:var(--ryux-green)">STOK AWAL</label><input type="number" id="newStock" class="glass-input" required value="0"></div><div style="flex:1;"><label class="tiny-label" style="color:var(--ryux-yellow)">COGS</label><input type="number" id="newCogs" class="glass-input" required value="0"></div></div>
@@ -665,8 +671,8 @@
           <div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes mr-1"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button></div>
           <div class="modal-body pointer-events-auto relative z-50">
             <div style="display:flex; gap:8px; margin-bottom:12px;">
-              <button class="btn btn-primary flex-1 py-1.5 text-[9px]" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Opname Fisik</button>
-              <button class="btn btn-outline flex-1 py-1.5 text-[9px]" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi Barang</button>
+              <button class="btn btn-primary flex-1 py-1 text-[8.5px]" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Opname Fisik</button>
+              <button class="btn btn-outline flex-1 py-1 text-[8.5px]" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi Barang</button>
             </div>
             
             <div id="tabOpname">
@@ -965,13 +971,73 @@
     var globalWallets = []; 
     var globalTransactions = [];
     var globalUtangPiutang = [];
+    var globalDashboardData = null;
 
     var reportChartObj = null;
     var financeChartObj = null;
     var dashChartTrend = null;
 
+    // ==============================================================
+    // ENGINE MODE PRIVASI (SEMBUNYIKAN NOMINAL JADI Rp ***)
+    // ==============================================================
+    var isPrivacyMode = localStorage.getItem('zonime_privacy_mode') === 'TRUE';
     var fmtAkuntan = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-    function formatRp(num) { return fmtAkuntan.format(num || 0); }
+
+    function formatRp(num) { 
+        if (isPrivacyMode) {
+            return 'Rp ***';
+        }
+        return fmtAkuntan.format(num || 0); 
+    }
+
+    function updatePrivacyButtonUI() {
+        const icon = document.getElementById('privacyIcon');
+        const label = document.getElementById('privacyLabel');
+        const btn = document.getElementById('btnPrivacyToggle');
+        if (isPrivacyMode) {
+            if (icon) icon.className = 'fas fa-eye text-cyan-400';
+            if (label) { label.innerText = 'Tampil'; label.className = 'hidden sm:inline text-cyan-400 font-bold'; }
+            if (btn) btn.classList.add('border-cyan-500/40', 'bg-cyan-500/10');
+        } else {
+            if (icon) icon.className = 'fas fa-eye-slash text-slate-400';
+            if (label) { label.innerText = 'Privasi'; label.className = 'hidden sm:inline text-slate-400'; }
+            if (btn) btn.classList.remove('border-cyan-500/40', 'bg-cyan-500/10');
+        }
+    }
+
+    function togglePrivacyMode() {
+        isPrivacyMode = !isPrivacyMode;
+        localStorage.setItem('zonime_privacy_mode', isPrivacyMode ? 'TRUE' : 'FALSE');
+        updatePrivacyButtonUI();
+
+        // Re-render seketika tanpa perlu fetch ulang ke server
+        if (globalDashboardData) {
+            renderDashboardKPIs(globalDashboardData);
+        }
+        if (globalSalesData && globalSalesData.length > 0) {
+            renderSalesTable();
+        }
+        if (globalWallets && globalWallets.length > 0) {
+            loadFinanceData();
+        }
+        if (globalInvData && globalInvData.length > 0) {
+            renderInventory();
+        }
+        if (globalProcData && globalProcData.length > 0) {
+            renderProcurement();
+        }
+    }
+
+    function renderDashboardKPIs(data) {
+        var omsetVal = (data && data.kpi && data.kpi.omset) ? data.kpi.omset : 0;
+        var profitVal = (data && data.kpi && data.kpi.profit) ? data.kpi.profit : 0;
+        var saldoVal = (data && data.kpi && data.kpi.saldoKas) ? data.kpi.saldoKas : 0;
+        var pesananVal = (data && data.kpi && data.kpi.pesanan) ? data.kpi.pesanan : 0;
+        document.getElementById('dashOmset').innerText = formatRp(omsetVal);
+        document.getElementById('dashProfit').innerText = formatRp(profitVal);
+        document.getElementById('dashSaldo').innerText = formatRp(saldoVal);
+        document.getElementById('dashOrder').innerText = pesananVal;
+    }
 
     function checkSession() {
         if (localStorage.getItem('zonime_session') === 'ACTIVE') {
@@ -991,19 +1057,16 @@
     });
 
     function handleHardwareBack() {
-        // A. Jika ada modal yang terbuka -> Tutup modal dulu!
         const openModals = document.querySelectorAll('.modal-overlay:not(.hidden-section)');
         if (openModals.length > 0) {
             openModals.forEach(m => m.classList.add('hidden-section'));
             return;
         }
-        // B. Jika sidebar aktif di mobile -> Tutup sidebar
         const sidebar = document.getElementById('mainSidebar');
         if (sidebar && sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
             return;
         }
-        // C. Jika sedang di menu lain (bukan dashboard) -> Kembali ke Control Center
         const activeSection = document.querySelector('.page-section:not(.hidden-section)');
         if (activeSection && activeSection.id !== 'pageDashboard') {
             showPage('pageDashboard', null);
@@ -1011,7 +1074,6 @@
             if (firstNav) mobileNavSwitch('pageDashboard', firstNav);
             return;
         }
-        // D. Jika sudah di Dashboard -> Konfirmasi keluar aplikasi
         if (confirm("Keluar dari ZONIME NEXUS?")) {
             if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
                 window.Capacitor.Plugins.App.exitApp();
@@ -1132,7 +1194,6 @@
 
       if(window.innerWidth < 768) { document.getElementById('mainSidebar').classList.remove('active'); }
 
-      // UPDATE HEADER TITLE DINAMIS
       const pageTitles = {
           'pageDashboard': 'Control Center',
           'pageFinance': 'Finance Manager',
@@ -1214,20 +1275,13 @@
 
         google.script.run
             .withSuccessHandler(data => { 
-                var omsetVal = (data && data.kpi && data.kpi.omset) ? data.kpi.omset : 0;
-                var profitVal = (data && data.kpi && data.kpi.profit) ? data.kpi.profit : 0;
-                var saldoVal = (data && data.kpi && data.kpi.saldoKas) ? data.kpi.saldoKas : 0;
-                var pesananVal = (data && data.kpi && data.kpi.pesanan) ? data.kpi.pesanan : 0;
+                globalDashboardData = data;
+                renderDashboardKPIs(data);
                 
                 var alertsArr = (data && data.alerts && Array.isArray(data.alerts)) ? data.alerts : [];
                 var topSkuArr = (data && data.topSku && Array.isArray(data.topSku)) ? data.topSku : [];
                 var chartData = (data && data.chart) ? data.chart : { labels: [], revenue: [], profit: [] };
 
-                document.getElementById('dashOmset').innerText = formatRp(omsetVal);
-                document.getElementById('dashProfit').innerText = formatRp(profitVal);
-                document.getElementById('dashSaldo').innerText = formatRp(saldoVal);
-                document.getElementById('dashOrder').innerText = pesananVal;
-                
                 var alertsHtml = '';
                 if(alertsArr.length === 0) {
                     alertsHtml = '<div class="text-center text-[9px] text-slate-500 py-1.5">Sistem Normal. Tidak ada peringatan kritis.</div>';
@@ -1406,7 +1460,6 @@
         
         var statMatch = (selStatus === 'ALL' || d.status.toLowerCase().includes(selStatus.toLowerCase()));
         
-        // Logika Pengecekan Kelengkapan (Error / Butuh Koreksi)
         var isErr = d.items.some(z => z.sku === '-' || z.nama.includes('⚠️') || z.nama.includes('Tidak Ditemukan')); 
         var kMatch = (selKelengkapan === 'ALL') || (selKelengkapan === 'AMAN' && !isErr) || (selKelengkapan === 'ERROR' && isErr); 
         
@@ -2573,6 +2626,7 @@
     window.onload = function() { 
       checkSession(); 
       preloadDatalists(); 
+      updatePrivacyButtonUI();
       showPage('pageDashboard', document.querySelector('.nav-item')); 
     };
 
