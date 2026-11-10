@@ -2522,21 +2522,65 @@
             }).editFinanceWallet(payload); 
     }
 
+    // ==============================================================
+    // KAMUS SUB-KATEGORI FINANSIAL OTOMATIS (IN, OUT, MUTASI)
+    // ==============================================================
+    const financeCategories = {
+      IN: [
+        { value: "Pencairan Saldo MP", label: "Pencairan Saldo MP (TikTok/Shopee)" },
+        { value: "Penjualan Langsung", label: "Penjualan Langsung / Offline / WA" },
+        { value: "Penambahan Modal", label: "Penambahan Modal (Suntikan Dana)" },
+        { value: "Pelunasan Piutang", label: "Pelunasan Piutang (Klien/Pihak Luar)" },
+        { value: "Pendapatan Lain-lain", label: "Pendapatan Lain-lain" }
+      ],
+      OUT: [
+        { value: "Restock HPP", label: "Restock HPP (Belanja Barang/Vendor)" },
+        { value: "Marketing & Ads", label: "Marketing & Ads (Iklan/Endorse)" },
+        { value: "Operasional & Packing", label: "Operasional & Packing (Lakban/Kardus/ATK)" },
+        { value: "Gaji & Fee", label: "Gaji & Fee Karyawan / Admin" },
+        { value: "Sewa & Utilitas", label: "Sewa & Utilitas (Listrik/Wifi/Gudang)" },
+        { value: "Pribadi / Prive", label: "Pribadi / Prive (Keluarga)" },
+        { value: "Pengeluaran Lain-lain", label: "Pengeluaran Lain-lain" }
+      ],
+      MUTASI: [
+        { value: "Transfer Antar Rekening", label: "Transfer Antar Rekening" },
+        { value: "Tarik Tunai Kas", label: "Tarik Tunai ke Kas Fisik" },
+        { value: "Top-Up E-Wallet", label: "Top-Up E-Wallet (ShopeePay/GoPay/Dana)" }
+      ]
+    };
+
     function fm_toggleMutasi(typeVal) {
         const wrapTo = document.getElementById('fm_wrapper_wallet_to'); 
         const wrapCat = document.getElementById('fm_wrapper_category'); 
         const lblFrom = document.getElementById('fm_lbl_wallet_from');
+        const selectCat = document.getElementById('fm_tx_subkategori');
+
+        if (selectCat && financeCategories[typeVal]) {
+            selectCat.innerHTML = '';
+            financeCategories[typeVal].forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.value;
+                opt.innerText = item.label;
+                selectCat.appendChild(opt);
+            });
+        }
+
         if(typeVal === 'MUTASI') { 
           wrapTo.classList.remove('hidden'); 
           document.getElementById('fm_tx_wallet_to').required = true; 
-          lblFrom.innerText = "Dompet Asal (Keluar)"; 
+          lblFrom.innerText = "DOMPET ASAL (SUMBER DANA)"; 
           lblFrom.classList.add('text-rose-400'); 
-          wrapCat.classList.add('hidden'); 
-          document.getElementById('fm_tx_subkategori').value = "-"; 
+          wrapCat.classList.remove('hidden'); 
+        } else if(typeVal === 'IN') { 
+          wrapTo.classList.add('hidden'); 
+          document.getElementById('fm_tx_wallet_to').required = false; 
+          lblFrom.innerText = "DOMPET PENERIMA (UANG MASUK)"; 
+          lblFrom.classList.remove('text-rose-400'); 
+          wrapCat.classList.remove('hidden'); 
         } else { 
           wrapTo.classList.add('hidden'); 
           document.getElementById('fm_tx_wallet_to').required = false; 
-          lblFrom.innerText = "Pilih Dompet"; 
+          lblFrom.innerText = "DOMPET SUMBER DANA"; 
           lblFrom.classList.remove('text-rose-400'); 
           wrapCat.classList.remove('hidden'); 
         }
