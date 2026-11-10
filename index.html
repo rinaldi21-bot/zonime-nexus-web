@@ -697,6 +697,88 @@
   <div id="printOpnameArea" class="hidden-section"></div>
 
   <!-- MODALS -->
+  <!-- MODAL INPUT PESANAN MANUAL -->
+  <div id="modalManualOrder" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:520px;">
+      <div class="modal-header">
+        <span style="color:var(--ryux-cyan);"><i class="fas fa-cart-plus mr-1"></i> Input Pesanan Manual (Kasir / WA / MP)</span>
+        <button type="button" onclick="closeManualOrderModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="event.preventDefault(); submitManualOrder();">
+          
+          <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px;">
+            <div class="form-group" style="flex:1; min-width:110px;">
+              <label class="tiny-label">TANGGAL & WAKTU</label>
+              <input type="datetime-local" id="moTgl" class="glass-input" required>
+            </div>
+            <div class="form-group" style="flex:1; min-width:110px;">
+              <label class="tiny-label">NO. PESANAN</label>
+              <input type="text" id="moNoOrder" class="glass-input" placeholder="Otomatis jika kosong">
+            </div>
+            <div class="form-group" style="flex:1; min-width:110px;">
+              <label class="tiny-label">CHANNEL</label>
+              <select id="moChannel" class="glass-input">
+                <option value="WhatsApp / Direct">WhatsApp / Direct</option>
+                <option value="Kasir Toko (Offline)">Kasir Toko (Offline)</option>
+                <option value="TikTok Shop (Manual)">TikTok Shop (Manual)</option>
+                <option value="Shopee (Manual)">Shopee (Manual)</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px;">
+            <div class="form-group" style="flex:1; min-width:110px;">
+              <label class="tiny-label text-emerald-400">STATUS PESANAN</label>
+              <select id="moStatus" class="glass-input border-emerald-500/30">
+                <option value="Selesai">Selesai (Langsung Lunas)</option>
+                <option value="Perlu dikirim">Perlu dikirim</option>
+                <option value="Sedang Transit">Sedang Transit</option>
+                <option value="Terkirim">Terkirim</option>
+                <option value="Batal">Batal</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex:1; min-width:140px;">
+              <label class="tiny-label text-cyan-400">MASUKKAN KE KAS</label>
+              <select id="moWallet" class="glass-input border-cyan-500/30">
+                <option value="">-- Jangan Catat ke Kas --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- DAFTAR ITEM BARANG -->
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="tiny-label text-white">DAFTAR BARANG YANG DIBELI</span>
+            <button type="button" class="btn btn-outline py-0.5 px-2 text-[8px]" onclick="addManualOrderItemRow()">+ Tambah Produk</button>
+          </div>
+          <div id="moItemsContainer" class="flex flex-col gap-1.5 mb-2.5"></div>
+
+          <!-- ADMIN & CATATAN -->
+          <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-bottom:10px; display:flex; gap:8px;">
+            <div class="form-group" style="flex:1;">
+              <label class="tiny-label text-rose-400">BIAYA ADMIN / POTONGAN (-)</label>
+              <input type="number" id="moAdminFee" class="glass-input text-rose-400" value="0" oninput="calcManualOrder()">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="tiny-label">SELLER NOTE / CATATAN</label>
+              <input type="text" id="moCatatan" class="glass-input" placeholder="Catatan pesanan">
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-weight:900;">
+            <div style="font-size:10px;">Total Kotor: <span id="moGrossLabel" style="color:var(--ryux-cyan);">Rp 0</span></div>
+            <div style="font-size:12.5px; color:var(--ryux-green);">Bersih Masuk: <span id="moNetLabel">Rp 0</span></div>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button type="button" onclick="closeManualOrderModal()" class="btn btn-outline" style="flex:1;">Batal</button>
+            <button type="submit" id="btnSubmitManualOrder" class="btn btn-primary" style="flex:2;">Simpan Pesanan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
   <div id="modalEditListingCode" class="modal-overlay hidden-section">
     <div class="modal-card" style="max-width:390px;">
       <div class="modal-header">
