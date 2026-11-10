@@ -1183,38 +1183,81 @@
     }
 
     // ==============================================================
-    // FITUR: MODAL INPUT TRANSAKSI ORDER MANUAL
+    // CONTROLLER: MODAL INPUT TRANSAKSI ORDER MANUAL (ANTI-MACET)
     // ==============================================================
-    function openManualOrderModal() {
-      const now = new Date();
-      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      document.getElementById('moTgl').value = now.toISOString().slice(0, 16);
-      
-      document.getElementById('moNoOrder').value = '';
-      document.getElementById('moCatatan').value = '';
-      document.getElementById('moAdminFee').value = 0;
-      document.getElementById('moStatus').value = 'Selesai';
-      
-      const selWallet = document.getElementById('moWallet');
-      selWallet.innerHTML = '<option value="">-- Jangan Catat ke Kas --</option>';
-      globalWallets.forEach(w => {
-        selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
-      });
+    function getLocalDateTimeString() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
 
-      document.getElementById('moItemsContainer').innerHTML = '';
-      addManualOrderItemRow();
-      calcManualOrder();
+    function openManualOrderModal(e) {
+      if (e) e.stopPropagation();
+      try {
+        const modal = document.getElementById('modalManualOrder');
+        if (!modal) {
+          alert("Error: Elemen modalManualOrder tidak ditemukan di HTML.");
+          return;
+        }
 
-      document.getElementById('modalManualOrder').classList.remove('hidden-section');
-      window.history.pushState({ modal: 'manualOrder' }, '');
+        // 1. Tampilkan modal seketika di baris pertama!
+        modal.classList.remove('hidden-section');
+        window.history.pushState({ modal: 'manualOrder' }, '');
+
+        // 2. Setel tanggal lokal yang aman (Anti-Crash)
+        const tglInput = document.getElementById('moTgl');
+        if (tglInput) tglInput.value = getLocalDateTimeString();
+
+        if (document.getElementById('moNoOrder')) document.getElementById('moNoOrder').value = '';
+        if (document.getElementById('moCatatan')) document.getElementById('moCatatan').value = '';
+        if (document.getElementById('moAdminFee')) document.getElementById('moAdminFee').value = 0;
+        if (document.getElementById('moStatus')) document.getElementById('moStatus').value = 'Selesai';
+        
+        // 3. Populate pilihan dompet kas
+        const selWallet = document.getElementById('moWallet');
+        if (selWallet) {
+          selWallet.innerHTML = '<option value="">-- Jangan Catat ke Kas --</option>';
+          if (globalWallets && globalWallets.length > 0) {
+            globalWallets.forEach(w => {
+              selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
+            });
+          } else {
+            // Jika dompet belum ter-load, ambil dari server di background
+            google.script.run.withSuccessHandler(res => {
+              globalWallets = res.wallets || [];
+              globalWallets.forEach(w => {
+                selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
+              });
+            }).getFinanceData();
+          }
+        }
+
+        // 4. Bersihkan daftar barang dan buat baris pertama
+        const container = document.getElementById('moItemsContainer');
+        if (container) {
+          container.innerHTML = '';
+          addManualOrderItemRow();
+        }
+        calcManualOrder();
+
+      } catch (err) {
+        console.error("Gagal membuka modal manual order:", err);
+        alert("Gagal membuka form: " + err.message);
+      }
     }
 
     function closeManualOrderModal() {
-      document.getElementById('modalManualOrder').classList.add('hidden-section');
+      const modal = document.getElementById('modalManualOrder');
+      if (modal) modal.classList.add('hidden-section');
     }
 
     function addManualOrderItemRow() {
       const container = document.getElementById('moItemsContainer');
+      if (!container) return;
       const div = document.createElement('div');
       div.className = 'mo-item-row flex gap-1.5 items-center bg-black/40 p-2 rounded-lg border border-white/5';
       div.innerHTML = `
@@ -1247,11 +1290,14 @@
         gross += (q * p);
       });
 
-      const adminFee = parseFloat(document.getElementById('moAdminFee').value) || 0;
+      const adminFeeEl = document.getElementById('moAdminFee');
+      const adminFee = adminFeeEl ? (parseFloat(adminFeeEl.value) || 0) : 0;
       const net = Math.max(0, gross - adminFee);
 
-      document.getElementById('moGrossLabel').innerText = formatRp(gross);
-      document.getElementById('moNetLabel').innerText = formatRp(net);
+      const grossLabel = document.getElementById('moGrossLabel');
+      const netLabel = document.getElementById('moNetLabel');
+      if (grossLabel) grossLabel.innerText = formatRp(gross);
+      if (netLabel) netLabel.innerText = formatRp(net);
     }
 
     function submitManualOrder() {
