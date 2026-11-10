@@ -1183,254 +1183,173 @@
     }
 
     // ==============================================================
-    // CONTROLLER: MODAL INPUT TRANSAKSI ORDER MANUAL (ANTI-MACET)
-    // ==============================================================
-    function getLocalDateTimeString() {
-      const d = new Date();
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      const hours = String(d.getHours()).padStart(2, '0');
-      const minutes = String(d.getMinutes()).padStart(2, '0');
-      return `${year}-${month}-${day}T${hours}:${minutes}`;
-    }
+// FITUR MODAL MANUAL ORDER (+ORDER) ANTI-MACET
+// ==============================================================
+function getLocalDateTimeString() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
 
-    function openManualOrderModal(e) {
-      if (e) e.stopPropagation();
-      try {
-        const modal = document.getElementById('modalManualOrder');
-        if (!modal) {
-          alert("Error: Elemen modalManualOrder tidak ditemukan di HTML.");
-          return;
-        }
+function openManualOrderModal(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  try {
+    const modal = document.getElementById('modalManualOrder');
+    if (!modal) return alert("Error: modalManualOrder belum terpasang di HTML.");
 
-        // 1. Tampilkan modal seketika di baris pertama!
-        modal.classList.remove('hidden-section');
-        window.history.pushState({ modal: 'manualOrder' }, '');
+    // 1. Munculkan modal seketika
+    modal.classList.remove('hidden-section');
+    window.history.pushState({ modal: 'manualOrder' }, '');
 
-        // 2. Setel tanggal lokal yang aman (Anti-Crash)
-        const tglInput = document.getElementById('moTgl');
-        if (tglInput) tglInput.value = getLocalDateTimeString();
+    // 2. Setel tanggal lokal yang aman (Anti-Crash)
+    const tglInput = document.getElementById('moTgl');
+    if (tglInput) tglInput.value = getLocalDateTimeString();
 
-        if (document.getElementById('moNoOrder')) document.getElementById('moNoOrder').value = '';
-        if (document.getElementById('moCatatan')) document.getElementById('moCatatan').value = '';
-        if (document.getElementById('moAdminFee')) document.getElementById('moAdminFee').value = 0;
-        if (document.getElementById('moStatus')) document.getElementById('moStatus').value = 'Selesai';
-        
-        // 3. Populate pilihan dompet kas
-        const selWallet = document.getElementById('moWallet');
-        if (selWallet) {
-          selWallet.innerHTML = '<option value="">-- Jangan Catat ke Kas --</option>';
-          if (globalWallets && globalWallets.length > 0) {
-            globalWallets.forEach(w => {
-              selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
-            });
-          } else {
-            // Jika dompet belum ter-load, ambil dari server di background
-            google.script.run.withSuccessHandler(res => {
-              globalWallets = res.wallets || [];
-              globalWallets.forEach(w => {
-                selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
-              });
-            }).getFinanceData();
-          }
-        }
-
-        // 4. Bersihkan daftar barang dan buat baris pertama
-        const container = document.getElementById('moItemsContainer');
-        if (container) {
-          container.innerHTML = '';
-          addManualOrderItemRow();
-        }
-        calcManualOrder();
-
-      } catch (err) {
-        console.error("Gagal membuka modal manual order:", err);
-        alert("Gagal membuka form: " + err.message);
-      }
-    }
-
-    function closeManualOrderModal() {
-      const modal = document.getElementById('modalManualOrder');
-      if (modal) modal.classList.add('hidden-section');
-    }
-
-    function addManualOrderItemRow() {
-      const container = document.getElementById('moItemsContainer');
-      if (!container) return;
-      const div = document.createElement('div');
-      div.className = 'mo-item-row flex gap-1.5 items-center bg-black/40 p-2 rounded-lg border border-white/5';
-      div.innerHTML = `
-        <input type="text" class="glass-input mo-item-sku flex-1 text-xs" data-custom-list="skuSuggestions" placeholder="Pilih/Ketik SKU" oninput="onManualItemSkuChange(this)" required>
-        <input type="number" class="glass-input mo-item-qty text-center font-bold text-xs" placeholder="Qty" value="1" min="1" style="width:55px;" oninput="calcManualOrder()" required>
-        <input type="number" class="glass-input mo-item-price text-right font-bold text-xs" placeholder="Harga Jual (Rp)" value="0" min="0" style="width:110px;" oninput="calcManualOrder()" required>
-        <button type="button" class="btn btn-danger py-1 px-2 text-[10px]" onclick="this.parentElement.remove(); calcManualOrder();" title="Hapus Barang"><i class="fas fa-trash"></i></button>
-      `;
-      container.appendChild(div);
-    }
-
-    function onManualItemSkuChange(inputEl) {
-      const val = inputEl.value.split(" | ")[0].trim().toUpperCase();
-      const match = masterProductFullList.find(p => p.sku && p.sku.toUpperCase() === val);
-      if (match) {
-        const row = inputEl.closest('.mo-item-row');
-        const priceInput = row.querySelector('.mo-item-price');
-        if (parseFloat(priceInput.value) === 0 && match.cogs > 0) {
-          priceInput.value = Math.round(match.cogs * 1.3);
-        }
-        calcManualOrder();
-      }
-    }
-
-    function calcManualOrder() {
-      let gross = 0;
-      document.querySelectorAll('.mo-item-row').forEach(row => {
-        const q = parseInt(row.querySelector('.mo-item-qty').value) || 0;
-        const p = parseFloat(row.querySelector('.mo-item-price').value) || 0;
-        gross += (q * p);
-      });
-
-      const adminFeeEl = document.getElementById('moAdminFee');
-      const adminFee = adminFeeEl ? (parseFloat(adminFeeEl.value) || 0) : 0;
-      const net = Math.max(0, gross - adminFee);
-
-      const grossLabel = document.getElementById('moGrossLabel');
-      const netLabel = document.getElementById('moNetLabel');
-      if (grossLabel) grossLabel.innerText = formatRp(gross);
-      if (netLabel) netLabel.innerText = formatRp(net);
-    }
-
-    function submitManualOrder() {
-      const btn = document.getElementById('btnSubmitManualOrder');
-      const items = [];
-      let totalGross = 0;
-
-      document.querySelectorAll('.mo-item-row').forEach(row => {
-        const skuVal = row.querySelector('.mo-item-sku').value.split(" | ")[0].trim();
-        const qtyVal = parseInt(row.querySelector('.mo-item-qty').value) || 1;
-        const priceVal = parseFloat(row.querySelector('.mo-item-price').value) || 0;
-        if (skuVal) {
-          items.push({ sku: skuVal, qty: qtyVal, harga: priceVal });
-          totalGross += (qtyVal * priceVal);
-        }
-      });
-
-      if (items.length === 0) return alert("Pilih minimal 1 barang untuk pesanan ini!");
-
-      const adminFee = parseFloat(document.getElementById('moAdminFee').value) || 0;
-      const netIncome = Math.max(0, totalGross - adminFee);
-      const walletId = document.getElementById('moWallet').value;
-      const walletObj = globalWallets.find(w => w.id === walletId);
-
-      const payload = {
-        tanggal: document.getElementById('moTgl').value.replace('T', ' ') + ':00',
-        noOrder: document.getElementById('moNoOrder').value,
-        channel: document.getElementById('moChannel').value,
-        status: document.getElementById('moStatus').value,
-        walletId: walletId,
-        walletName: walletObj ? walletObj.nama : '',
-        catatan: document.getElementById('moCatatan').value,
-        adminFee: adminFee,
-        totalGross: totalGross,
-        netIncome: netIncome,
-        items: items
-      };
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-1"></i> Menyimpan...';
-
-      google.script.run
-        .withSuccessHandler(res => {
-          alert(res);
-          btn.disabled = false;
-          btn.innerText = "Simpan Pesanan";
-          closeManualOrderModal();
-          loadSalesData();
-          loadDashboard();
-          if (walletId) loadFinanceData();
-        })
-        .withFailureHandler(err => {
-          alert("Gagal: " + err);
-          btn.disabled = false;
-          btn.innerText = "Simpan Pesanan";
-        })
-        .simpanOrderManual(payload);
-    }
-
-    function openEditListingCodeModal(rowIdx, noOrder, currentLc) {
-      document.getElementById('editLcRowIdx').value = rowIdx;
-      document.getElementById('editLcOrderLabel').innerText = noOrder;
-      document.getElementById('editLcInput').value = (currentLc && currentLc !== '-' && currentLc !== 'undefined') ? currentLc : '';
-      document.getElementById('modalEditListingCode').classList.remove('hidden-section');
-      window.history.pushState({ modal: 'editListingCode' }, '');
-      setTimeout(() => document.getElementById('editLcInput').focus(), 80);
-    }
-
-    function closeEditListingCodeModal() {
-      document.getElementById('modalEditListingCode').classList.add('hidden-section');
-    }
-
-    function submitEditListingCode() {
-      var btn = document.getElementById('btnSubmitEditLc');
-      var rowIdx = document.getElementById('editLcRowIdx').value;
-      var newLc = document.getElementById('editLcInput').value;
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses...';
-
-      google.script.run
-        .withSuccessHandler(res => {
-          alert(res);
-          btn.disabled = false;
-          btn.innerHTML = 'Simpan & Re-Parse';
-          closeEditListingCodeModal();
-          loadSalesData();
-        })
-        .withFailureHandler(err => {
-          alert("Error: " + err);
-          btn.disabled = false;
-          btn.innerHTML = 'Simpan & Re-Parse';
-        })
-        .simpanEditListingCode({ rowIdx: rowIdx, newListingCode: newLc });
-    }
+    if (document.getElementById('moNoOrder')) document.getElementById('moNoOrder').value = '';
+    if (document.getElementById('moCatatan')) document.getElementById('moCatatan').value = '';
+    if (document.getElementById('moAdminFee')) document.getElementById('moAdminFee').value = 0;
+    if (document.getElementById('moStatus')) document.getElementById('moStatus').value = 'Selesai';
     
-    function prosesLogin(e) {
-        e.preventDefault();
-        const btn = document.getElementById('btnLogin');
-        const errBox = document.getElementById('loginError');
-        const u = document.getElementById('loginUser').value;
-        const p = document.getElementById('loginPass').value;
-
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> VERIFYING...';
-        errBox.classList.add('hidden');
-
-        google.script.run
-            .withSuccessHandler(res => {
-                if (res === "SUCCESS") {
-                    localStorage.setItem('zonime_session', 'ACTIVE');
-                    document.getElementById('loginScreen').classList.add('opacity-0');
-                    setTimeout(() => {
-                        document.getElementById('loginScreen').classList.add('hidden-section');
-                        document.getElementById('loginScreen').classList.remove('opacity-0');
-                    }, 400);
-                    btn.disabled = false;
-                    btn.innerHTML = 'INITIATE SEQUENCE';
-                } else {
-                    errBox.innerText = res;
-                    errBox.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.innerHTML = 'INITIATE SEQUENCE';
-                }
-            })
-            .withFailureHandler(err => {
-                errBox.innerText = "Connection Error: " + err;
-                errBox.classList.remove('hidden');
-                btn.disabled = false;
-                btn.innerHTML = 'INITIATE SEQUENCE';
-            })
-            .verifikasiLogin({username: u, password: p});
+    // 3. Muat pilihan dompet kas
+    const selWallet = document.getElementById('moWallet');
+    if (selWallet) {
+      selWallet.innerHTML = '<option value="">-- Jangan Catat ke Kas --</option>';
+      if (globalWallets && globalWallets.length > 0) {
+        globalWallets.forEach(w => {
+          selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
+        });
+      } else {
+        google.script.run.withSuccessHandler(res => {
+          globalWallets = res.wallets || [];
+          globalWallets.forEach(w => {
+            selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
+          });
+        }).getFinanceData();
+      }
     }
+
+    // 4. Buat baris barang pertama
+    const container = document.getElementById('moItemsContainer');
+    if (container) {
+      container.innerHTML = '';
+      addManualOrderItemRow();
+    }
+    calcManualOrder();
+  } catch (err) {
+    alert("Error buka form: " + err.message);
+  }
+}
+
+function closeManualOrderModal() {
+  const modal = document.getElementById('modalManualOrder');
+  if (modal) modal.classList.add('hidden-section');
+}
+
+function addManualOrderItemRow() {
+  const container = document.getElementById('moItemsContainer');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.className = 'mo-item-row flex gap-1.5 items-center bg-black/40 p-1.5 rounded-lg border border-white/5';
+  div.innerHTML = `
+    <input type="text" class="glass-input mo-item-sku flex-1 text-xs" data-custom-list="skuSuggestions" placeholder="Ketik/Pilih SKU" oninput="onManualItemSkuChange(this)" required>
+    <input type="number" class="glass-input mo-item-qty text-center font-bold text-xs" placeholder="Qty" value="1" min="1" style="width:50px;" oninput="calcManualOrder()" required>
+    <input type="number" class="glass-input mo-item-price text-right font-bold text-xs" placeholder="Harga (Rp)" value="0" min="0" style="width:100px;" oninput="calcManualOrder()" required>
+    <button type="button" class="btn btn-danger py-1 px-2 text-[10px]" onclick="this.parentElement.remove(); calcManualOrder();" title="Hapus"><i class="fas fa-trash"></i></button>
+  `;
+  container.appendChild(div);
+}
+
+function onManualItemSkuChange(inputEl) {
+  const val = inputEl.value.split(" | ")[0].trim().toUpperCase();
+  const match = masterProductFullList.find(p => p.sku && p.sku.toUpperCase() === val);
+  if (match) {
+    const row = inputEl.closest('.mo-item-row');
+    const priceInput = row.querySelector('.mo-item-price');
+    if (parseFloat(priceInput.value) === 0 && match.cogs > 0) {
+      priceInput.value = Math.round(match.cogs * 1.3);
+    }
+    calcManualOrder();
+  }
+}
+
+function calcManualOrder() {
+  let gross = 0;
+  document.querySelectorAll('.mo-item-row').forEach(row => {
+    const q = parseInt(row.querySelector('.mo-item-qty').value) || 0;
+    const p = parseFloat(row.querySelector('.mo-item-price').value) || 0;
+    gross += (q * p);
+  });
+
+  const adminFeeEl = document.getElementById('moAdminFee');
+  const adminFee = adminFeeEl ? (parseFloat(adminFeeEl.value) || 0) : 0;
+  const net = Math.max(0, gross - adminFee);
+
+  const grossLabel = document.getElementById('moGrossLabel');
+  const netLabel = document.getElementById('moNetLabel');
+  if (grossLabel) grossLabel.innerText = formatRp(gross);
+  if (netLabel) netLabel.innerText = formatRp(net);
+}
+
+function submitManualOrder() {
+  const btn = document.getElementById('btnSubmitManualOrder');
+  const items = [];
+  let totalGross = 0;
+
+  document.querySelectorAll('.mo-item-row').forEach(row => {
+    const skuVal = row.querySelector('.mo-item-sku').value.split(" | ")[0].trim();
+    const qtyVal = parseInt(row.querySelector('.mo-item-qty').value) || 1;
+    const priceVal = parseFloat(row.querySelector('.mo-item-price').value) || 0;
+    if (skuVal) {
+      items.push({ sku: skuVal, qty: qtyVal, harga: priceVal });
+      totalGross += (qtyVal * priceVal);
+    }
+  });
+
+  if (items.length === 0) return alert("Pilih minimal 1 barang!");
+
+  const adminFee = parseFloat(document.getElementById('moAdminFee').value) || 0;
+  const netIncome = Math.max(0, totalGross - adminFee);
+  const walletId = document.getElementById('moWallet').value;
+  const walletObj = globalWallets.find(w => w.id === walletId);
+
+  const payload = {
+    tanggal: document.getElementById('moTgl').value.replace('T', ' ') + ':00',
+    noOrder: document.getElementById('moNoOrder').value,
+    channel: document.getElementById('moChannel').value,
+    status: document.getElementById('moStatus').value,
+    walletId: walletId,
+    walletName: walletObj ? walletObj.nama : '',
+    catatan: document.getElementById('moCatatan').value,
+    adminFee: adminFee,
+    totalGross: totalGross,
+    netIncome: netIncome,
+    items: items
+  };
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-1"></i> Menyimpan...';
+
+  google.script.run
+    .withSuccessHandler(res => {
+      alert(res);
+      btn.disabled = false;
+      btn.innerText = "Simpan Pesanan";
+      closeManualOrderModal();
+      loadSalesData();
+      loadDashboard();
+      if (walletId) loadFinanceData();
+    })
+    .withFailureHandler(err => {
+      alert("Gagal: " + err);
+      btn.disabled = false;
+      btn.innerText = "Simpan Pesanan";
+    })
+    .simpanOrderManual(payload);
+}
 
     function prosesLogout() {
         localStorage.removeItem('zonime_session');
