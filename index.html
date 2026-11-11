@@ -517,6 +517,54 @@
       </div>
 
       <!-- 3. LIVE SALES -->
+      <!-- FILTER BAR LIVE SALES LENGKAP DENGAN RENTANG TANGGAL -->
+        <div class="glass-card p-2.5 flex flex-col gap-2 shrink-0 z-30 mb-2.5 bg-black/40">
+          <div class="flex gap-2 items-center flex-wrap">
+            <select class="glass-input w-auto py-1 text-[9.5px] flex-1 min-w-[100px]" id="filterDateRangeSales" onchange="renderSalesTable();">
+              <option value="ALL">Semua Bulan</option>
+              <option value="TODAY">Hari Ini</option>
+              <option value="YESTERDAY">Kemarin</option>
+              <option value="THIS_WEEK">Pekan Ini</option>
+              <option value="THIS_MONTH">Bulan Ini</option>
+            </select>
+            
+            <select class="glass-input w-auto py-1 text-[9.5px] flex-1 min-w-[100px]" id="filterStatusSales" onchange="renderSalesTable()">
+              <option value="ALL">Semua Status</option>
+              <option value="Selesai">Selesai</option>
+              <option value="Terkirim">Terkirim</option>
+              <option value="Perlu dikirim">Perlu dikirim</option>
+              <option value="Sedang Transit">Sedang Transit</option>
+              <option value="Batal">Batal</option>
+              <option value="Return COD">Return COD</option>
+              <option value="Refund & Return">Refund & Return</option>
+            </select>
+
+            <select class="glass-input w-auto py-1 text-[9.5px] flex-1 min-w-[100px] border-purple-500/30 text-purple-300" id="filterKelengkapanSales" onchange="renderSalesTable()">
+              <option value="ALL">Semua Data</option>
+              <option value="AMAN">Data Valid</option>
+              <option value="ERROR">Butuh Koreksi ⚠️</option>
+            </select>
+          </div>
+
+          <!-- BARIS KEDUA: FILTER RENTANG TANGGAL DARI - SAMPAI -->
+          <div class="flex gap-1.5 items-center flex-wrap">
+            <div class="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-lg border border-white/10 text-[9px]">
+               <span class="text-slate-400">Dari:</span>
+               <input type="date" id="salesStartDate" onchange="renderSalesTable()" class="bg-transparent text-white text-[9px] outline-none cursor-pointer">
+               <span class="text-slate-400">s/d</span>
+               <input type="date" id="salesEndDate" onchange="renderSalesTable()" class="bg-transparent text-white text-[9px] outline-none cursor-pointer">
+            </div>
+
+            <div class="relative flex-1 min-w-[130px]">
+               <i class="fa-solid fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[9px]"></i>
+               <input type="text" class="glass-input pl-7 py-1 text-[9.5px]" id="searchSales" placeholder="Cari Order / Listing Code..." onkeyup="renderSalesTable()">
+            </div>
+
+            <button type="button" onclick="openManualOrderModal(event)" class="btn btn-primary py-1 px-2.5 text-[9.5px] shadow-[0_0_10px_rgba(0,240,255,0.2)] shrink-0" title="Input Pesanan Manual"><i class="fas fa-cart-plus mr-1"></i>+Order</button>
+            <button onclick="resetSalesFilter()" class="btn-outline py-1 px-2.5 text-[9.5px] rounded-lg shrink-0" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
+          </div>
+        </div>
+      
       <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full relative z-10 pointer-events-auto">
         <div class="glass-card p-2.5 flex flex-col gap-2 shrink-0 z-30 mb-2.5 bg-black/40">
           <div class="flex gap-2 items-center flex-wrap">
@@ -1737,6 +1785,7 @@ function submitManualOrder() {
         renderSalesTable();
     }
 
+   // RENDER SALES TABLE LENGKAP: GROSS, ADMIN FEE, ACTUAL INCOME, & PROFIT
     function renderSalesTable() {
       var container = document.getElementById('salesContainer');
       if(!container || globalSalesData.length === 0) { 
@@ -1747,15 +1796,23 @@ function submitManualOrder() {
       var selDate = document.getElementById('filterDateRangeSales').value; 
       var selStatus = document.getElementById('filterStatusSales').value; 
       var selKelengkapan = document.getElementById('filterKelengkapanSales') ? document.getElementById('filterKelengkapanSales').value : 'ALL'; 
+      var selStart = document.getElementById('salesStartDate') ? document.getElementById('salesStartDate').value : ''; 
+      var selEnd = document.getElementById('salesEndDate') ? document.getElementById('salesEndDate').value : ''; 
       var sq = document.getElementById('searchSales').value.toLowerCase();
       
       var now = new Date(); now.setHours(0,0,0,0); 
       var targetStart = null, targetEnd = null;
-      
-      if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
-      else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
-      else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
-      else if(selDate === 'THIS_MONTH') { targetStart = new Date(now.getFullYear(), now.getMonth(), 1); targetEnd = new Date(now); }
+
+      // Filter Rentang Tanggal Manual (Jika Diisi)
+      if (selStart || selEnd) {
+          if (selStart) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); }
+          if (selEnd) { targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
+      } else {
+          if(selDate === 'TODAY') { targetStart = new Date(now); targetEnd = new Date(now); }
+          else if (selDate === 'YESTERDAY') { targetStart = new Date(now); targetStart.setDate(now.getDate() - 1); targetEnd = new Date(targetStart); }
+          else if (selDate === 'THIS_WEEK') { var day = now.getDay() || 7; targetStart = new Date(now); targetStart.setDate(now.getDate() - day + 1); targetEnd = new Date(now); }
+          else if(selDate === 'THIS_MONTH') { targetStart = new Date(now.getFullYear(), now.getMonth(), 1); targetEnd = new Date(now); }
+      }
 
       var filtered = globalSalesData.filter(d => {
         var dTime = new Date(d.tanggal).getTime();
@@ -1810,8 +1867,8 @@ function submitManualOrder() {
               } 
           });
           
-          var actBtn = `<button class="btn btn-outline py-0.5 px-2 text-[8.5px]" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Fix</button>`;
-          if(d.status.includes("Return")) actBtn = `<button class="btn btn-danger py-0.5 px-2 text-[8.5px]" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Retur</button>`;
+          var actBtn = `<button type="button" class="btn btn-outline py-0.5 px-2 text-[8.5px] pointer-events-auto cursor-pointer" onclick="openFixModal(${d.rowIdx})"><i class="fas fa-pen"></i> Fix</button>`;
+          if(d.status.includes("Return")) actBtn = `<button type="button" class="btn btn-danger py-0.5 px-2 text-[8.5px] pointer-events-auto cursor-pointer" onclick="openReturModal(${d.rowIdx}, '${d.noOrder}')"><i class="fas fa-undo"></i> Retur</button>`;
           
           var displayLc = "-";
           if (d.items && d.items.length > 0 && d.items[0].listingCode && d.items[0].listingCode !== "undefined") {
@@ -1822,19 +1879,24 @@ function submitManualOrder() {
 
           var cardBorder = isRowError ? 'border-rose-500/30 bg-rose-950/10' : 'border-white/5 bg-black/40';
 
+          // KARTU TRANSAKSI LENGKAP: GROSS, FEE, ACTUAL INCOME, & NET PROFIT
           html += `<div class="data-group-card glass-card mb-2 ${cardBorder}">
                       <div class="dg-header">
                           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
                               <span class="${badgeClass}">${d.status}</span>
                               <span style="font-size:11px; color:white; font-weight:800;">${d.noOrder}</span>
                               <span class="text-[8.5px] text-slate-400 font-mono"><i class="far fa-clock mr-1 text-cyan-400"></i>${d.tanggal || '-'}</span>
-                              <span class="badge-purple cursor-pointer hover:bg-purple-500/25 transition-all flex items-center gap-1" onclick="openEditListingCodeModal(${d.rowIdx}, '${d.noOrder}', '${(displayLc || '').replace(/'/g, "\\'")}')" title="Edit Listing Code">
+                              <span class="badge-purple cursor-pointer hover:bg-purple-500/25 transition-all flex items-center gap-1" onclick="openEditListingCodeModal(${d.rowIdx}, '${d.noOrder}', '${(displayLc || '').replace(/'/g, "\\'")}')" title="Edit LC">
                                   <span>LC: ${displayLc}</span>
                                   <i class="fas fa-pen text-[6.5px] opacity-70"></i>
                               </span>
                           </div>
-                          <div style="display:flex; gap:10px; align-items:center;">
-                              <div class="money-stat"><span>REVENUE</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div>
+                          
+                          <!-- DETAIL KEUANGAN TRANSAKSI SECARA TRANSPARAN -->
+                          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                              <div class="money-stat"><span>GROSS</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div>
+                              <div class="money-stat"><span>FEE MP</span><div style="color:var(--ryux-red);">${formatRp(d.adminFee || 0)}</div></div>
+                              <div class="money-stat"><span>INCOME (CAIR)</span><div style="color:white;">${formatRp(d.actualIncome || 0)}</div></div>
                               <div class="money-stat"><span>PROFIT</span><div style="color:var(--ryux-green);">${formatRp(d.profit)}</div></div>
                               ${actBtn}
                           </div>
@@ -1851,6 +1913,34 @@ function submitManualOrder() {
       document.getElementById('sumOrder').innerText = filtered.length; 
       document.getElementById('sumQty').innerText = sQty + " Pcs"; 
       container.innerHTML = html;
+    }
+
+    // FUNGSI OPEN FIX MODAL (ANTI-GAGAL)
+    function openFixModal(idx) { 
+      try {
+        var item = globalSalesData.find(s => s.rowIdx === idx); 
+        if(!item) return alert("Data pesanan tidak ditemukan."); 
+
+        document.getElementById('fixRowIdx').value = idx; 
+        document.getElementById('fixRefBox').innerHTML = `
+          <div class="tiny-label">ORDER REF: ${item.noOrder}</div>
+          <div style="font-weight:900; color:white; font-size:11px;">${item.mpProductName || '-'}</div>
+          <div style="font-size:9.5px; color:var(--ryux-yellow); margin-top:2px;">LC: ${item.listingCode || '-'}</div>
+        `; 
+        
+        document.getElementById('fixItemsContainer').innerHTML = ""; 
+        var itms = (item.items && Array.isArray(item.items) && item.items.length > 0) ? item.items : [{ sku: '', qty: 1 }];
+        itms.forEach((itm) => { 
+          if(itm.qty > 0 || itm.sku === "-") { 
+            addFixRowUI(itm.sku === '-' ? '' : itm.sku, itm.qty); 
+          } 
+        }); 
+
+        document.getElementById('modalFixSales').classList.remove('hidden-section'); 
+        window.history.pushState({ modal: 'fixSales' }, '');
+      } catch (err) {
+        alert("Gagal membuka form fix: " + err.message);
+      }
     }
 
     // MODULE: INVENTORY
