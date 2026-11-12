@@ -516,36 +516,6 @@
          </div>
       </div>
 
-      <!-- 3. LIVE SALES -->
-      <!-- FILTER BAR LIVE SALES LENGKAP DENGAN RENTANG TANGGAL -->
-        <div class="glass-card p-2.5 flex flex-col gap-2 shrink-0 z-30 mb-2.5 bg-black/40">
-          <div class="flex gap-2 items-center flex-wrap">
-            <select class="glass-input w-auto py-1 text-[9.5px] flex-1 min-w-[100px]" id="filterDateRangeSales" onchange="renderSalesTable();">
-              <option value="ALL">Semua Bulan</option>
-              <option value="TODAY">Hari Ini</option>
-              <option value="YESTERDAY">Kemarin</option>
-              <option value="THIS_WEEK">Pekan Ini</option>
-              <option value="THIS_MONTH">Bulan Ini</option>
-            </select>
-            
-            <select class="glass-input w-auto py-1 text-[9.5px] flex-1 min-w-[100px]" id="filterStatusSales" onchange="renderSalesTable()">
-              <option value="ALL">Semua Status</option>
-              <option value="Selesai">Selesai</option>
-              <option value="Terkirim">Terkirim</option>
-              <option value="Perlu dikirim">Perlu dikirim</option>
-              <option value="Sedang Transit">Sedang Transit</option>
-              <option value="Batal">Batal</option>
-              <option value="Return COD">Return COD</option>
-              <option value="Refund & Return">Refund & Return</option>
-            </select>
-
-            <select class="glass-input w-auto py-1 text-[9.5px] flex-1 min-w-[100px] border-purple-500/30 text-purple-300" id="filterKelengkapanSales" onchange="renderSalesTable()">
-              <option value="ALL">Semua Data</option>
-              <option value="AMAN">Data Valid</option>
-              <option value="ERROR">Butuh Koreksi ⚠️</option>
-            </select>
-          </div>
-
           <!-- BARIS KEDUA: FILTER RENTANG TANGGAL DARI - SAMPAI -->
           <div class="flex gap-1.5 items-center flex-wrap">
             <div class="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-lg border border-white/10 text-[9px]">
@@ -3119,7 +3089,32 @@ function submitManualOrder() {
     };
 
   </script>
+<!-- MODAL FIX / KOREKSI PENJUALAN YANG HILANG -->
+<div id="modalFixSales" class="modal-overlay hidden-section">
+  <div class="modal-card" style="max-width:440px;">
+    <div class="modal-header">
+      <span style="color:var(--ryux-cyan);"><i class="fas fa-wrench mr-1"></i> Koreksi SKU Pesanan</span>
+      <button type="button" onclick="closeFixModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="fixRowIdx">
+      <div id="fixRefBox" class="p-2.5 rounded-lg mb-3 bg-cyan-500/10 border border-cyan-500/20 text-xs"></div>
+      
+      <div class="flex justify-between items-center mb-2">
+        <label class="tiny-label text-slate-300">DAFTAR SKU YANG BENAR</label>
+        <button type="button" class="btn btn-outline py-0.5 px-2 text-[8px]" onclick="addFixRowUI()">+ Tambah Baris</button>
+      </div>
+      
+      <div id="fixItemsContainer" class="flex flex-col gap-2 mb-4"></div>
 
+      <div class="flex gap-2">
+        <button type="button" onclick="closeFixModal()" class="btn btn-outline flex-1">Batal</button>
+        <button type="button" id="btnSaveFix" onclick="saveFixModal()" class="btn btn-primary flex-2">Simpan Koreksi</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
   <!-- FLOATING CYBER MOBILE BOTTOM NAV DOCK -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 z-[999] bg-[#0b0f19]/90 backdrop-blur-md border-t border-cyan-500/20 px-2 py-1.5 flex justify-around items-center shadow-[0_-5px_20px_rgba(0,0,0,0.8)] pb-[calc(0.4rem+env(safe-area-inset-bottom))]">
     <button onclick="mobileNavSwitch('pageDashboard', this)" class="mobile-nav-btn flex flex-col items-center gap-0.5 text-cyan-400">
