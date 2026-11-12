@@ -305,7 +305,6 @@
                  <option value="TODAY">🕒 Hari Ini</option>
              </select>
              <div class="flex gap-1.5">
-                 <!-- FITUR BARU: +ORDER DARI DASHBOARD -->
                  <button class="btn btn-primary action-pill-btn shadow-[0_0_10px_rgba(0,240,255,0.2)]" onclick="openManualOrderModal()"><i class="fas fa-cart-plus mr-1"></i>+Order</button>
                  <button class="btn btn-outline action-pill-btn" onclick="openGrnModal()"><i class="fas fa-box-open text-cyan-400 mr-1"></i>+GRN</button>
                  <button class="btn btn-outline action-pill-btn" onclick="fm_openTransaksiModal()"><i class="fas fa-wallet text-emerald-400 mr-1"></i>+Kas</button>
@@ -314,7 +313,6 @@
          </div>
          
          <div class="flex-1 overflow-y-auto custom-scroll flex flex-col gap-3 pb-20">
-             
              <!-- 4 KPI BENTO GRID -->
              <div class="kpi-responsive-grid">
                  <div class="glass-card kpi-responsive-card border-t-2 border-cyan-400 bg-black/40">
@@ -357,9 +355,8 @@
                  </div>
              </div>
 
-             <!-- ROW 3: OPTIMASI SPACE (TOP 5 SKU BERDAMPINGAN DENGAN LIVE PIPELINE FULFILLMENT) -->
+             <!-- ROW 3: TOP 5 SKU & LIVE PIPELINE FULFILLMENT -->
              <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                 <!-- WIDGET 1: TOP 5 SKU -->
                  <div class="glass-card flex flex-col overflow-hidden border border-white/10 bg-black/40">
                      <div class="px-3.5 py-2 border-b border-white/5 flex justify-between items-center">
                          <span class="text-[9px] md:text-[10px] font-black tracking-wider text-yellow-400"><i class="fas fa-crown mr-1"></i>TOP 5 SKU TERLARIS</span>
@@ -373,7 +370,6 @@
                      </div>
                  </div>
 
-                 <!-- WIDGET 2: LIVE ORDER PIPELINE & RETURN COD MONITOR -->
                  <div class="glass-card p-3.5 flex flex-col justify-between border border-white/10 bg-black/40">
                      <div>
                          <div class="flex justify-between items-center mb-2.5 pb-1 border-b border-white/5">
@@ -409,7 +405,6 @@
                      </div>
                  </div>
              </div>
-
          </div>
       </div>
 
@@ -516,25 +511,7 @@
          </div>
       </div>
 
-          <!-- BARIS KEDUA: FILTER RENTANG TANGGAL DARI - SAMPAI -->
-          <div class="flex gap-1.5 items-center flex-wrap">
-            <div class="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-lg border border-white/10 text-[9px]">
-               <span class="text-slate-400">Dari:</span>
-               <input type="date" id="salesStartDate" onchange="renderSalesTable()" class="bg-transparent text-white text-[9px] outline-none cursor-pointer">
-               <span class="text-slate-400">s/d</span>
-               <input type="date" id="salesEndDate" onchange="renderSalesTable()" class="bg-transparent text-white text-[9px] outline-none cursor-pointer">
-            </div>
-
-            <div class="relative flex-1 min-w-[130px]">
-               <i class="fa-solid fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[9px]"></i>
-               <input type="text" class="glass-input pl-7 py-1 text-[9.5px]" id="searchSales" placeholder="Cari Order / Listing Code..." onkeyup="renderSalesTable()">
-            </div>
-
-            <button type="button" onclick="openManualOrderModal(event)" class="btn btn-primary py-1 px-2.5 text-[9.5px] shadow-[0_0_10px_rgba(0,240,255,0.2)] shrink-0" title="Input Pesanan Manual"><i class="fas fa-cart-plus mr-1"></i>+Order</button>
-            <button onclick="resetSalesFilter()" class="btn-outline py-1 px-2.5 text-[9.5px] rounded-lg shrink-0" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
-          </div>
-        </div>
-      
+      <!-- 3. LIVE SALES LOG (SATU FILTER BAR BERSIH & RAPI) -->
       <div id="pageSalesLog" class="page-section hidden-section flex flex-col h-full relative z-10 pointer-events-auto">
         <div class="glass-card p-2.5 flex flex-col gap-2 shrink-0 z-30 mb-2.5 bg-black/40">
           <div class="flex gap-2 items-center flex-wrap">
@@ -564,13 +541,20 @@
             </select>
           </div>
 
-          <div class="flex gap-1.5 items-center">
-            <div class="relative flex-1">
+          <div class="flex gap-1.5 items-center flex-wrap">
+            <div class="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-lg border border-white/10 text-[9px]">
+               <span class="text-slate-400">Dari:</span>
+               <input type="date" id="salesStartDate" onchange="renderSalesTable()" class="bg-transparent text-white text-[9px] outline-none cursor-pointer">
+               <span class="text-slate-400">s/d</span>
+               <input type="date" id="salesEndDate" onchange="renderSalesTable()" class="bg-transparent text-white text-[9px] outline-none cursor-pointer">
+            </div>
+
+            <div class="relative flex-1 min-w-[130px]">
                <i class="fa-solid fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[9px]"></i>
                <input type="text" class="glass-input pl-7 py-1 text-[9.5px]" id="searchSales" placeholder="Cari Order / Listing Code..." onkeyup="renderSalesTable()">
             </div>
-            <!-- TOMBOL +ORDER DI LIVE SALES -->
-            <button onclick="openManualOrderModal()" class="btn btn-primary py-1 px-2.5 text-[9.5px] shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="Input Pesanan Manual"><i class="fas fa-cart-plus mr-1"></i>+Order</button>
+
+            <button type="button" onclick="openManualOrderModal(event)" class="btn btn-primary py-1 px-2.5 text-[9.5px] shadow-[0_0_10px_rgba(0,240,255,0.2)] shrink-0" title="Input Pesanan Manual"><i class="fas fa-cart-plus mr-1"></i>+Order</button>
             <button onclick="resetSalesFilter()" class="btn-outline py-1 px-2.5 text-[9.5px] rounded-lg shrink-0" title="Reset Filter"><i class="fa-solid fa-rotate-left"></i></button>
           </div>
         </div>
@@ -649,7 +633,7 @@
             <div class="glass-card flex-1 overflow-y-auto custom-scroll p-0 border-t-2 border-t-rose-500/50 bg-black/40">
               <table id="invTableBs" class="w-full">
                 <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>SKU</th><th>Detail Produk</th><th style="text-align:center;">Stok BS</th><th style="text-align:right;">COGS</th><th style="text-align:right;">Nilai Kerugian</th><th style="text-align:center;">Aksi</th></tr></thead>
-                <tbody id="invBodyBs"><tr><td colspan="6" class="text-center py-6 text-slate-500 italic text-xs">Menunggu data BS...</td></tr></tbody>
+                <tbody id="invBodyBs"><tr><td colspan="6" class="text-center py-5 text-slate-500 italic text-[10px]">Belum ada barang BS.</td></tr></tbody>
               </table>
             </div>
          </div>
@@ -659,7 +643,7 @@
             <div class="glass-card flex-1 overflow-y-auto custom-scroll p-0 border-t-2 border-t-purple-500/50 bg-black/40">
               <table id="invTableLog" class="w-full">
                 <thead class="sticky top-0 z-10 bg-black/80 backdrop-blur-md"><tr><th>Waktu</th><th>Tipe</th><th>SKU</th><th style="text-align:center;">Qty</th><th>Keterangan</th></tr></thead>
-                <tbody id="invBodyLog"><tr><td colspan="5" class="text-center py-6 text-slate-500 italic text-xs">Menunggu log mutasi...</td></tr></tbody>
+                <tbody id="invBodyLog"><tr><td colspan="5" class="text-center py-5 text-slate-500 italic text-[10px]">Belum ada log mutasi.</td></tr></tbody>
               </table>
             </div>
          </div>
@@ -715,6 +699,105 @@
   <div id="printOpnameArea" class="hidden-section"></div>
 
   <!-- MODALS -->
+
+  <!-- MODAL FIX / KOREKSI PENJUALAN (LENGKAP & ANTI-ERROR) -->
+  <div id="modalFixSales" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:440px;">
+      <div class="modal-header">
+        <span style="color:var(--ryux-cyan);"><i class="fas fa-wrench mr-1"></i> Koreksi SKU Pesanan</span>
+        <button type="button" onclick="closeFixModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="fixRowIdx">
+        <div id="fixRefBox" class="p-2.5 rounded-lg mb-3 bg-cyan-500/10 border border-cyan-500/20 text-xs"></div>
+        
+        <div class="flex justify-between items-center mb-2">
+          <label class="tiny-label text-slate-300">DAFTAR SKU YANG BENAR</label>
+          <button type="button" class="btn btn-outline py-0.5 px-2 text-[8px]" onclick="addFixRowUI()">+ Tambah Baris</button>
+        </div>
+        
+        <div id="fixItemsContainer" class="flex flex-col gap-2 mb-4"></div>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="closeFixModal()" class="btn btn-outline flex-1">Batal</button>
+          <button type="button" id="btnSaveFix" onclick="saveFixModal()" class="btn btn-primary flex-2">Simpan Koreksi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TERIMA RETUR COD -->
+  <div id="modalRetur" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:400px;">
+      <div class="modal-header">
+        <span style="color:var(--ryux-red);"><i class="fas fa-undo mr-1"></i> Terima Barang Retur COD</span>
+        <button type="button" onclick="closeReturModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="event.preventDefault(); submitRetur();">
+          <input type="hidden" id="returRowIdx">
+          <div class="p-2.5 rounded-lg mb-3 bg-rose-500/10 border border-rose-500/20 text-xs">
+            <div class="tiny-label text-rose-400">NO. PESANAN RETUR</div>
+            <div id="returNoOrderLabel" class="font-black text-white text-sm"></div>
+          </div>
+          <div class="mb-3">
+            <label class="tiny-label text-slate-300">BARANG DALAM PESANAN</label>
+            <div id="returItemsList" class="p-2 rounded bg-black/40 border border-white/5 flex flex-col gap-1"></div>
+          </div>
+          <div class="form-group">
+            <label class="tiny-label">KONDISI BARANG YANG DITERIMA</label>
+            <select id="returKondisi" class="glass-input">
+              <option value="BAIK">Masih Baik (Kembali ke Stok Normal MASTER_SKU)</option>
+              <option value="BS">Rusak / Hilang (Masuk ke Stok BARANG_BS)</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="tiny-label">KETERANGAN</label>
+            <input type="text" id="returKeterangan" class="glass-input" placeholder="Contoh: Paket retur segel utuh" required>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="closeReturModal()" class="btn btn-outline flex-1">Batal</button>
+            <button type="submit" class="btn btn-danger flex-2">Konfirmasi Terima Retur</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL REVISI PROCUREMENT (GRN) -->
+  <div id="modalReviseProc" class="modal-overlay hidden-section">
+    <div class="modal-card" style="max-width:400px;">
+      <div class="modal-header">
+        <span style="color:var(--ryux-yellow);"><i class="fas fa-pen mr-1"></i> Revisi Item Nota GRN</span>
+        <button type="button" onclick="closeReviseProcModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="event.preventDefault(); submitReviseProc();">
+          <input type="hidden" id="revProcNota">
+          <input type="hidden" id="revProcOldSku">
+          <div class="form-group">
+            <label class="tiny-label">SKU / PRODUK</label>
+            <input type="text" id="revProcSku" data-custom-list="skuSuggestions" class="glass-input" required>
+          </div>
+          <div class="flex gap-2 mb-3">
+            <div class="flex-1">
+              <label class="tiny-label">QTY</label>
+              <input type="number" id="revProcQty" class="glass-input" required min="1">
+            </div>
+            <div class="flex-1">
+              <label class="tiny-label">HARGA SATUAN (RP)</label>
+              <input type="number" id="revProcHarga" class="glass-input" required min="0">
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="closeReviseProcModal()" class="btn btn-outline flex-1">Batal</button>
+            <button type="submit" class="btn btn-warning flex-2">Simpan Perubahan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL INPUT PESANAN MANUAL -->
   <div id="modalManualOrder" class="modal-overlay hidden-section">
     <div class="modal-card" style="max-width:520px;">
@@ -724,7 +807,6 @@
       </div>
       <div class="modal-body">
         <form onsubmit="event.preventDefault(); submitManualOrder();">
-          
           <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px;">
             <div class="form-group" style="flex:1; min-width:110px;">
               <label class="tiny-label">TANGGAL & WAKTU</label>
@@ -765,14 +847,12 @@
             </div>
           </div>
 
-          <!-- DAFTAR ITEM BARANG -->
           <div class="flex justify-between items-center mb-1.5">
             <span class="tiny-label text-white">DAFTAR BARANG YANG DIBELI</span>
             <button type="button" class="btn btn-outline py-0.5 px-2 text-[8px]" onclick="addManualOrderItemRow()">+ Tambah Produk</button>
           </div>
           <div id="moItemsContainer" class="flex flex-col gap-1.5 mb-2.5"></div>
 
-          <!-- ADMIN & CATATAN -->
           <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-bottom:10px; display:flex; gap:8px;">
             <div class="form-group" style="flex:1;">
               <label class="tiny-label text-rose-400">BIAYA ADMIN / POTONGAN (-)</label>
@@ -797,6 +877,7 @@
       </div>
     </div>
   </div>
+
   <div id="modalEditListingCode" class="modal-overlay hidden-section">
     <div class="modal-card" style="max-width:390px;">
       <div class="modal-header">
@@ -829,47 +910,47 @@
   <div id="modalImport" class="modal-overlay hidden-section"><div class="modal-card" style="max-width:370px;"><div class="modal-header"><span style="color:white;"><i class="fab fa-tiktok mr-1"></i> Import TikTok</span><button onclick="closeImportModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button></div><div class="modal-body"><div class="form-group"><label class="tiny-label">TARGET ACCOUNT</label><select id="importAccount" class="glass-input"><option value="Zonime Biru">Zonime Biru</option><option value="Zonime Merah">Zonime Merah</option></select></div><div style="display:flex; gap:8px; margin-top:12px;"><button type="button" onclick="closeImportModal()" class="btn-outline" style="flex:1;">Cancel</button><button type="button" onclick="executeImport()" id="btnExecImport" class="btn btn-warning" style="flex:2;">Execute</button></div></div></div></div>
   
   <div id="modalInvAction" class="modal-overlay hidden-section pointer-events-auto">
-        <div class="modal-card pointer-events-auto relative z-50" style="max-width:400px;">
-          <div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes mr-1"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button></div>
-          <div class="modal-body pointer-events-auto relative z-50">
+    <div class="modal-card pointer-events-auto relative z-50" style="max-width:400px;">
+      <div class="modal-header"><span style="color:var(--ryux-purple);"><i class="fas fa-cubes mr-1"></i> Inventory Action</span><button onclick="closeInvActionModal()" class="btn-outline" style="border:none; font-size:16px;">&times;</button></div>
+      <div class="modal-body pointer-events-auto relative z-50">
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <button class="btn btn-primary flex-1 py-1 text-[8.5px]" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Opname Fisik</button>
+          <button class="btn btn-outline flex-1 py-1 text-[8.5px]" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi Barang</button>
+        </div>
+        
+        <div id="tabOpname">
+          <form onsubmit="event.preventDefault(); submitOpname();">
+            <input type="hidden" id="invActSku"><input type="hidden" id="invActCogs">
+            <div style="background:rgba(0,240,255,0.05); padding:8px 10px; border-radius:8px; margin-bottom:10px; border:1px solid rgba(0,240,255,0.2);">
+              <div class="tiny-label" style="color:var(--ryux-cyan);">TARGET SKU</div>
+              <div style="font-size:11.5px; font-weight:900;" id="invActSkuLabel"></div>
+            </div>
             <div style="display:flex; gap:8px; margin-bottom:10px;">
-              <button class="btn btn-primary flex-1 py-1 text-[8.5px]" id="tabOpnameBtn" onclick="switchInvTab('OPNAME')">Opname Fisik</button>
-              <button class="btn btn-outline flex-1 py-1 text-[8.5px]" id="tabBsBtn" onclick="switchInvTab('BS')">Mutasi Barang</button>
+              <div class="form-group" style="flex:1;"><label class="tiny-label">STOK SISTEM</label><input type="number" id="invActStokSistem" class="glass-input" readonly></div>
+              <div class="form-group" style="flex:1;"><label class="tiny-label" style="color:var(--ryux-yellow);">STOK FISIK REAL</label><input type="number" id="invActStokFisik" class="glass-input" required oninput="calcOpnameDiff()"></div>
             </div>
-            
-            <div id="tabOpname">
-              <form onsubmit="event.preventDefault(); submitOpname();">
-                <input type="hidden" id="invActSku"><input type="hidden" id="invActCogs">
-                <div style="background:rgba(0,240,255,0.05); padding:8px 10px; border-radius:8px; margin-bottom:10px; border:1px solid rgba(0,240,255,0.2);">
-                  <div class="tiny-label" style="color:var(--ryux-cyan);">TARGET SKU</div>
-                  <div style="font-size:11.5px; font-weight:900;" id="invActSkuLabel"></div>
-                </div>
-                <div style="display:flex; gap:8px; margin-bottom:10px;">
-                  <div class="form-group" style="flex:1;"><label class="tiny-label">STOK SISTEM</label><input type="number" id="invActStokSistem" class="glass-input" readonly></div>
-                  <div class="form-group" style="flex:1;"><label class="tiny-label" style="color:var(--ryux-yellow);">STOK FISIK REAL</label><input type="number" id="invActStokFisik" class="glass-input" required oninput="calcOpnameDiff()"></div>
-                </div>
-                <div class="form-group"><label class="tiny-label">SELISIH</label><input type="text" id="invActSelisih" class="glass-input text-center font-bold" readonly></div>
-                <div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetOpname" class="glass-input" required></div>
-                <button type="submit" id="btnSubmitOpname" class="btn btn-warning w-full py-2 text-[9.5px]">Proses Opname</button>
-              </form>
-            </div>
+            <div class="form-group"><label class="tiny-label">SELISIH</label><input type="text" id="invActSelisih" class="glass-input text-center font-bold" readonly></div>
+            <div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetOpname" class="glass-input" required></div>
+            <button type="submit" id="btnSubmitOpname" class="btn btn-warning w-full py-2 text-[9.5px]">Proses Opname</button>
+          </form>
+        </div>
 
-            <div id="tabBs" class="hidden-section">
-              <form onsubmit="event.preventDefault(); submitMutasiBs();">
-                <div class="form-group"><label class="tiny-label">ARAH MUTASI</label>
-                    <select id="invActArahBs" class="glass-input">
-                        <option value="BAIK_KE_BS">Stok BAIK ke Stok BS (Rusak)</option>
-                        <option value="BS_KE_BAIK">Stok BS ke Stok BAIK (Fix)</option>
-                    </select>
-                </div>
-                <div class="form-group"><label class="tiny-label">QTY</label><input type="number" id="invActQtyBs" class="glass-input" required min="1"></div>
-                <div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetBs" class="glass-input" required></div>
-                <button type="submit" id="btnSubmitBs" class="btn btn-danger w-full py-2 text-[9.5px]">Eksekusi Mutasi</button>
-              </form>
+        <div id="tabBs" class="hidden-section">
+          <form onsubmit="event.preventDefault(); submitMutasiBs();">
+            <div class="form-group"><label class="tiny-label">ARAH MUTASI</label>
+                <select id="invActArahBs" class="glass-input">
+                    <option value="BAIK_KE_BS">Stok BAIK ke Stok BS (Rusak)</option>
+                    <option value="BS_KE_BAIK">Stok BS ke Stok BAIK (Fix)</option>
+                </select>
             </div>
-          </div>
+            <div class="form-group"><label class="tiny-label">QTY</label><input type="number" id="invActQtyBs" class="glass-input" required min="1"></div>
+            <div class="form-group"><label class="tiny-label">KETERANGAN</label><input type="text" id="invActKetBs" class="glass-input" required></div>
+            <button type="submit" id="btnSubmitBs" class="btn btn-danger w-full py-2 text-[9.5px]">Eksekusi Mutasi</button>
+          </form>
         </div>
       </div>
+    </div>
+  </div>
     
   <div id="modalEditSku" class="modal-overlay hidden-section">
       <div class="modal-card" style="max-width:400px;">
@@ -1169,9 +1250,6 @@
         }
     }
 
-    // ==============================================================
-    // KAMUS SUB-KATEGORI FINANSIAL DINAMIS (IN, OUT, MUTASI)
-    // ==============================================================
     const financeCategories = {
       IN: [
         { value: "Pencairan Saldo MP", label: "Pencairan Saldo MP (TikTok/Shopee)" },
@@ -1233,7 +1311,6 @@
         }
     }
 
-    // HISTORY STATE TRAP: SOLUSI TOMBOL BACK HP ANTI-KELUAR
     function setupHistoryTrap() {
       window.history.replaceState({ page: 'pageDashboard' }, '');
 
@@ -1282,174 +1359,167 @@
       if (btnEl) btnEl.className = 'mobile-nav-btn flex flex-col items-center gap-0.5 text-cyan-400';
     }
 
-    // ==============================================================
-// FITUR MODAL MANUAL ORDER (+ORDER) ANTI-MACET
-// ==============================================================
-function getLocalDateTimeString() {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
+    function getLocalDateTimeString() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
 
-function openManualOrderModal(e) {
-  if (e && e.stopPropagation) e.stopPropagation();
-  try {
-    const modal = document.getElementById('modalManualOrder');
-    if (!modal) return alert("Error: modalManualOrder belum terpasang di HTML.");
+    function openManualOrderModal(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      try {
+        const modal = document.getElementById('modalManualOrder');
+        if (!modal) return alert("Error: modalManualOrder belum terpasang di HTML.");
 
-    // 1. Munculkan modal seketika
-    modal.classList.remove('hidden-section');
-    window.history.pushState({ modal: 'manualOrder' }, '');
+        modal.classList.remove('hidden-section');
+        window.history.pushState({ modal: 'manualOrder' }, '');
 
-    // 2. Setel tanggal lokal yang aman (Anti-Crash)
-    const tglInput = document.getElementById('moTgl');
-    if (tglInput) tglInput.value = getLocalDateTimeString();
+        const tglInput = document.getElementById('moTgl');
+        if (tglInput) tglInput.value = getLocalDateTimeString();
 
-    if (document.getElementById('moNoOrder')) document.getElementById('moNoOrder').value = '';
-    if (document.getElementById('moCatatan')) document.getElementById('moCatatan').value = '';
-    if (document.getElementById('moAdminFee')) document.getElementById('moAdminFee').value = 0;
-    if (document.getElementById('moStatus')) document.getElementById('moStatus').value = 'Selesai';
-    
-    // 3. Muat pilihan dompet kas
-    const selWallet = document.getElementById('moWallet');
-    if (selWallet) {
-      selWallet.innerHTML = '<option value="">-- Jangan Catat ke Kas --</option>';
-      if (globalWallets && globalWallets.length > 0) {
-        globalWallets.forEach(w => {
-          selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
-        });
-      } else {
-        google.script.run.withSuccessHandler(res => {
-          globalWallets = res.wallets || [];
-          globalWallets.forEach(w => {
-            selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
-          });
-        }).getFinanceData();
+        if (document.getElementById('moNoOrder')) document.getElementById('moNoOrder').value = '';
+        if (document.getElementById('moCatatan')) document.getElementById('moCatatan').value = '';
+        if (document.getElementById('moAdminFee')) document.getElementById('moAdminFee').value = 0;
+        if (document.getElementById('moStatus')) document.getElementById('moStatus').value = 'Selesai';
+        
+        const selWallet = document.getElementById('moWallet');
+        if (selWallet) {
+          selWallet.innerHTML = '<option value="">-- Jangan Catat ke Kas --</option>';
+          if (globalWallets && globalWallets.length > 0) {
+            globalWallets.forEach(w => {
+              selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
+            });
+          } else {
+            google.script.run.withSuccessHandler(res => {
+              globalWallets = res.wallets || [];
+              globalWallets.forEach(w => {
+                selWallet.innerHTML += `<option value="${w.id}">${w.nama} (${w.kategori}) - ${formatRp(w.saldoAkhir)}</option>`;
+              });
+            }).getFinanceData();
+          }
+        }
+
+        const container = document.getElementById('moItemsContainer');
+        if (container) {
+          container.innerHTML = '';
+          addManualOrderItemRow();
+        }
+        calcManualOrder();
+      } catch (err) {
+        alert("Error buka form: " + err.message);
       }
     }
 
-    // 4. Buat baris barang pertama
-    const container = document.getElementById('moItemsContainer');
-    if (container) {
-      container.innerHTML = '';
-      addManualOrderItemRow();
+    function closeManualOrderModal() {
+      const modal = document.getElementById('modalManualOrder');
+      if (modal) modal.classList.add('hidden-section');
     }
-    calcManualOrder();
-  } catch (err) {
-    alert("Error buka form: " + err.message);
-  }
-}
 
-function closeManualOrderModal() {
-  const modal = document.getElementById('modalManualOrder');
-  if (modal) modal.classList.add('hidden-section');
-}
-
-function addManualOrderItemRow() {
-  const container = document.getElementById('moItemsContainer');
-  if (!container) return;
-  const div = document.createElement('div');
-  div.className = 'mo-item-row flex gap-1.5 items-center bg-black/40 p-1.5 rounded-lg border border-white/5';
-  div.innerHTML = `
-    <input type="text" class="glass-input mo-item-sku flex-1 text-xs" data-custom-list="skuSuggestions" placeholder="Ketik/Pilih SKU" oninput="onManualItemSkuChange(this)" required>
-    <input type="number" class="glass-input mo-item-qty text-center font-bold text-xs" placeholder="Qty" value="1" min="1" style="width:50px;" oninput="calcManualOrder()" required>
-    <input type="number" class="glass-input mo-item-price text-right font-bold text-xs" placeholder="Harga (Rp)" value="0" min="0" style="width:100px;" oninput="calcManualOrder()" required>
-    <button type="button" class="btn btn-danger py-1 px-2 text-[10px]" onclick="this.parentElement.remove(); calcManualOrder();" title="Hapus"><i class="fas fa-trash"></i></button>
-  `;
-  container.appendChild(div);
-}
-
-function onManualItemSkuChange(inputEl) {
-  const val = inputEl.value.split(" | ")[0].trim().toUpperCase();
-  const match = masterProductFullList.find(p => p.sku && p.sku.toUpperCase() === val);
-  if (match) {
-    const row = inputEl.closest('.mo-item-row');
-    const priceInput = row.querySelector('.mo-item-price');
-    if (parseFloat(priceInput.value) === 0 && match.cogs > 0) {
-      priceInput.value = Math.round(match.cogs * 1.3);
+    function addManualOrderItemRow() {
+      const container = document.getElementById('moItemsContainer');
+      if (!container) return;
+      const div = document.createElement('div');
+      div.className = 'mo-item-row flex gap-1.5 items-center bg-black/40 p-1.5 rounded-lg border border-white/5';
+      div.innerHTML = `
+        <input type="text" class="glass-input mo-item-sku flex-1 text-xs" data-custom-list="skuSuggestions" placeholder="Ketik/Pilih SKU" oninput="onManualItemSkuChange(this)" required>
+        <input type="number" class="glass-input mo-item-qty text-center font-bold text-xs" placeholder="Qty" value="1" min="1" style="width:50px;" oninput="calcManualOrder()" required>
+        <input type="number" class="glass-input mo-item-price text-right font-bold text-xs" placeholder="Harga (Rp)" value="0" min="0" style="width:100px;" oninput="calcManualOrder()" required>
+        <button type="button" class="btn btn-danger py-1 px-2 text-[10px]" onclick="this.parentElement.remove(); calcManualOrder();" title="Hapus"><i class="fas fa-trash"></i></button>
+      `;
+      container.appendChild(div);
     }
-    calcManualOrder();
-  }
-}
 
-function calcManualOrder() {
-  let gross = 0;
-  document.querySelectorAll('.mo-item-row').forEach(row => {
-    const q = parseInt(row.querySelector('.mo-item-qty').value) || 0;
-    const p = parseFloat(row.querySelector('.mo-item-price').value) || 0;
-    gross += (q * p);
-  });
-
-  const adminFeeEl = document.getElementById('moAdminFee');
-  const adminFee = adminFeeEl ? (parseFloat(adminFeeEl.value) || 0) : 0;
-  const net = Math.max(0, gross - adminFee);
-
-  const grossLabel = document.getElementById('moGrossLabel');
-  const netLabel = document.getElementById('moNetLabel');
-  if (grossLabel) grossLabel.innerText = formatRp(gross);
-  if (netLabel) netLabel.innerText = formatRp(net);
-}
-
-function submitManualOrder() {
-  const btn = document.getElementById('btnSubmitManualOrder');
-  const items = [];
-  let totalGross = 0;
-
-  document.querySelectorAll('.mo-item-row').forEach(row => {
-    const skuVal = row.querySelector('.mo-item-sku').value.split(" | ")[0].trim();
-    const qtyVal = parseInt(row.querySelector('.mo-item-qty').value) || 1;
-    const priceVal = parseFloat(row.querySelector('.mo-item-price').value) || 0;
-    if (skuVal) {
-      items.push({ sku: skuVal, qty: qtyVal, harga: priceVal });
-      totalGross += (qtyVal * priceVal);
+    function onManualItemSkuChange(inputEl) {
+      const val = inputEl.value.split(" | ")[0].trim().toUpperCase();
+      const match = masterProductFullList.find(p => p.sku && p.sku.toUpperCase() === val);
+      if (match) {
+        const row = inputEl.closest('.mo-item-row');
+        const priceInput = row.querySelector('.mo-item-price');
+        if (parseFloat(priceInput.value) === 0 && match.cogs > 0) {
+          priceInput.value = Math.round(match.cogs * 1.3);
+        }
+        calcManualOrder();
+      }
     }
-  });
 
-  if (items.length === 0) return alert("Pilih minimal 1 barang!");
+    function calcManualOrder() {
+      let gross = 0;
+      document.querySelectorAll('.mo-item-row').forEach(row => {
+        const q = parseInt(row.querySelector('.mo-item-qty').value) || 0;
+        const p = parseFloat(row.querySelector('.mo-item-price').value) || 0;
+        gross += (q * p);
+      });
 
-  const adminFee = parseFloat(document.getElementById('moAdminFee').value) || 0;
-  const netIncome = Math.max(0, totalGross - adminFee);
-  const walletId = document.getElementById('moWallet').value;
-  const walletObj = globalWallets.find(w => w.id === walletId);
+      const adminFeeEl = document.getElementById('moAdminFee');
+      const adminFee = adminFeeEl ? (parseFloat(adminFeeEl.value) || 0) : 0;
+      const net = Math.max(0, gross - adminFee);
 
-  const payload = {
-    tanggal: document.getElementById('moTgl').value.replace('T', ' ') + ':00',
-    noOrder: document.getElementById('moNoOrder').value,
-    channel: document.getElementById('moChannel').value,
-    status: document.getElementById('moStatus').value,
-    walletId: walletId,
-    walletName: walletObj ? walletObj.nama : '',
-    catatan: document.getElementById('moCatatan').value,
-    adminFee: adminFee,
-    totalGross: totalGross,
-    netIncome: netIncome,
-    items: items
-  };
+      const grossLabel = document.getElementById('moGrossLabel');
+      const netLabel = document.getElementById('moNetLabel');
+      if (grossLabel) grossLabel.innerText = formatRp(gross);
+      if (netLabel) netLabel.innerText = formatRp(net);
+    }
 
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-1"></i> Menyimpan...';
+    function submitManualOrder() {
+      const btn = document.getElementById('btnSubmitManualOrder');
+      const items = [];
+      let totalGross = 0;
 
-  google.script.run
-    .withSuccessHandler(res => {
-      alert(res);
-      btn.disabled = false;
-      btn.innerText = "Simpan Pesanan";
-      closeManualOrderModal();
-      loadSalesData();
-      loadDashboard();
-      if (walletId) loadFinanceData();
-    })
-    .withFailureHandler(err => {
-      alert("Gagal: " + err);
-      btn.disabled = false;
-      btn.innerText = "Simpan Pesanan";
-    })
-    .simpanOrderManual(payload);
-}
+      document.querySelectorAll('.mo-item-row').forEach(row => {
+        const skuVal = row.querySelector('.mo-item-sku').value.split(" | ")[0].trim();
+        const qtyVal = parseInt(row.querySelector('.mo-item-qty').value) || 1;
+        const priceVal = parseFloat(row.querySelector('.mo-item-price').value) || 0;
+        if (skuVal) {
+          items.push({ sku: skuVal, qty: qtyVal, harga: priceVal });
+          totalGross += (qtyVal * priceVal);
+        }
+      });
+
+      if (items.length === 0) return alert("Pilih minimal 1 barang!");
+
+      const adminFee = parseFloat(document.getElementById('moAdminFee').value) || 0;
+      const netIncome = Math.max(0, totalGross - adminFee);
+      const walletId = document.getElementById('moWallet').value;
+      const walletObj = globalWallets.find(w => w.id === walletId);
+
+      const payload = {
+        tanggal: document.getElementById('moTgl').value.replace('T', ' ') + ':00',
+        noOrder: document.getElementById('moNoOrder').value,
+        channel: document.getElementById('moChannel').value,
+        status: document.getElementById('moStatus').value,
+        walletId: walletId,
+        walletName: walletObj ? walletObj.nama : '',
+        catatan: document.getElementById('moCatatan').value,
+        adminFee: adminFee,
+        totalGross: totalGross,
+        netIncome: netIncome,
+        items: items
+      };
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-1"></i> Menyimpan...';
+
+      google.script.run
+        .withSuccessHandler(res => {
+          alert(res);
+          btn.disabled = false;
+          btn.innerText = "Simpan Pesanan";
+          closeManualOrderModal();
+          loadSalesData();
+          loadDashboard();
+          if (walletId) loadFinanceData();
+        })
+        .withFailureHandler(err => {
+          alert("Gagal: " + err);
+          btn.disabled = false;
+          btn.innerText = "Simpan Pesanan";
+        })
+        .simpanOrderManual(payload);
+    }
 
     function prosesLogout() {
         localStorage.removeItem('zonime_session');
@@ -1469,7 +1539,6 @@ function submitManualOrder() {
         }
     }
 
-    // HEADER TITLE DINAMIS
     function showPage(pageId, navEl, shouldPush = true) {
       document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden-section'));
       document.getElementById(pageId).classList.remove('hidden-section');
@@ -1751,15 +1820,16 @@ function submitManualOrder() {
         if(document.getElementById('filterDateRangeSales')) document.getElementById('filterDateRangeSales').value = 'ALL';
         if(document.getElementById('filterStatusSales')) document.getElementById('filterStatusSales').value = 'ALL';
         if(document.getElementById('filterKelengkapanSales')) document.getElementById('filterKelengkapanSales').value = 'ALL';
+        if(document.getElementById('salesStartDate')) document.getElementById('salesStartDate').value = '';
+        if(document.getElementById('salesEndDate')) document.getElementById('salesEndDate').value = '';
         if(document.getElementById('searchSales')) document.getElementById('searchSales').value = '';
         renderSalesTable();
     }
 
-   // RENDER SALES TABLE LENGKAP: GROSS, ADMIN FEE, ACTUAL INCOME, & PROFIT
     function renderSalesTable() {
       var container = document.getElementById('salesContainer');
       if(!container || globalSalesData.length === 0) { 
-        container.innerHTML = '<div class="glass-card" style="padding:24px; text-align:center; font-size:11px;">Data kosong.</div>'; 
+        if(container) container.innerHTML = '<div class="glass-card" style="padding:24px; text-align:center; font-size:11px;">Data kosong.</div>'; 
         return; 
       }
       
@@ -1773,7 +1843,6 @@ function submitManualOrder() {
       var now = new Date(); now.setHours(0,0,0,0); 
       var targetStart = null, targetEnd = null;
 
-      // Filter Rentang Tanggal Manual (Jika Diisi)
       if (selStart || selEnd) {
           if (selStart) { targetStart = new Date(selStart); targetStart.setHours(0,0,0,0); }
           if (selEnd) { targetEnd = new Date(selEnd); targetEnd.setHours(23,59,59,999); }
@@ -1849,7 +1918,6 @@ function submitManualOrder() {
 
           var cardBorder = isRowError ? 'border-rose-500/30 bg-rose-950/10' : 'border-white/5 bg-black/40';
 
-          // KARTU TRANSAKSI LENGKAP: GROSS, FEE, ACTUAL INCOME, & NET PROFIT
           html += `<div class="data-group-card glass-card mb-2 ${cardBorder}">
                       <div class="dg-header">
                           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
@@ -1862,7 +1930,6 @@ function submitManualOrder() {
                               </span>
                           </div>
                           
-                          <!-- DETAIL KEUANGAN TRANSAKSI SECARA TRANSPARAN -->
                           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                               <div class="money-stat"><span>GROSS</span><div style="color:var(--ryux-cyan);">${formatRp(d.totalPendapatan)}</div></div>
                               <div class="money-stat"><span>FEE MP</span><div style="color:var(--ryux-red);">${formatRp(d.adminFee || 0)}</div></div>
@@ -1885,7 +1952,7 @@ function submitManualOrder() {
       container.innerHTML = html;
     }
 
-    // FUNGSI OPEN FIX MODAL (ANTI-GAGAL)
+    // FUNGSI OPEN FIX MODAL (ROBUST & RESIK)
     function openFixModal(idx) { 
       try {
         var item = globalSalesData.find(s => s.rowIdx === idx); 
@@ -1911,6 +1978,49 @@ function submitManualOrder() {
       } catch (err) {
         alert("Gagal membuka form fix: " + err.message);
       }
+    }
+
+    function closeFixModal() { 
+      document.getElementById('modalFixSales').classList.add('hidden-section'); 
+    }
+
+    function addFixRowUI(sku='', qty=1) { 
+      document.getElementById('fixItemsContainer').innerHTML += `
+        <div style="display:flex; gap:6px;">
+          <input type="text" class="glass-input fix-sku-input" data-custom-list="skuSuggestions" placeholder="Pilih / Ketik SKU" value="${sku}">
+          <input type="number" class="glass-input fix-qty-input font-bold text-center" placeholder="QTY" style="width:65px;" value="${qty}" min="1">
+        </div>`; 
+    }
+
+    function saveFixModal() { 
+      var rowIdx = parseInt(document.getElementById('fixRowIdx').value); 
+      var arr = []; 
+      document.querySelectorAll('#fixItemsContainer > div').forEach(div => { 
+        var s = div.querySelector('.fix-sku-input').value.trim();
+        var q = div.querySelector('.fix-qty-input').value;
+        if (s) arr.push({ sku: s, qty: q }); 
+      }); 
+
+      if (arr.length === 0) return alert("Harap isi minimal 1 SKU!");
+
+      var btn = document.getElementById('btnSaveFix');
+      btn.innerText = "Processing..."; 
+      btn.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(res => { 
+          alert(res); 
+          btn.innerText = "Simpan Koreksi"; 
+          btn.disabled = false;
+          closeFixModal(); 
+          loadSalesData(); 
+        })
+        .withFailureHandler(err => {
+          alert("Gagal: " + err);
+          btn.innerText = "Simpan Koreksi";
+          btn.disabled = false;
+        })
+        .simpanKoreksiSales(rowIdx, arr); 
     }
 
     // MODULE: INVENTORY
@@ -2309,26 +2419,37 @@ function submitManualOrder() {
       google.script.run.withSuccessHandler(res => { alert(res); closeInvActionModal(); loadInventoryData(); }).simpanPenyesuaianStok(payload); 
     }
 
-    function openFixModal(idx) { 
-      var item = globalSalesData.find(s => s.rowIdx === idx); 
-      if(!item) return; 
-      document.getElementById('fixRowIdx').value = idx; 
-      document.getElementById('fixRefBox').innerHTML = `<div class="tiny-label">MP REF</div><div style="font-weight:900; color:white; font-size:11px;">${item.mpProductName}</div><div style="font-size:9.5px; color:var(--ryux-yellow); margin-top:2px;">LC: ${item.listingCode}</div>`; 
-      document.getElementById('fixItemsContainer').innerHTML = ""; 
-      item.items.forEach((itm, i) => { if(itm.qty>0 || itm.sku==="-") { addFixRowUI(itm.sku==='-'?'':itm.sku, itm.qty); } }); 
-      document.getElementById('modalFixSales').classList.remove('hidden-section'); 
-      window.history.pushState({ modal: 'fixSales' }, '');
+    function openEditListingCodeModal(rowIdx, noOrder, lc) {
+      document.getElementById('editLcRowIdx').value = rowIdx;
+      document.getElementById('editLcOrderLabel').innerText = noOrder;
+      document.getElementById('editLcInput').value = (lc && lc !== '-') ? lc : '';
+      document.getElementById('modalEditListingCode').classList.remove('hidden-section');
+      window.history.pushState({ modal: 'editLc' }, '');
     }
-    function closeFixModal() { document.getElementById('modalFixSales').classList.add('hidden-section'); }
-    function addFixRowUI(sku='', qty=1) { 
-      document.getElementById('fixItemsContainer').innerHTML += `<div style="display:flex; gap:6px;"><input type="text" class="glass-input fix-sku-input" data-custom-list="skuSuggestions" placeholder="SKU" value="${sku}"><input type="number" class="glass-input fix-qty-input" placeholder="QTY" style="width:60px;" value="${qty}"></div>`; 
+    function closeEditListingCodeModal() {
+      document.getElementById('modalEditListingCode').classList.add('hidden-section');
     }
-    function saveFixModal() { 
-      var rowIdx = parseInt(document.getElementById('fixRowIdx').value); 
-      var arr = []; 
-      document.querySelectorAll('#fixItemsContainer > div').forEach(div => { arr.push({ sku: div.querySelector('.fix-sku-input').value, qty: div.querySelector('.fix-qty-input').value }); }); 
-      document.getElementById('btnSaveFix').innerText = "Processing..."; 
-      google.script.run.withSuccessHandler(res => { alert(res); document.getElementById('btnSaveFix').innerText="Apply"; closeFixModal(); loadSalesData(); }).simpanKoreksiSales(rowIdx, arr); 
+    function submitEditListingCode() {
+      var rowIdx = document.getElementById('editLcRowIdx').value;
+      var newLc = document.getElementById('editLcInput').value;
+      var btn = document.getElementById('btnSubmitEditLc');
+      btn.innerText = "Memproses...";
+      btn.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(res => {
+          alert(res);
+          btn.innerText = "Simpan & Re-Parse";
+          btn.disabled = false;
+          closeEditListingCodeModal();
+          loadSalesData();
+        })
+        .withFailureHandler(err => {
+          alert("Gagal: " + err);
+          btn.innerText = "Simpan & Re-Parse";
+          btn.disabled = false;
+        })
+        .simpanEditListingCode({ rowIdx: rowIdx, newListingCode: newLc });
     }
 
     function openReturModal(idx, no) { 
@@ -2336,8 +2457,12 @@ function submitManualOrder() {
       document.getElementById('returNoOrderLabel').innerText = no; 
       var item = globalSalesData.find(s => s.rowIdx === idx); 
       var html = ''; 
-      item.items.forEach(itm => { if(itm.qty>0 && itm.sku!=='-') html += `<div style="display:flex; justify-content:space-between; color:white; font-size:10px; margin-bottom:4px;"><span>${itm.sku}</span><span style="color:var(--ryux-cyan);">+${itm.qty}</span></div>`; }); 
-      document.getElementById('returItemsList').innerHTML = html; 
+      if (item && item.items) {
+        item.items.forEach(itm => { 
+          if(itm.qty>0 && itm.sku!=='-') html += `<div style="display:flex; justify-content:space-between; color:white; font-size:10px; margin-bottom:4px;"><span>${itm.sku} (${itm.nama})</span><span style="color:var(--ryux-cyan);">+${itm.qty}</span></div>`; 
+        }); 
+      }
+      document.getElementById('returItemsList').innerHTML = html || '<div class="text-xs text-slate-400">Tidak ada item terdeteksi.</div>'; 
       document.getElementById('modalRetur').classList.remove('hidden-section'); 
       window.history.pushState({ modal: 'retur' }, '');
     }
